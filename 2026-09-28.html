@@ -2,448 +2,560 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Tech Intelligence – Sep 28, 2026</title>
+<title>Daily Tech Intelligence — 2026-09-28</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
-  * { margin:0; padding:0; box-sizing:border-box; }
-
-  body {
-    background: #000;
-    font-family: 'Inter', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 30px 20px;
-    min-height: 100vh;
-  }
-
-  .carousel { width: 480px; position: relative; }
-
-  /* ── SLIDE ── */
-  .slide {
-    display: none;
-    width: 480px;
-    height: 620px;
-    border-radius: 20px;
-    overflow: hidden;
-    position: relative;
-  }
-  .slide.active { display: block; }
-
-  /* AI background image */
-  .slide-bg {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    filter: brightness(0.35) saturate(1.2);
-    transition: opacity 0.5s;
-  }
-
-  /* dark gradient overlay on top of image */
-  .slide-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(0,0,0,0.2) 0%,
-      rgba(0,0,0,0.5) 40%,
-      rgba(0,0,0,0.9) 100%
-    );
-  }
-
-  .slide-content {
-    position: relative;
-    z-index: 2;
-    padding: 28px 26px 24px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* counter */
-  .counter {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: rgba(255,255,255,0.4);
-    font-weight: 700;
-    letter-spacing: 2px;
-    margin-bottom: 16px;
-  }
-
-  /* badge */
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 14px;
-    border-radius: 100px;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-    width: fit-content;
-  }
-  .badge-green { background: rgba(0,230,118,0.15); border: 1px solid rgba(0,230,118,0.5); color: #00e676; }
-  .badge-blue  { background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.5); color: #38bdf8; }
-  .badge-red   { background: rgba(255,80,80,0.15);  border: 1px solid rgba(255,80,80,0.5);  color: #ff6060; }
-  .badge-gold  { background: rgba(255,200,0,0.15);  border: 1px solid rgba(255,200,0,0.5);  color: #ffc800; }
-  .badge-purple{ background: rgba(167,139,250,0.15);border: 1px solid rgba(167,139,250,0.5);color: #a78bfa; }
-
-  /* big headline */
-  .headline { font-size: 40px; font-weight: 900; color: #fff; line-height: 1.05; letter-spacing: -1px; text-transform: uppercase; }
-  .headline .hl-green  { color: #00e676; }
-  .headline .hl-red    { color: #ff5050; }
-  .headline .hl-gold   { color: #ffc800; }
-  .headline .hl-blue   { color: #38bdf8; }
-  .headline .hl-purple { color: #a78bfa; }
-  .subline { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 2.5px; text-transform: uppercase; margin-top: 6px; font-weight: 600; }
-
-  /* terminal panel */
-  .panel {
-    background: rgba(0,0,0,0.7);
-    border: 1px solid rgba(0,230,118,0.3);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 14px;
-  }
-  .panel-head {
-    background: rgba(0,0,0,0.5);
-    border-bottom: 1px solid rgba(0,230,118,0.2);
-    padding: 7px 12px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .dot-r{width:7px;height:7px;border-radius:50%;background:#ff5f57;flex-shrink:0;}
-  .dot-y{width:7px;height:7px;border-radius:50%;background:#ffbd2e;flex-shrink:0;}
-  .dot-g{width:7px;height:7px;border-radius:50%;background:#28c841;flex-shrink:0;}
-  .panel-title { font-size: 9px; color: rgba(255,255,255,0.35); letter-spacing: 2px; font-weight: 700; margin-left: 4px; }
-  .panel-body { padding: 12px 14px; }
-
-  .data-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    font-size: 12px;
-  }
-  .data-row:last-child { border-bottom: none; }
-  .data-label { color: rgba(255,255,255,0.45); font-weight: 600; display:flex;align-items:center;gap:7px; }
-  .data-val { font-weight: 800; font-size: 12px; }
-  .val-green  { color: #00e676; }
-  .val-red    { color: #ff5050; }
-  .val-gold   { color: #ffc800; }
-  .val-white  { color: #fff; }
-  .val-blue   { color: #38bdf8; }
-
-  /* terminal lines */
-  .term { padding: 10px 14px; font-family: 'Courier New', monospace; }
-  .term-line { font-size: 11px; color: rgba(255,255,255,0.35); line-height: 1.9; }
-  .term-line::before { content: '> '; color: #00e676; font-weight: 700; }
-  .term-hl { color: #00e676; font-weight: 700; }
-
-  /* bullets */
-  .bullets { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; }
-  .bullet {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    background: rgba(0,0,0,0.55);
-    border-left: 3px solid #00e676;
-    border-radius: 0 8px 8px 0;
-    padding: 9px 12px;
-  }
-  .bullet.red-border  { border-left-color: #ff5050; }
-  .bullet.blue-border { border-left-color: #38bdf8; }
-  .bullet-ico { font-size: 13px; flex-shrink:0; margin-top:1px; }
-  .bullet-text { font-size: 12px; color: rgba(255,255,255,0.8); line-height: 1.45; font-weight: 500; }
-  .bullet-text strong { color: #fff; }
-
-  /* stats */
-  .stat-row { display:flex; gap:10px; margin-top:14px; }
-  .stat-box {
-    flex:1;
-    background: rgba(0,0,0,0.6);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    padding: 12px 8px;
-    text-align: center;
-  }
-  .stat-box.gb { border-color: rgba(0,230,118,0.35); }
-  .stat-val { font-size: 20px; font-weight: 900; color: #00e676; line-height:1; }
-  .stat-val.red { color: #ff5050; }
-  .stat-val.wh { color: #fff; }
-  .stat-lbl { font-size: 8px; color: rgba(255,255,255,0.3); margin-top:4px; letter-spacing:1.5px; text-transform:uppercase; font-weight:700; }
-
-  /* alert */
-  .alert {
-    display:flex; align-items:center; gap:10px;
-    border-radius: 8px; padding: 10px 14px;
-    font-size: 12px; font-weight: 700;
-    margin-top: 12px;
-  }
-  .alert-green { background:rgba(0,230,118,0.1); border:1px solid rgba(0,230,118,0.35); color:#00e676; }
-  .alert-red   { background:rgba(255,80,80,0.1);  border:1px solid rgba(255,80,80,0.35);  color:#ff6060; }
-  .alert-gold  { background:rgba(255,200,0,0.1);  border:1px solid rgba(255,200,0,0.35);  color:#ffc800; }
-
-  /* footer */
-  .slide-footer {
-    margin-top: auto;
-    padding-top: 12px;
-    border-top: 1px solid rgba(255,255,255,0.07);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .foot-brand { font-size: 10px; color: rgba(255,255,255,0.25); font-weight: 700; letter-spacing:1px; }
-  .foot-swipe { font-size: 10px; color: rgba(255,255,255,0.2); }
-
-  /* cta */
-  .cta-box {
-    background: rgba(0,230,118,0.08);
-    border: 2px solid rgba(0,230,118,0.5);
-    border-radius: 12px;
-    padding: 14px;
-    text-align: center;
-    margin-top: 14px;
-  }
-  .cta-main { font-size: 15px; font-weight:900; color:#00e676; letter-spacing:1px; text-transform:uppercase; }
-  .cta-sub  { font-size: 10px; color:rgba(255,255,255,0.35); margin-top:4px; letter-spacing:1px; }
-
-  /* controls */
-  .controls {
-    display:flex; align-items:center; gap:16px;
-    margin-top:20px; justify-content:center;
-  }
-  .btn {
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.12);
-    color:#fff; width:40px; height:40px;
-    border-radius:50%; font-size:16px; cursor:pointer;
-    transition:all 0.2s; display:flex;align-items:center;justify-content:center;
-  }
-  .btn:hover { background:rgba(0,230,118,0.2); border-color:#00e676; }
-  .dots { display:flex; gap:6px; }
-  .dot { width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2);cursor:pointer;transition:all 0.3s; }
-  .dot.active { background:#00e676; width:22px; border-radius:3px; }
-
-  .tags { margin-top:16px; font-size:11px; color:rgba(0,230,118,0.45); text-align:center; line-height:2; max-width:480px; }
-
-  /* loading shimmer for images */
-  .slide-bg { background-color: #111; }
-  .slide-bg img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1s; }
-  .slide-bg img.loaded { opacity:1; }
+body { font-family: Segoe UI, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #0d1117; color: #c9d1d9; line-height: 1.7; }
+h1 { color: #58a6ff; border-bottom: 2px solid #30363d; padding-bottom: 10px; }
+h2 { color: #f0883e; margin-top: 40px; }
+h3 { color: #79c0ff; }
+strong { color: #ffa657; }
+code { background: #161b22; padding: 2px 6px; border-radius: 4px; }
+hr { border-color: #30363d; }
 </style>
 </head>
 <body>
+<h1>🌍 DAILY TECH INTELLIGENCE — 2026-09-28</h1>
+<p><strong>Monday</strong> · Written for a MERN developer moving into backend, system design, AI agents and creative development.</p>
+<p><em>Source confidence labels used below: CONFIRMED (primary source), ANNOUNCED (vendor claim), EARLY (emerging / secondary reporting), ANALYSIS (my interpretation).</em></p>
 
-<div class="carousel">
+<h2>⚡ TODAY IN 60 SECONDS</h2>
 
-  <!-- ══ SLIDE 1: COVER ══ -->
-  <div class="slide active">
-    <div class="slide-bg">
-      <img src="https://image.pollinations.ai/prompt/dark%20cinematic%20futuristic%20AI%20neural%20network%20glowing%20blue%20circuits%20bokeh%20professional%20photography%204k?width=480&height=620&nologo=true&seed=101" onload="this.classList.add('loaded')" />
-    </div>
-    <div class="slide-overlay"></div>
-    <div class="slide-content">
-      <div class="counter"><span>01 / 06</span><span>@SAQIBTAHIR</span></div>
-      <div style="margin-top:auto;">
-        <div class="badge badge-purple">📡 Daily Intelligence Brief</div>
-        <div class="headline">TODAY'S<br>TECH WORLD<br><span class="hl-green">IN 6 SLIDES.</span></div>
-        <div class="subline">September 28, 2026 · AI · Security · Web · Creative</div>
-        <div class="panel" style="margin-top:16px;">
-          <div class="panel-head"><div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div><span class="panel-title">HERMES AI · BRIEFING v1.0</span></div>
-          <div class="term">
-            <div class="term-line">scanning 200+ sources...</div>
-            <div class="term-line">MCP protocol → <span class="term-hl">major update</span></div>
-            <div class="term-line">npm attack → <span class="term-hl">CONFIRMED</span></div>
-            <div class="term-line">Three.js WebGPU → <span class="term-hl">game changer</span></div>
-            <div class="term-line">brief ready. <span class="term-hl">swipe to read ▌</span></div>
-          </div>
-        </div>
-        <div class="slide-footer">
-          <span class="foot-brand">DAILY TECH INTELLIGENCE</span>
-          <span class="foot-swipe">Swipe → to start</span>
-        </div>
-      </div>
-    </div>
-  </div>
+<h3>1. The AI-tool protocol you keep hearing about (MCP) threw away its "memory" — and became a normal web API</h3>
+<p><strong>WHAT HAPPENED:</strong> The Model Context Protocol spec version <code>2026-07-28</code> is now the live standard, and the SDK/ecosystem work around it is still landing week by week (TypeScript SDK 2.1.0 in the last few days). The headline change: MCP is now <em>stateless</em>. The old <code>initialize</code> handshake and the <code>Mcp-Session-Id</code> header are gone. Every request now carries its own version and identity info. <em>(CONFIRMED — modelcontextprotocol.io blog + changelog)</em></p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM:</strong> MCP (Model Context Protocol)<br>
+<strong>SIMPLE MEANING:</strong> A standard way to let an AI model call your tools. You write a small server that says "here are my tools: getOrder, refundOrder", and any AI client (Claude Code, Cursor, your own app) can discover and call them.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> You expose your MongoDB order lookup as an MCP tool. An AI agent can now answer "why was order 812 refunded?" by calling your function instead of hallucinating.<br>
+<strong>WHY IT MATTERS:</strong> Before MCP, every AI product invented its own tool format. Now it is one shape, like REST became one shape for HTTP APIs.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is literally "write an Express-style server for AI". It is the single closest bridge between your existing Node/Express skill and the AI-agent job market.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn it and build one small MCP server this week.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> Stateless means you can run your MCP server behind a plain load balancer, in serverless, in multiple containers — no sticky sessions, no shared Redis for session state. That is exactly the deployment model you already know from Express + Vercel/Railway.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT<br>
+<strong>IMPORTANCE:</strong> 🔥 HIGH<br>
+<strong>WHAT I SHOULD DO:</strong> Build a 3-tool MCP server in TypeScript against the new spec. Do not learn Roots/Sampling/Logging — they are deprecated.</p>
 
-  <!-- ══ SLIDE 2: MCP ══ -->
-  <div class="slide">
-    <div class="slide-bg">
-      <img src="https://image.pollinations.ai/prompt/dark%20server%20room%20glowing%20green%20cables%20API%20protocol%20cinematic%20dramatic%20lighting%204k%20professional?width=480&height=620&nologo=true&seed=202" onload="this.classList.add('loaded')" />
-    </div>
-    <div class="slide-overlay"></div>
-    <div class="slide-content">
-      <div class="counter"><span>02 / 06</span><span>@SAQIBTAHIR</span></div>
-      <div class="badge badge-green">🤖 AI Protocol</div>
-      <div class="headline">MCP JUST<br><span class="hl-green">WENT</span><br>STATELESS.</div>
-      <div class="subline">Biggest protocol change since launch</div>
-      <div class="panel">
-        <div class="panel-head"><div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div><span class="panel-title">MODEL CONTEXT PROTOCOL · 2026-07-28</span></div>
-        <div class="panel-body">
-          <div class="data-row"><span class="data-label">🔄 Session IDs</span><span class="data-val val-red">REMOVED</span></div>
-          <div class="data-row"><span class="data-label">⚡ Load balancing</span><span class="data-val val-green">Plain round-robin</span></div>
-          <div class="data-row"><span class="data-label">📦 SDK</span><span class="data-val val-white">TypeScript 2.1.0</span></div>
-          <div class="data-row"><span class="data-label">🗑️ Deprecated</span><span class="data-val val-red">Roots, Sampling, Logging</span></div>
-        </div>
-      </div>
-      <div class="alert alert-green">⚡ MCP is now a plain HTTP API. If you know Express, you can build MCP servers.</div>
-      <div class="slide-footer"><span class="foot-brand">@SAQIBTAHIR</span><span class="foot-swipe">Swipe →</span></div>
-    </div>
-  </div>
+<h3>2. A poisoned npm package proved that "verified publisher" badges can lie</h3>
+<p><strong>WHAT HAPPENED:</strong> On 9 September attackers held a maintainer account for the npm package <code>@dforge-core/dforge-mcp</code> for 105 minutes. They changed 3 lines of a GitHub Actions workflow so any push to <code>main</code> auto-published, injected one malicious line at line 3320 of a 99KB file, and shipped version <code>0.2.21</code>. It was live for 35 minutes. The malicious release carried <strong>valid npm provenance signatures</strong>. Disclosed by CloudSEK on 20 September. <em>(CONFIRMED — CloudSEK report, Infosecurity Magazine)</em></p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM:</strong> Supply-chain attack / provenance / trusted publishing<br>
+<strong>SIMPLE MEANING:</strong> A supply-chain attack means the attacker does not hack you — they hack something you install. "Provenance" is a cryptographic receipt saying "this package was built by this GitHub repo's CI". "Trusted publishing" means npm trusts your CI identity instead of a password token.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> You run <code>npm i</code> on a Friday. One dependency quietly reads your <code>~/.ssh</code> keys and GitHub token and uploads them.<br>
+<strong>WHY IT MATTERS:</strong> The whole industry was told "use trusted publishing + provenance, it is safer". This attack shows provenance proves <em>where</em> code was built, not <em>whether the source was honest</em>. If an attacker can push to main, push access = publish access.<br>
+<strong>WHY IT MATTERS TO ME:</strong> You install npm packages every day, and this one was an MCP package — exactly the kind of thing you are about to start using.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn defensive npm hygiene today (30 min, concrete steps in the Cybersecurity section).</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT<br>
+<strong>IMPORTANCE:</strong> 🔥 HIGH<br>
+<strong>WHAT I SHOULD DO:</strong> Turn on <code>--ignore-scripts</code> habits and commit lockfiles. Details below.</p>
 
-  <!-- ══ SLIDE 3: NPM ATTACK ══ -->
-  <div class="slide">
-    <div class="slide-bg">
-      <img src="https://image.pollinations.ai/prompt/dark%20cybersecurity%20hacker%20red%20warning%20code%20skull%20threat%20cinematic%20dramatic%20lighting%204k?width=480&height=620&nologo=true&seed=303" onload="this.classList.add('loaded')" />
-    </div>
-    <div class="slide-overlay"></div>
-    <div class="slide-content">
-      <div class="counter"><span>03 / 06</span><span>@SAQIBTAHIR</span></div>
-      <div class="badge badge-red">🛡️ Cybersecurity</div>
-      <div class="headline">NPM GOT<br><span class="hl-red">POISONED.</span><br>YOUR TOOLS.</div>
-      <div class="subline">Confirmed supply-chain attack this month</div>
-      <div class="bullets">
-        <div class="bullet red-border"><span class="bullet-ico">💀</span><span class="bullet-text"><strong>@tanstack/react-query</strong> — 42 malicious packages published via hijacked CI. GitHub tokens + SSH keys stolen.</span></div>
-        <div class="bullet red-border"><span class="bullet-ico">🔓</span><span class="bullet-text"><strong>CrowdSec breach</strong> — 170 private repos leaked via ex-employee's never-revoked token</span></div>
-        <div class="bullet red-border"><span class="bullet-ico">✅</span><span class="bullet-text"><strong>Fix:</strong> use <code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:3px;">npm ci</code> + <code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:3px;">ignore-scripts=true</code> in .npmrc</span></div>
-      </div>
-      <div class="alert alert-red">🚨 Signed packages ≠ safe packages. Push access = publish access now.</div>
-      <div class="slide-footer"><span class="foot-brand">@SAQIBTAHIR</span><span class="foot-swipe">Swipe →</span></div>
-    </div>
-  </div>
+<h3>3. Node.js 26.9.0 lets JavaScript call C libraries directly — no C++ addon needed</h3>
+<p><strong>WHAT HAPPENED:</strong> Node.js 26.9.0 shipped 16 September with <strong>FFI enabled by default</strong>, experimental Web Workers in thread contexts, an experimental DTLS API, and a <code>node:bench</code> benchmarking module (which was then moved behind <code>--experimental-bench</code> after review). Node 26 is still "Current", not LTS — LTS is expected October 2026. Node 24.21.0 remains the LTS line. <em>(CONFIRMED — nodejs.org releases)</em></p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM:</strong> FFI (Foreign Function Interface)<br>
+<strong>SIMPLE MEANING:</strong> A way for JavaScript to call functions inside a compiled native library (<code>.dll</code>, <code>.so</code>, <code>.dylib</code>) directly, without writing C++ glue code or running <code>node-gyp</code>.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> You want fast image resizing or a native crypto library. Previously: install a package that compiles C++ on your machine and breaks on Windows. Now: point Node at the existing library and describe the function signature.<br>
+<strong>WHY IT MATTERS:</strong> It removes one of the most painful categories of Node bugs — native build failures — and makes Node viable for CPU-heavy work it used to farm out.<br>
+<strong>WHY IT MATTERS TO ME:</strong> Fewer <code>node-gyp</code> nightmares in your stack, and a future path when a Node service needs real speed.<br>
+<strong>WHAT I SHOULD DO:</strong> Understand the basics. Do not migrate anything to Node 26 yet — it is not LTS.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED<br>
+<strong>IMPORTANCE:</strong> 🟠 MEDIUM<br>
+<strong>WHAT I SHOULD DO:</strong> Stay on Node 24 LTS for real projects. Read the 26.x notes so the October LTS bump is not a surprise.</p>
 
-  <!-- ══ SLIDE 4: THREE.JS ══ -->
-  <div class="slide">
-    <div class="slide-bg">
-      <img src="https://image.pollinations.ai/prompt/stunning%203D%20WebGL%20render%20glowing%20particles%20GPU%20shader%20art%20dark%20background%20neon%20blue%20purple%20cinematic%204k?width=480&height=620&nologo=true&seed=404" onload="this.classList.add('loaded')" />
-    </div>
-    <div class="slide-overlay"></div>
-    <div class="slide-content">
-      <div class="counter"><span>04 / 06</span><span>@SAQIBTAHIR</span></div>
-      <div class="badge badge-blue">🎨 Creative Dev</div>
-      <div class="headline">THREE.JS<br><span class="hl-blue">WENT</span><br>GPU-NATIVE.</div>
-      <div class="subline">WebGPU now reaches 95% of users · Safari 26</div>
-      <div class="panel">
-        <div class="panel-head"><div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div><span class="panel-title">THREE.JS r185 · WHAT CHANGED</span></div>
-        <div class="panel-body">
-          <div class="data-row"><span class="data-label">🌐 WebGPU coverage</span><span class="data-val val-green">~95% users</span></div>
-          <div class="data-row"><span class="data-label">⚡ TSL compile speed</span><span class="data-val val-green">3x faster</span></div>
-          <div class="data-row"><span class="data-label">🚀 GPU Rasterizer</span><span class="data-val val-white">Nanite-style</span></div>
-          <div class="data-row"><span class="data-label">❌ ShaderMaterial</span><span class="data-val val-red">Not supported</span></div>
-        </div>
-      </div>
-      <div class="alert alert-blue" style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.35);color:#38bdf8;">💡 Skip GLSL. Learn TSL — it's JavaScript-style shader coding.</div>
-      <div class="slide-footer"><span class="foot-brand">@SAQIBTAHIR</span><span class="foot-swipe">Swipe →</span></div>
-    </div>
-  </div>
+<h3>4. Three.js quietly got a game-engine-class feature: a GPU "Nanite-style" rasterizer</h3>
+<p><strong>WHAT HAPPENED:</strong> Three.js r185 (1 July 2026) shipped a compute-shader-based rasterizer (the example was renamed from <code>webgpu_compute_nanite-style</code> to <code>webgpu_compute_rasterizer</code>, signalling it is now a real capability) plus full WebGPU skinning with instancing. Separately, TSL compilation got ~3x faster, and a compatibility layer is landing so TSL/NodeMaterials can run on the old WebGLRenderer. With Safari 26 shipping WebGPU, roughly 95% of users are now on a WebGPU-capable browser. <em>(CONFIRMED — three.js repo PRs #33120, #32851, threejs.org manual; release summary via secondary reporting)</em></p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You want Awwwards-level work. The tooling just crossed the line where WebGPU is the default target, not the experiment — and where you must learn TSL instead of raw GLSL.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT<br>
+<strong>IMPORTANCE:</strong> 🔥 HIGH<br>
+<strong>WHAT I SHOULD DO:</strong> Start writing TSL now instead of <code>ShaderMaterial</code> + GLSL. Full explanation in the Creative Development section.</p>
 
-  <!-- ══ SLIDE 5: AGENT MEMORY ══ -->
-  <div class="slide">
-    <div class="slide-bg">
-      <img src="https://image.pollinations.ai/prompt/AI%20brain%20neural%20network%20memory%20nodes%20glowing%20dark%20background%20cinematic%20digital%20art%204k%20professional?width=480&height=620&nologo=true&seed=505" onload="this.classList.add('loaded')" />
-    </div>
-    <div class="slide-overlay"></div>
-    <div class="slide-content">
-      <div class="counter"><span>05 / 06</span><span>@SAQIBTAHIR</span></div>
-      <div class="badge badge-purple">🧠 AI Agents</div>
-      <div class="headline">AI AGENTS<br>NOW HAVE<br><span class="hl-purple">MEMORY.</span></div>
-      <div class="subline">The fastest growing open-source category right now</div>
-      <div class="bullets">
-        <div class="bullet" style="border-left-color:#a78bfa;"><span class="bullet-ico">🧩</span><span class="bullet-text"><strong>google/ax</strong> — agentic orchestration runtime, +1,379 GitHub stars in one day</span></div>
-        <div class="bullet" style="border-left-color:#a78bfa;"><span class="bullet-ico">💾</span><span class="bullet-text"><strong>MongoDB Atlas</strong> has vector search built-in — build agent memory in your existing DB</span></div>
-        <div class="bullet" style="border-left-color:#a78bfa;"><span class="bullet-ico">⚙️</span><span class="bullet-text"><strong>AWS Bedrock AgentCore</strong> — managed agent runtime replacing self-managed ECS</span></div>
-      </div>
-      <div class="stat-row">
-        <div class="stat-box gb"><div class="stat-val">+1.4k</div><div class="stat-lbl">Stars/Day</div></div>
-        <div class="stat-box gb"><div class="stat-val">3</div><div class="stat-lbl">Memory Layers</div></div>
-        <div class="stat-box gb"><div class="stat-val">$0</div><div class="stat-lbl">MongoDB Free</div></div>
-      </div>
-      <div class="slide-footer"><span class="foot-brand">@SAQIBTAHIR</span><span class="foot-swipe">Swipe →</span></div>
-    </div>
-  </div>
+<h3>5. The open-source AI world stopped building chatbots and started building agent <em>memory</em> and <em>orchestration</em></h3>
+<p><strong>WHAT HAPPENED:</strong> The GitHub trending pattern for the last two weeks is unmistakable: Google released <code>google/ax</code>, an agentic orchestration runtime in Go (+1,379 stars in a day); <code>vectorize-io/hindsight</code> (agent memory that learns) posted the single biggest one-day growth on the list; <code>supermemory</code>, <code>claude-mem</code>, <code>cognee</code> all surged. AWS shipped Bedrock AgentCore as a managed runtime for multi-model agent apps, replacing self-managed ECS setups. <em>(EARLY — aggregated GitHub trending data + AWS blog; star counts from third-party trackers, treat as directional not exact)</em></p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM:</strong> Agent orchestration runtime / agent memory<br>
+<strong>SIMPLE MEANING:</strong> An orchestration runtime is the "server framework" for AI agents — it handles running steps, calling tools, retries, parallel work and state, the way Express handles routes and middleware. "Agent memory" is a store that lets an agent remember across sessions instead of forgetting everything each conversation.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> An agent that handles refunds needs to remember "this customer already complained twice" next week. A vector database can find similar text, but it does not record <em>why</em> a decision was made. Memory systems add that.<br>
+<strong>WHY IT MATTERS:</strong> Agents that forget cannot be trusted with real work. Memory + orchestration is the current bottleneck, so that is where jobs and money are moving.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This layer is plain backend engineering — queues, state, storage, retries, auth. You already have 80% of the required skills. This is your fastest realistic entry into AI work.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn agent orchestration patterns. Build one agent with real persisted memory in MongoDB.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT<br>
+<strong>IMPORTANCE:</strong> 🔥 HIGH<br>
+<strong>WHAT I SHOULD DO:</strong> Read <code>google/ax</code>'s design docs, then implement a minimal version yourself in Node.</p>
 
-  <!-- ══ SLIDE 6: ACTION PLAN + CTA ══ -->
-  <div class="slide">
-    <div class="slide-bg">
-      <img src="https://image.pollinations.ai/prompt/dark%20cinematic%20developer%20workspace%20glowing%20monitors%20code%20futuristic%20dramatic%20lighting%20bokeh%204k?width=480&height=620&nologo=true&seed=606" onload="this.classList.add('loaded')" />
-    </div>
-    <div class="slide-overlay"></div>
-    <div class="slide-content">
-      <div class="counter"><span>06 / 06</span><span>@SAQIBTAHIR</span></div>
-      <div class="badge badge-gold">🚀 Action Plan</div>
-      <div class="headline">TODAY'S<br><span class="hl-gold">ONE HOUR</span><br>CHALLENGE.</div>
-      <div class="subline">Build an MCP server in TypeScript — right now</div>
-      <div class="panel">
-        <div class="panel-head"><div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div><span class="panel-title">IF YOU ONLY HAVE 1 HOUR TODAY</span></div>
-        <div class="panel-body">
-          <div class="data-row"><span class="data-label">0–10 min</span><span class="data-val val-white">Read MCP spec changelog</span></div>
-          <div class="data-row"><span class="data-label">10–20 min</span><span class="data-val val-white">Install TypeScript SDK</span></div>
-          <div class="data-row"><span class="data-label">20–40 min</span><span class="data-val val-green">Build searchItems() tool</span></div>
-          <div class="data-row"><span class="data-label">40–60 min</span><span class="data-val val-green">Connect AI client → test</span></div>
-        </div>
-      </div>
-      <div class="cta-box">
-        <div class="cta-main">📖 Full Briefing</div>
-        <div class="cta-sub">saqibtahir0201.github.io/daily-news-carousel/2026-09-28.html</div>
-      </div>
-      <div class="slide-footer"><span class="foot-brand">FOLLOW FOR DAILY BRIEFS</span><span class="foot-swipe">#AI #TechNews</span></div>
-    </div>
-  </div>
+<h2>🔥 BIGGEST DEVELOPMENTS</h2>
 
-</div><!-- /carousel -->
+<h3>1. MCP goes stateless — the biggest protocol revision since launch</h3>
+<p><strong>WHAT HAPPENED:</strong> The <code>2026-07-28</code> MCP spec removed protocol-level sessions entirely. Six separate proposals combined to do it. Method and tool names now travel in HTTP headers (<code>Mcp-Method</code>, <code>Mcp-Name</code>) so gateways can route and rate-limit without parsing JSON bodies. Tool list responses now carry <code>ttlMs</code> and <code>cacheScope</code> — literally HTTP-style cache hints. Roots, Sampling and Logging are deprecated with a 12-month window. Dynamic Client Registration is deprecated in favour of Client ID Metadata Documents. <em>(CONFIRMED)</em></p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p><strong>TERM:</strong> Stateless vs stateful protocol / sticky sessions<br>
+<strong>SIMPLE MEANING:</strong> Stateful means the server remembers you between requests, so every one of your requests must come back to the <em>same</em> server instance (a "sticky session"). Stateless means each request carries everything it needs, so any server instance can handle it.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> A JWT is stateless auth — the token carries the identity. A server-side session stored in memory is stateful — if the load balancer sends you to a different container, you are logged out.<br>
+<strong>WHY IT MATTERS:</strong> Stateless services scale horizontally for free. Stateful ones need sticky routing or a shared session store (Redis), which is extra infrastructure and a failure point.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is the exact same lesson you need for your own Express APIs, and it is today's system design concept.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn deeply. This concept pays off in every backend interview.</p>
+<p><strong>TERM:</strong> MRTR (Multi Round-Trip Requests)<br>
+<strong>SIMPLE MEANING:</strong> A way for a tool to ask the user a question mid-call without holding a connection open. The server replies <code>resultType: "input_required"</code> with the questions; the client then <em>retries the same call</em> with the answers attached.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> An agent calls <code>deleteCustomer</code>. Instead of a live prompt over an open socket, the server returns "I need confirmation", and the client re-sends the call with <code>confirmed: true</code>.<br>
+<strong>WHY IT MATTERS:</strong> Long-lived open streams break behind load balancers, proxies and serverless. Retry-with-answers works on ordinary HTTP.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is a pattern you can steal for your own APIs — any multi-step form or confirmation flow. It is also how human-in-the-loop approval works in agents, which is a real product requirement.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn it while building your MCP server.</p>
+<p><strong>WHY DOES IT MATTER?</strong> MCP is becoming boring infrastructure — and boring is when something gets adopted everywhere. It now runs on the same HTTP plumbing companies already own.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT · <strong>LEARNING PRIORITY:</strong> 🔥 HIGH · <strong>MODE:</strong> LEARN DEEPLY<br>
+<strong>WHAT SHOULD I LEARN?</strong> The MCP TypeScript SDK (v2.x), the <code>2026-07-28</code> spec, tool schemas (now full JSON Schema 2020-12), and MCP OAuth basics.</p>
 
-<div class="controls">
-  <button class="btn" onclick="change(-1)">&#8592;</button>
-  <div class="dots" id="dots"></div>
-  <button class="btn" onclick="change(1)">&#8594;</button>
-</div>
+<h3>2. The npm attack chain that ended with 170 private repos on a criminal forum</h3>
+<p><strong>WHAT HAPPENED:</strong> Two stories, one chain. (a) 11 May 2026: 84 malicious versions of 42 <code>@tanstack/*</code> packages were published to npm after a misconfigured GitHub Actions <code>pull_request_target</code> workflow was exploited (tracked as CVE-2026-45321). The malware harvested GitHub tokens, SSH keys and cloud credentials from developer machines. (b) A former CrowdSec employee had installed one of those versions; his OAuth token still had access after he left. On 22 May an attacker used it to clone ~170 private CrowdSec repos in under 10 minutes. CrowdSec revoked the token on 25 May without realising anything was stolen — and only found out when the code appeared on a forum on 16 September. <em>(CONFIRMED — CrowdSec disclosure, GitHub Security Advisory)</em></p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p><strong>TERM:</strong> <code>pull_request_target</code> (GitHub Actions)<br>
+<strong>SIMPLE MEANING:</strong> A CI trigger that runs a workflow with the <em>base repository's</em> secrets, but can be made to check out code from an untrusted pull request. If misconfigured, an outsider's PR code runs with your secrets available.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Someone opens a PR to your open-source repo. Your workflow checks out their branch and runs <code>npm install</code>. Their <code>postinstall</code> script prints your npm publish token.<br>
+<strong>WHY IT MATTERS:</strong> This one misconfiguration has caused several of the largest npm compromises. It is a known footgun.<br>
+<strong>WHY IT MATTERS TO ME:</strong> If you ever put CI on a public GitHub repo (and you should), this is the #1 mistake to avoid.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn the safe pattern: never check out untrusted code in a <code>pull_request_target</code> job; use <code>pull_request</code> for untrusted code and keep secrets out of it.</p>
+<p><strong>WHY DOES IT MATTER?</strong> Because the failure was <em>not</em> clever. It was: a popular package got poisoned, and an ex-employee's access was never revoked. Two boring process failures chained into a company-level breach of a <em>security vendor</em>.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> You are a MERN developer. <code>@tanstack/react-query</code> is in a huge share of React codebases. This was aimed straight at your ecosystem.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT · <strong>LEARNING PRIORITY:</strong> 🔥 HIGH · <strong>MODE:</strong> LEARN DEEPLY<br>
+<strong>WHAT SHOULD I LEARN?</strong> Dependency security: lockfile discipline, <code>npm ci</code>, <code>--ignore-scripts</code>, GitHub Actions secret hygiene, token rotation, least-privilege PATs.</p>
 
-<div class="tags">
-  #AI #MCP #JavaScript #NodeJS #CyberSecurity #ThreeJS #WebGPU #TechNews #DeveloperTools #OpenSource
-</div>
+<h3>3. Frontier model race: cheaper and faster, not smarter</h3>
+<p><strong>WHAT HAPPENED:</strong> September was dense with model releases: OpenAI's GPT-6 Astra (3 Sep), Google's Gemini 3.8 Flash (2 Sep) and Gemini 3.8 Live (15 Sep), Anthropic's Claude Fable/Mythos 5.1 (1 Sep), and Anthropic announcing Claude Opus 5.5 around 23 September claiming ~40% lower cost and 30%+ faster than Opus 5 with better agentic coding scores. DeepSeek V4.1 Flash and Qwen3.8-Omni-Flash also shipped. <em>(ANNOUNCED for vendor benchmark claims; CONFIRMED that releases happened, per model trackers and vendor docs)</em></p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p><strong>TERM:</strong> Model routing<br>
+<strong>SIMPLE MEANING:</strong> Sending each request to the cheapest model that can handle it, instead of sending everything to the most expensive one.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> "Classify this support ticket" goes to a cheap Flash-class model. "Refactor this 2,000-line file" goes to a frontier model. One endpoint in your Express app decides.<br>
+<strong>WHY IT MATTERS:</strong> AI cost is now the main constraint on shipping AI features. Routing can cut a bill by 5-20x with no visible quality loss.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is a backend engineering problem, not an ML problem. It is caching, fallbacks, timeouts, cost accounting — your territory. And it is directly relevant to you already running free/cheap models through an OpenAI-compatible gateway.<br>
+<strong>WHAT I SHOULD DO:</strong> Build a tiny router in Express: a config of model tiers, a task-type classifier, a fallback chain, and per-request cost logging.</p>
+<p><strong>WHY DOES IT MATTER?</strong> The interesting signal is not "new model is smarter". It is that pricing and speed are now the competitive axis, and that everything ships with "agentic coding" benchmarks. The vendors have decided agents are the product.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED (the models) / 🟢 DIRECT (routing and cost control)<br>
+<strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM · <strong>MODE:</strong> WATCH ONLY for model names, EXPERIMENT with routing<br>
+<strong>WHAT SHOULD I LEARN?</strong> Do not memorise model names — they change monthly. Learn the abstraction: a provider-agnostic AI layer in your own code.</p>
 
-<script>
-const slides = document.querySelectorAll('.slide');
-const dotsEl = document.getElementById('dots');
-let cur = 0;
+<h3>4. Managed agent runtimes arrive from the big clouds</h3>
+<p><strong>WHAT HAPPENED:</strong> AWS Bedrock AgentCore now offers a managed runtime for multi-model agentic applications with session management, identity and observability built in — explicitly positioned as replacing self-managed ECS setups. AWS also shipped a SageMaker HyperPod Inference Gateway claiming up to 82% lower time-to-first-token. <em>(ANNOUNCED — AWS blogs)</em></p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p><strong>TERM:</strong> Time to first token (TTFT)<br>
+<strong>SIMPLE MEANING:</strong> How long the user waits before the first word of an AI response appears.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Your chat UI spins for 4 seconds, then streams fast. The 4 seconds is TTFT, and it is what users judge as "slow".<br>
+<strong>WHY IT MATTERS:</strong> Total generation time matters less than TTFT for perceived speed. Optimising it is mostly infrastructure: warm models, batching, routing, caching.<br>
+<strong>WHY IT MATTERS TO ME:</strong> If you build any AI feature in Next.js, TTFT is the metric your users feel. Streaming responses (which you already know from React) is the frontend half; the backend half is this.<br>
+<strong>WHAT I SHOULD DO:</strong> Understand the basics and measure TTFT in your own AI endpoints.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> "Agent hosting" is becoming a product category. That means agent deployment is becoming a <em>job</em>: identity, observability, session isolation, cost controls.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED · <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM · <strong>MODE:</strong> UNDERSTAND THE BASICS<br>
+<strong>WHAT SHOULD I LEARN?</strong> Don't learn AWS AgentCore specifically. Learn the <em>concepts</em> it packages — because you'll implement them yourself on Railway/Docker for far less money.</p>
 
-slides.forEach((_,i) => {
-  const d = document.createElement('div');
-  d.className = 'dot' + (i===0?' active':'');
-  d.onclick = () => go(i);
-  dotsEl.appendChild(d);
-});
+<h3>5. Interesting, but not important for you right now</h3>
+<ul>
+<li><strong>Anthropic interpretability research ("J-space" representational structure in Claude).</strong> Genuinely fascinating research on how models internally integrate information. It is model-internals work. It will not change a single line of code you write. ⚪ NOT IMPORTANT RIGHT NOW.</li>
+<li><strong>Apple's "Dynamically Scaled Activation Steering".</strong> A technique for nudging a model's behaviour only when bad behaviour appears, instead of all the time. Relevant if you train or fine-tune models. You do not. ⚪ NOT IMPORTANT RIGHT NOW.</li>
+<li><strong>AI copyright litigation and internal-email disclosures around training data.</strong> Important for the industry and worth being aware of as a citizen and as someone who might ship AI products commercially. Zero learning value. ⚪ NOT IMPORTANT RIGHT NOW.</li>
+<li><strong>AI governance debates (nuclear-weapons autonomy bans, congressional testimony, antitrust guidance on safety coordination).</strong> Read it as news, not as study material. ⚪ NOT IMPORTANT RIGHT NOW.</li>
+<li><strong>Node.js FFI deep dive.</strong> Real and cool, but not LTS and not your bottleneck. 🟡 RELATED, ⚪ LOW priority.</li>
+</ul>
 
-function go(n) {
-  slides[cur].classList.remove('active');
-  dotsEl.children[cur].classList.remove('active');
-  cur = ((n%slides.length)+slides.length)%slides.length;
-  slides[cur].classList.add('active');
-  dotsEl.children[cur].classList.add('active');
+<h2>🤖 AI &amp; AI AGENTS</h2>
+
+<h3>Deep dive: agent memory (the thing everyone is suddenly building)</h3>
+<p><strong>WHAT IS IT?</strong> A storage layer that lets an agent remember facts, decisions and history across separate sessions. Not the model's context window — an external store the agent reads from and writes to.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> The "goldfish problem". A model's context window is wiped every conversation. Without memory, your agent re-asks the same questions, repeats the same mistakes, and cannot be held accountable for past decisions.</p>
+<p><strong>HOW DOES IT WORK? (simplified)</strong> Three layers, which you can build in MongoDB:</p>
+<ol>
+<li><strong>Raw log</strong> — every message, tool call and result, appended. Cheap, complete, unusable directly (too big for a context window).</li>
+<li><strong>Summaries</strong> — periodically compress old history into short facts ("user prefers Roman Urdu", "project uses Next.js 16").</li>
+<li><strong>Retrieval</strong> — at the start of each turn, fetch only the relevant facts and inject them into the prompt.</li>
+</ol>
+<p>The newer projects add a fourth idea worth stealing: <strong>causal links</strong> — storing <em>why</em> a decision was made and what it depended on, so you can trace any action back to its cause. That is an audit log, and it is a normal backend design problem.</p>
+<p><strong>TERM:</strong> Vector database / embedding<br>
+<strong>SIMPLE MEANING:</strong> An embedding turns text into a list of numbers that captures its meaning. A vector database finds stored text whose numbers are closest to your query's numbers — i.e. search by meaning instead of by exact keyword.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> You search "how do I cancel" and it finds a document titled "Refund and termination policy" even though no word matches.<br>
+<strong>WHY IT MATTERS:</strong> It is how AI apps look things up in your own data.<br>
+<strong>WHY IT MATTERS TO ME:</strong> You do not need a new database. <strong>MongoDB Atlas has vector search built in.</strong> You can build a full memory system inside the database you already know.<br>
+<strong>WHAT I SHOULD DO:</strong> Build it. This is the single highest-leverage AI project for a MERN developer.</p>
+<p><strong>WHY ARE PEOPLE USING IT?</strong> Because stateless chatbots are a demo and stateful agents are a product.</p>
+<p><strong>HOW COULD I USE IT IN A REAL PROJECT?</strong> A support agent for a MERN app: Express endpoint → agent loop → tools that query MongoDB → a <code>memories</code> collection with Atlas Vector Search → summariser job on a queue.</p>
+<p><strong>DO I NEED TO LEARN THIS NOW?</strong> Yes. It is the part of AI that is genuinely backend work.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT · <strong>LEARNING PRIORITY:</strong> 🔥 HIGH · <strong>MODE:</strong> LEARN DEEPLY</p>
+
+<h3>Deep dive: agent orchestration (what <code>google/ax</code> and friends actually are)</h3>
+<p><strong>WHAT IS IT?</strong> The runtime that executes an agent's plan: which step runs next, what happens on failure, how many things run in parallel, how state is persisted, how tools are permitted.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> A naive agent is a <code>while</code> loop calling an LLM. That loop breaks in production: it hangs, loops forever, blows the budget, loses work on a crash, or calls a destructive tool it should not have.</p>
+<p><strong>HOW DOES IT WORK?</strong> It looks exactly like a job system you would design in Node:</p>
+<ul>
+<li>Each step is a durable task with an ID, stored so a crash does not lose it.</li>
+<li>Steps run through a queue with concurrency limits and retries with backoff.</li>
+<li>Tools are declared with schemas and permissions.</li>
+<li>Every step is traced for observability and cost.</li>
+<li>Human approval is a first-class state, not a hack.</li>
+</ul>
+<p><strong>TERM:</strong> Capability scoping (least privilege for agents)<br>
+<strong>SIMPLE MEANING:</strong> Give an agent only the tools and permissions it actually needs for its job.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> A "summarise customer feedback" agent should have <code>readFeedback</code> and nothing else. It should physically not be able to call <code>deleteCustomer</code>.<br>
+<strong>WHY IT MATTERS:</strong> A model can be talked into things. Permissions cannot. The only reliable defence against a manipulated agent is not giving it the dangerous tool.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is authorisation — you already do this with JWT roles and Express middleware. The same middleware pattern applies to tool calls.<br>
+<strong>WHAT I SHOULD DO:</strong> Build your MCP server with per-tool permission checks from day one.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> Read this list again: queues, retries, idempotency, observability, authorisation. Every item is a backend skill you are already trying to learn. Agent orchestration is not a new discipline — it is distributed systems with an LLM in one of the boxes. That is your unfair advantage.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT · <strong>LEARNING PRIORITY:</strong> 🔥 HIGH · <strong>MODE:</strong> LEARN DEEPLY</p>
+
+<h3>Transferable lesson, not a science lesson</h3>
+<p><strong>Why am I telling you this?</strong> AI research keeps producing results in biology, chemistry and safety research. Almost none of it belongs in your learning plan. What <em>is</em> worth extracting is the architecture. The recurring pattern in large AI research systems: one big problem is split across many parallel AI workers, each result is verified, and results are merged. That is fan-out/fan-in with a verification stage — and it is the same shape as a production AI pipeline you might build (e.g. "run 1,000 product descriptions through an LLM, validate each against a schema, retry failures, merge"). <strong>Learn the architecture. Ignore the science.</strong></p>
+
+<h2>💻 MERN / JAVASCRIPT / WEB</h2>
+
+<h3>Next.js Cache Components — the caching model you will actually have to learn</h3>
+<p><strong>WHAT CHANGED?</strong> Next.js 16 (current docs show 16.3.4) makes caching <strong>explicit and opt-in</strong>. The old implicit automatic caching of the App Router — the thing that confused everybody in Next 13-15 — is gone. Experimental PPR as a separate flag is gone too; it is now folded into Cache Components. <em>(CONFIRMED — nextjs.org docs and blog)</em></p>
+<p><strong>WHAT IS IT?</strong></p>
+<p><strong>TERM:</strong> Cache Components / <code>"use cache"</code><br>
+<strong>SIMPLE MEANING:</strong> A directive you put at the top of a page, component or function to say "cache the result of this". Everything else is dynamic by default. The compiler generates the cache key for you from the function's arguments.<br>
+<strong>REAL-WORLD EXAMPLE:</strong></p>
+<pre><code>// next.config.ts
+export default { cacheComponents: true }
+
+// app/page.tsx
+import { cacheLife, cacheTag } from 'next/cache'
+
+async function ProductList() {
+  'use cache'
+  cacheLife('hours')      // how long it stays fresh
+  cacheTag('products')    // label for invalidation
+  const products = await db.collection('products').find().toArray()
+  return &lt;ul&gt;{products.map(p =&gt; &lt;li key={p._id}&gt;{p.name}&lt;/li&gt;)}&lt;/ul&gt;
 }
-function change(d) { go(cur+d); }
 
-let t = setInterval(()=>change(1), 5000);
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;ProductList /&gt;                       {/* cached */}
+      &lt;Suspense fallback={&lt;Spinner /&gt;}&gt;
+        &lt;CartSummary /&gt;                     {/* dynamic, streams in */}
+      &lt;/Suspense&gt;
+    &lt;/&gt;
+  )
+}</code></pre>
+<p>When a product changes, your API route calls <code>revalidateTag('products', 'hours')</code> or the newer <code>updateTag()</code>.</p>
+<p><strong>WHY WAS IT CREATED?</strong> Because in Next 13-15, developers could not predict whether a page was cached. The framework cached aggressively and invisibly, and "why is my data stale in production but fine locally?" became the most common Next.js complaint. Making it explicit fixes the mental model.</p>
+<p><strong>HOW DOES IT WORK?</strong> Next renders a static HTML shell immediately, then streams the dynamic parts in as they resolve. One page can be part-static, part-cached-dynamic, part-live. That is Partial Pre-Rendering.</p>
+<p><strong>TERM:</strong> PPR (Partial Pre-Rendering)<br>
+<strong>SIMPLE MEANING:</strong> Serving the unchanging parts of a page instantly from a cache while the personalised parts load in afterwards, in one request.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> An e-commerce page where the product grid is instant but "Your cart (3)" fills in a moment later.<br>
+<strong>WHY IT MATTERS:</strong> Before PPR, a page was either fully static (fast, but can't be personalised) or fully dynamic (personalised, but slow). PPR removes the choice.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is the core performance feature of the framework you build in. Interviewers will ask about it.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn deeply — it is directly your stack.</p>
+<p><strong>WHAT EXISTING CONCEPT DOES IT REPLACE?</strong> ISR + route segment configs (<code>revalidate</code>, <code>dynamic = 'force-static'</code>) + the implicit fetch cache + the experimental PPR flag — all collapsed into one mechanism.</p>
+<p><strong>Two gotchas worth knowing now:</strong></p>
+<ul>
+<li>Cache Components <strong>requires the Node.js runtime</strong>. Routes with <code>runtime = 'edge'</code> must be migrated.</li>
+<li>With it enabled, Next uses React's <code>&lt;Activity&gt;</code> to keep the old route <em>mounted but hidden</em> during navigation instead of unmounting it. Your dropdowns, dialogs and cleanup effects may behave differently. Read the "Preserving UI state" guide before upgrading a real app.</li>
+</ul>
+<p><strong>SHOULD I LEARN IT? HOW DEEPLY?</strong> Yes — LEARN DEEPLY. 🟢 DIRECT · 🔥 HIGH. Learn: <code>use cache</code>, <code>cacheLife</code>, <code>cacheTag</code>, <code>revalidateTag</code> vs <code>updateTag</code>, and where <code>&lt;Suspense&gt;</code> boundaries are mandatory.</p>
 
-document.addEventListener('keydown', e=>{
-  if(e.key==='ArrowRight'){clearInterval(t);change(1);}
-  if(e.key==='ArrowLeft'){clearInterval(t);change(-1);}
-});
+<h3>Also on your radar this week</h3>
+<ul>
+<li><strong>React Compiler is stable</strong> and integrated in Next 16 (<code>reactCompiler: true</code>). It auto-memoises components at build time. Practical effect: you can stop scattering <code>useMemo</code>/<code>useCallback</code> defensively. <strong>WHAT IT REPLACES:</strong> manual memoisation. 🟢 DIRECT · 🟠 MEDIUM · UNDERSTAND THE BASICS — turn it on in a side project and watch the re-render count drop.</li>
+<li><strong>Next.js Devtools MCP</strong> ships in 16 — it exposes your app's routing and caching semantics to an AI agent so the agent can debug Next-specific behaviour without you explaining the framework. Note the pattern: frameworks are now shipping MCP servers <em>for themselves</em>. 🟢 DIRECT · 🟠 MEDIUM · EXPERIMENT.</li>
+<li><strong><code>middleware.ts</code> → <code>proxy.ts</code></strong> in Next 16, renamed to make the network boundary explicit. Small but it will break your muscle memory. 🟢 DIRECT · ⚪ LOW · just know it exists.</li>
+<li><strong>Node 24.21.0 is the LTS you should be on.</strong> Node 26 goes Active LTS around October 2026; v26 already removed legacy APIs (<code>writeHeader()</code>, legacy <code>stream*</code> modules). 🟢 DIRECT · 🟠 MEDIUM · plan the bump, don't rush it.</li>
+</ul>
 
-let sx=0;
-document.querySelector('.carousel').addEventListener('touchstart',e=>sx=e.touches[0].clientX);
-document.querySelector('.carousel').addEventListener('touchend',e=>{
-  const d=sx-e.changedTouches[0].clientX;
-  if(Math.abs(d)>40){clearInterval(t);change(d>0?1:-1);}
-});
-</script>
+<h2>🏗️ TODAY'S SYSTEM DESIGN CONCEPT</h2>
+<p><strong>CONCEPT:</strong> Stateless services and horizontal scaling (and why sticky sessions are a trap)</p>
+<p><strong>IN ONE SENTENCE:</strong> If every request carries everything the server needs to handle it, you can run as many identical copies of your server as you like and any of them can answer any request.</p>
+<p><strong>WHY TODAY?</strong> Because MCP just did exactly this, deliberately, as its biggest-ever change — and their stated reason was "so any request can land on any instance behind a plain round-robin load balancer". That is the cleanest real-world justification of this concept you will ever get.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> One server instance eventually runs out of CPU/RAM. You want to run five. But if instance #1 is holding your session in memory, the load balancer must always send you back to instance #1 (a "sticky session"). Now: if #1 dies, you lose everything; you cannot scale to zero; deploys drop connections; and autoscaling barely helps because load is unevenly pinned.</p>
+<p><strong>SIMPLE REAL-WORLD EXAMPLE:</strong> A hotel. <em>Stateful:</em> only the receptionist who checked you in remembers you — if she goes on break, you are stuck. <em>Stateless:</em> you carry a key card with your room number on it, so any receptionist can help you.</p>
+<p><strong>HOW IT WORKS:</strong></p>
+<ol>
+<li>Move per-user state out of process memory. Either into the request itself (a signed token) or into a shared store (Redis/MongoDB) that all instances read.</li>
+<li>Keep handlers pure with respect to instance-local state: no module-level mutable maps holding user data, no in-memory upload buffers, no local file writes you expect to read back later.</li>
+<li>Let the load balancer do plain round-robin. No sticky cookies.</li>
+<li>For long-running work, return a <strong>handle</strong> (a job ID) instead of holding the connection. The client polls or subscribes. MCP did exactly this with its Tasks extension: <code>tasks/get</code> polling replaced a blocking call.</li>
+</ol>
+<p><strong>WHERE IS IT USED?</strong> Every serverless platform (Vercel, Lambda, Cloudflare Workers) <em>forces</em> this on you. JWT auth exists because of it. REST's "stateless" constraint is this. Kubernetes autoscaling depends on it.</p>
+<p><strong>HOW WOULD I USE IT WITH NODE / EXPRESS / MONGODB?</strong></p>
+<ul>
+<li>❌ <code>const sessions = new Map()</code> at module scope → breaks with 2+ instances.</li>
+<li>❌ <code>express-session</code> with the default MemoryStore → same problem.</li>
+<li>✅ JWT in an httpOnly cookie, verified per request — nothing stored server-side.</li>
+<li>✅ Or <code>connect-mongo</code> / Redis as the session store — state is shared, so instances stay interchangeable.</li>
+<li>✅ Rate limiting: an in-memory counter is wrong with 5 instances (each allows the full quota, so you allow 5x). Use a Redis counter.</li>
+<li>✅ File uploads: stream to S3/cloud storage, not local disk.</li>
+<li>✅ WebSockets are inherently sticky — when you need them across instances, use a shared pub/sub adapter (e.g. Redis) so a message published on instance #2 reaches a socket held by instance #4.</li>
+</ul>
+<p><strong>COMMON MISTAKE:</strong> Believing you are stateless because you use JWTs, while a rate limiter, a cache, a WebSocket map, or an in-memory job queue quietly holds per-instance state. It works perfectly on one instance and fails mysteriously the moment you scale. <em>The bug always looks like "it works sometimes".</em></p>
+<p><strong>SECOND COMMON MISTAKE:</strong> Going stateless but forgetting <strong>idempotency</strong>. If a request can land on any instance and clients retry on failure, the same "create payment" call can execute twice. Fix: an <code>Idempotency-Key</code> header stored with a unique index in MongoDB; if the key exists, return the stored result instead of re-running.</p>
+<p><strong>WHAT I SHOULD BUILD TO LEARN IT:</strong> Take an existing Express app using <code>express-session</code> with MemoryStore. Run three instances behind a simple round-robin proxy (nginx, or a 20-line Node proxy). Watch logins randomly fail. Then fix it three ways — JWT, Mongo session store, Redis session store — and add a Redis-backed rate limiter. You will never forget the lesson.</p>
+<p><strong>DIFFICULTY:</strong> Intermediate</p>
+
+<h2>🎨 CREATIVE DEVELOPMENT</h2>
+
+<h3>TSL — stop learning GLSL first, learn this</h3>
+<p><strong>WHAT IS IT?</strong></p>
+<p><strong>TERM:</strong> TSL (Three Shading Language)<br>
+<strong>SIMPLE MEANING:</strong> A way to write shader logic in JavaScript, by composing small "nodes" (values and operations) instead of writing shader source code as a string. Three.js then compiles your JavaScript into the real shader language the browser needs — WGSL for WebGPU, or GLSL for WebGL.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Instead of a template-string GLSL fragment shader, you write something like <code>color.mul(sin(time.mul(2))).add(0.2)</code> in JS. Autocomplete works. Type errors surface in your editor. You can extract a glow effect into a reusable function and import it.<br>
+<strong>WHY IT MATTERS:</strong> Shaders used to be opaque strings with no tooling — no autocomplete, no type checking, no imports, and you had to write two versions if you supported both WebGL and WebGPU. TSL kills all four problems and writes once, runs on both.<br>
+<strong>WHY IT MATTERS TO ME:</strong> You are a JavaScript/TypeScript developer. TSL turns shader programming from "learn a foreign C-like language" into "compose functions in the language you already write every day". It is the single biggest lowering of the barrier into serious creative development for someone with your background.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn it — and make it your default instead of <code>ShaderMaterial</code> + GLSL.</p>
+<p><strong>WHY IS IT BECOMING IMPORTANT NOW?</strong> Three concrete things converged:</p>
+<ol>
+<li><strong>Browser coverage crossed the line.</strong> With Safari 26 shipping WebGPU, roughly 95% of users can run WebGPU, and Three.js falls back to WebGL 2 automatically for the rest. You no longer ship WebGPU "for fun".</li>
+<li><strong>TSL got fast.</strong> A merged PR improved TSL compilation performance ~3x (one scene went from ~1,550ms to ~515ms of material compilation) mostly by caching node type resolution. Compile stutter was a real reason people avoided it.</li>
+<li><strong>There is now a migration path.</strong> A WebGLRenderer NodeMaterial compatibility layer lets you use TSL/NodeMaterials on the <em>old</em> renderer (<code>renderer.setNodesHandler(new WebGLNodesHandler())</code>), so you can port materials gradually and swap to WebGPURenderer later. It targets ~90% of cases, with known limits (VSM shadows, MRT nodes, storage textures, transmissive materials, some instancing/skinning edge cases).</li>
+</ol>
+<p><strong>The hard constraint you must know:</strong> <code>WebGPURenderer</code> does <strong>not</strong> support <code>ShaderMaterial</code>, <code>RawShaderMaterial</code>, or <code>onBeforeCompile()</code> hacks. Nor does it support <code>EffectComposer</code> — it has its own node-based post-processing stack (with new effects like SSGI, SSS, better DoF available only there). So every GLSL shader tutorial you follow today is code you will have to rewrite. <em>(CONFIRMED — threejs.org WebGPURenderer manual)</em></p>
+<p><strong>WHAT CAN IT DO / WHAT CAN I BUILD?</strong> Three.js r185 landed a compute-shader-based <strong>rasterizer</strong> (Nanite-style) and full <strong>WebGPU skinning with instancing</strong>.</p>
+<p><strong>TERM:</strong> Compute shader / GPU compute<br>
+<strong>SIMPLE MEANING:</strong> Using the GPU for general parallel maths, not just drawing pixels. Thousands of tiny calculations run simultaneously.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> 500,000 particles each needing position updates every frame. On the CPU in JS: impossible at 60fps. On a compute shader: routine.<br>
+<strong>WHY IT MATTERS:</strong> It is the difference between "a few thousand animated things" and "a million". This capability simply did not exist in WebGL.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is what separates an Awwwards site-of-the-day from a nice portfolio. Big particle systems, GPU physics, crowds, flow fields.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn TSL basics first, then one GPU compute particle example. Do not start with the rasterizer — that is deep water.</p>
+<p><strong>WHAT SHOULD I LEARN FIRST?</strong> In this order: (1) React Three Fiber with <code>WebGPURenderer</code> instead of the default — get it rendering at all; (2) TSL fundamentals — <code>uniform</code>, <code>attribute</code>, <code>vec3</code>, <code>time</code>, maths node chaining, <code>colorNode</code> and <code>positionNode</code> on a <code>MeshBasicNodeMaterial</code>; (3) one TSL vertex displacement effect (wave a plane); (4) TSL post-processing; (5) only then compute shaders. Skip raw GLSL entirely unless you must maintain old code.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT · <strong>LEARNING PRIORITY:</strong> 🔥 HIGH · <strong>MODE:</strong> LEARN DEEPLY</p>
+<p><em>Reference point for what's achievable: a community showcase this year ran 4,000 particles with custom magnetic/cursor physics and all shading in TSL — additive glow, radial falloff, pulsing emission, per-instance colours — on React 19 + R3F + Three r183 + WebGPU + Zustand + Vite. That is a realistic target project for you, not a research demo.</em></p>
+
+<h2>🛡️ CYBERSECURITY</h2>
+
+<h3>The GHAPPIER npm loader — and why "signed package" is not "safe package"</h3>
+<p><strong>WHAT HAPPENED?</strong> Covered above in the top stories. Recapping the security mechanics, because they are the lesson: attacker had push access to <code>main</code> on the repo behind <code>@dforge-core/dforge-mcp</code>. They edited the GitHub Actions workflow so any push to main triggered a release, then rewrote it 14 minutes later so it could publish unattended. The payload was <strong>one line at line 3320 of a 99KB file</strong>. It opened a four-stage chain ending in a remote shell that <strong>deleted itself from disk as it ran</strong>. It triggered only when the MCP server was <em>started</em>, not on install. A related variant pulled its commands from <strong>Ethereum transactions</strong> instead of a domain or IP. CloudSEK traced the loader family across 65 repositories, 73 infected files, 22 accounts. CloudSEK's own summary: <em>"Every action in this report is an authorised action taken with a stolen key."</em> <em>(CONFIRMED — CloudSEK, 20 Sep 2026; no CVE issued at time of reporting)</em></p>
+<p><strong>WHAT IS THE VULNERABILITY?</strong> There isn't a software bug to patch. The weakness is <em>trust design</em>:</p>
+<p><strong>TERM:</strong> Provenance attestation (and its limit)<br>
+<strong>SIMPLE MEANING:</strong> A signed record proving which CI system built a package from which commit. It proves the <em>origin</em> of the build, not the <em>honesty</em> of the code.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> A sealed envelope from a trusted courier. The seal proves nobody tampered <em>in transit</em>. It says nothing about whether the sender wrote something malicious inside.<br>
+<strong>WHY IT MATTERS:</strong> Under trusted publishing, npm trusts the repo's CI identity — so <strong>push access became publish access</strong>. No npm token needed to be stolen. And <code>npm audit signatures</code> passes cleanly on a malicious release.<br>
+<strong>WHY IT MATTERS TO ME:</strong> Do not treat a provenance badge as a safety signal. It is an authenticity signal.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn defence in depth below.</p>
+<p><strong>TERM:</strong> Blockchain C2 (command and control)<br>
+<strong>SIMPLE MEANING:</strong> The malware reads its instructions from data embedded in cryptocurrency transactions instead of contacting a server.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Normally defenders block the malware's domain and it dies. Here there is no domain to block and no takedown to file — the ledger is public and permanent.<br>
+<strong>WHY IT MATTERS:</strong> Traditional blocklist defences stop working. Detection has to move to behaviour (unexpected outbound connections, unexpected child processes).<br>
+<strong>WHY IT MATTERS TO ME:</strong> Mostly awareness — but it explains why "just block the bad domain" is no longer the answer, and why egress control matters.<br>
+<strong>WHAT I SHOULD DO:</strong> Understand the basics. Nothing to implement personally.</p>
+<p><strong>HOW DOES THE ATTACK WORK (defensive view)?</strong> Compromise a developer machine → steal a token or extension-level access → gain push rights to a package repo → make CI publish for you → ship a tiny loader that only activates on <em>run</em>, not install → self-delete to defeat file-based forensics. Note that <em>every</em> step used a legitimate, authorised mechanism.</p>
+<p><strong>WHO IS AFFECTED?</strong> Anyone who installed <code>@dforge-core/dforge-mcp@0.2.21</code> <em>and started its server</em>. Separately, anyone who installed the malicious <code>@tanstack/*</code> versions from 11 May 2026 should assume credential theft.</p>
+<p><strong>WHY SHOULD A MERN DEVELOPER CARE?</strong> Your entire toolchain is npm. The TanStack vector hit mainstream React packages. The dforge vector hit an MCP package — precisely the category you are about to start installing. Your laptop holds GitHub tokens, SSH keys, <code>.env</code> files with Mongo URIs, Railway tokens and AI API keys. A dependency that runs code on your machine has all of it.</p>
+<p><strong>HOW DO I PROTECT MY APPLICATION?</strong> Concretely, today:</p>
+<ol>
+<li><strong>Commit your lockfile and use <code>npm ci</code>, never <code>npm install</code>, in CI.</strong> <code>npm ci</code> installs exactly the locked versions. <code>npm install</code> can drift you onto a fresh malicious release.</li>
+<li><strong>Add <code>ignore-scripts=true</code> to your <code>.npmrc</code></strong> and run <code>npm rebuild</code> deliberately for the few packages that genuinely need native builds. Most install-time malware runs in <code>postinstall</code>.</li>
+<li><strong>Delay adoption of brand-new versions.</strong> Both attacks here lived for ~35 minutes and were then withdrawn. A 24-72 hour cooldown before upgrading dependencies would have protected you completely, for free.</li>
+<li><strong>Scope your tokens.</strong> A GitHub fine-grained PAT that can read one repo is worth far less to an attacker than a classic token with full org access. Set expiry dates.</li>
+<li><strong>Get secrets off your dev machine's plaintext.</strong> Use a secret manager or at minimum never keep production <code>.env</code> files on the laptop you install packages on.</li>
+<li><strong>Revoke access when people leave.</strong> The CrowdSec breach only happened because an ex-employee's token still worked. Make an offboarding checklist even if your "team" is two friends.</li>
+<li><strong>In CI, never check out untrusted PR code in a job that holds secrets</strong> (the <code>pull_request_target</code> footgun). Pin third-party actions to a full commit SHA, not a tag.</li>
+<li><strong>Audit lockfiles for the known-bad versions.</strong> Treat any lockfile referencing <code>@dforge-core/dforge-mcp@0.2.21</code> as a compromise indicator; pin to 0.2.22+. Same for the malicious <code>@tanstack/*</code> versions from 11 May.</li>
+</ol>
+<p><strong>WHAT SHOULD I LEARN?</strong> Supply-chain security fundamentals: lockfiles, SBOM basics, npm provenance (and its limits), least-privilege tokens, CI secret hygiene, secret rotation.</p>
+<p><strong>SAFE PRACTICAL LAB (30 minutes, entirely local, nothing malicious):</strong></p>
+<ol>
+<li>Create an empty folder. Make a local package with a <code>postinstall</code> script that just runs <code>console.log("I could have read your SSH keys")</code> and writes a file to your temp dir.</li>
+<li><code>npm install ./that-folder</code>. Watch it execute. That is the entire attack surface, demonstrated.</li>
+<li>Add <code>ignore-scripts=true</code> to <code>.npmrc</code>. Reinstall. Watch it not execute.</li>
+<li>Run <code>npm ls --all</code> on your biggest project and count your real dependency tree. Then run <code>npm audit signatures</code> and note that a clean result would <em>not</em> have caught GHAPPIER.</li>
+<li>Rotate one GitHub token and replace it with a fine-grained, expiring, single-repo token. Do it for real, not as an exercise.</li>
+</ol>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT · <strong>LEARNING PRIORITY:</strong> 🔥 HIGH · <strong>MODE:</strong> LEARN DEEPLY (this is the cheapest security win available to you)</p>
+
+<h3>One MCP-specific security note</h3>
+<p>The new MCP spec hardened authorisation: clients must now validate the <code>iss</code> parameter on authorisation responses (RFC 9207) to prevent "mix-up" attacks, credentials are bound to the issuer that minted them, and Dynamic Client Registration is deprecated in favour of Client ID Metadata Documents.</p>
+<p><strong>TERM:</strong> Authorisation-server mix-up attack<br>
+<strong>SIMPLE MEANING:</strong> When one app talks to many different OAuth providers, an attacker can trick the app into redeeming a code issued by provider A at provider B, leaking the code. Checking which issuer actually sent the response (<code>iss</code>) blocks it.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Your app supports "Login with Google" and "Login with GitHub". Without issuer validation, a malicious flow can cross the wires.<br>
+<strong>WHY IT MATTERS:</strong> MCP's shape — one client, many servers — makes this class of bug much more likely, which is why they hardened it.<br>
+<strong>WHY IT MATTERS TO ME:</strong> You already do auth in MERN apps. If you build multi-provider OAuth, validate <code>iss</code>. 🟢 DIRECT · 🟠 MEDIUM · UNDERSTAND THE BASICS.</p>
+
+<h2>🧩 OPEN SOURCE</h2>
+<p>Only two picks, both chosen for what reading them teaches you — not for star counts. <em>(EARLY — repo momentum via third-party trending trackers; verify current state yourself before investing time)</em></p>
+
+<h3>1. <code>google/ax</code> — an agentic orchestration runtime (Go)</h3>
+<p><strong>WHAT IS IT?</strong> Google's open-source production runtime for running AI agents. Written in Go.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> Turning a fragile agent loop into something you can deploy: typed tools, state, concurrency, failure handling.</p>
+<p><strong>WHY IS IT INTERESTING?</strong> Because a major cloud vendor's opinion about how agents <em>should</em> be structured is a free architecture lesson. When Google decides the agent layer is strategic infrastructure, their design choices tell you where the industry is heading.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> You will not write Go. That is fine — you are reading it for the <em>shape</em>, not the syntax. Specifically: how they model a tool, how they model a step, where they put retries, how they persist state, how they scope permissions.</p>
+<p><strong>WHAT CAN I LEARN BY READING THE CODE?</strong> Read the docs and the type/interface definitions only. Ask: what is the smallest unit of work? What happens when a tool call fails? Where does state live? Then reimplement that shape in TypeScript. That reimplementation is worth more than any tutorial.</p>
+<p><strong>SHOULD I:</strong> <strong>Read it (docs + interfaces), then build something similar in Node.</strong> Do not clone and run it. Do not adopt it. 🟡 RELATED · 🟠 MEDIUM.</p>
+
+<h3>2. An agent memory project (e.g. <code>vectorize-io/hindsight</code>, <code>supermemory</code>, <code>cognee</code>)</h3>
+<p><strong>WHAT IS IT?</strong> Persistent, retrievable memory for agents. The more interesting ones store <em>causal links</em> between decisions — "this action happened because of that fact" — rather than just embedding blobs of text.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> Agents forgetting everything between sessions, and being unauditable when they do something wrong.</p>
+<p><strong>WHY IS IT INTERESTING?</strong> The causal-link idea is the genuinely novel bit. A vector database can tell you "this text is similar". A causal store can tell you "walk this decision back to its root cause". That second thing is what makes an agent reviewable and compliant — and it is a schema design problem, not an AI problem.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> This is a MongoDB schema design exercise in disguise. You are strong here.</p>
+<p><strong>WHAT CAN I LEARN BY READING THE CODE?</strong> The data model. What fields does a memory record have? How is decay/relevance handled? How do they decide what to inject into a prompt and what to leave out? How is summarisation triggered?</p>
+<p><strong>SHOULD I:</strong> <strong>Read the data model, then build your own minimal version</strong> with a MongoDB <code>memories</code> collection + Atlas Vector Search. 🟢 DIRECT · 🔥 HIGH.</p>
+
+<h3>Ignore for now</h3>
+<p>The flood of "agent skill" / "prompt rules" / "token compression" repos, the agent-fleet management UIs, and the AI-native office suites. Interesting as market signals, near-zero learning value for you. You want the layer <em>underneath</em> these tools, not more tools.</p>
+
+<h2>📈 SKILLS TO LEARN</h2>
+
+<h3>SKILLS I SHOULD LEARN NOW</h3>
+<p><strong>1. Skill:</strong> Building MCP servers in TypeScript (spec <code>2026-07-28</code>)<br>
+<strong>Why:</strong> It is the standard interface between AI and software, it just stabilised into a plain stateless HTTP protocol, and it is almost entirely Node/Express knowledge. Highest-value-per-hour AI skill available to you right now.<br>
+<strong>What exactly to learn:</strong> The MCP TypeScript SDK v2.x; defining tools with JSON Schema 2020-12 input/output schemas; the stateless request model (no <code>initialize</code>, no session ID); MRTR for confirmations; per-tool permission checks; MCP OAuth basics. <em>Skip</em> Roots, Sampling and Logging — deprecated.</p>
+<p><strong>2. Skill:</strong> Stateless service design + idempotency in Node/Express<br>
+<strong>Why:</strong> It is the prerequisite for every other backend and cloud topic on your list — horizontal scaling, serverless, queues, agent orchestration. Without it, you build systems that work on one instance and break on two.<br>
+<strong>What exactly to learn:</strong> Where state hides (sessions, rate limiters, in-memory caches, WebSocket maps, local files); JWT vs shared session stores; <code>Idempotency-Key</code> with a unique index; job-handle + polling instead of long-held connections; Redis pub/sub for multi-instance WebSockets.</p>
+<p><strong>3. Skill:</strong> TSL (Three Shading Language) with WebGPURenderer<br>
+<strong>Why:</strong> WebGPU coverage is now ~95%, TSL compiles 3x faster than before, and <code>WebGPURenderer</code> flatly does not support <code>ShaderMaterial</code>/GLSL hacks. Learning GLSL first now means learning the deprecated path. This is the correct moment to enter creative development, and it is JavaScript.<br>
+<strong>What exactly to learn:</strong> R3F + WebGPURenderer setup; TSL nodes (<code>uniform</code>, <code>attribute</code>, <code>time</code>, vector maths chaining); <code>colorNode</code> and <code>positionNode</code>; the node-based post-processing stack (not <code>EffectComposer</code>).</p>
+<p><strong>4. Skill:</strong> npm supply-chain defence<br>
+<strong>Why:</strong> Two live, confirmed attacks this month landed directly in your ecosystem (React/TanStack and MCP). It takes an hour to learn and protects everything you own.<br>
+<strong>What exactly to learn:</strong> <code>npm ci</code> vs <code>npm install</code>; <code>ignore-scripts</code>; version cooldown policy; fine-grained expiring tokens; pinning GitHub Actions to SHAs; the <code>pull_request_target</code> footgun; offboarding/token revocation.</p>
+<p><strong>5. Skill:</strong> Next.js 16 Cache Components<br>
+<strong>Why:</strong> It replaced the caching model in the framework you actually ship in, it is a breaking mental-model change, and it is the most likely Next.js interview question of the next year.<br>
+<strong>What exactly to learn:</strong> <code>"use cache"</code>, <code>cacheLife</code>, <code>cacheTag</code>, <code>revalidateTag</code> vs <code>updateTag</code>, mandatory <code>&lt;Suspense&gt;</code> boundaries, the Node-runtime requirement, and <code>&lt;Activity&gt;</code> state-preservation gotchas.</p>
+
+<h3>SKILLS I SHOULD WATCH</h3>
+<ul>
+<li><strong>GPU compute shaders</strong> (compute rasterizers, GPU particle physics). Enormous creative ceiling, but learn TSL basics first or you will drown.</li>
+<li><strong>Managed agent runtimes</strong> (Bedrock AgentCore and equivalents). Know the concepts; don't learn a specific vendor's console.</li>
+<li><strong>Node FFI</strong>. Watch it reach LTS in October, then revisit.</li>
+<li><strong>Model routing and AI cost engineering</strong>. Will become a named job function. Cheap to pick up once you have one AI app in production.</li>
+<li><strong>Observability for AI systems</strong> (OpenTelemetry — note MCP now explicitly points to OTel instead of its own logging feature). Relevant the moment you run something real.</li>
+</ul>
+
+<h3>SKILLS I CAN IGNORE FOR NOW</h3>
+<ul>
+<li><strong>Chasing model releases.</strong> Six frontier models shipped this month. Memorising names and benchmarks is pure churn. Learn a provider-agnostic abstraction once.</li>
+<li><strong>Model internals, interpretability, activation steering, fine-tuning.</strong> Fascinating, deep, and irrelevant to application development. You are building <em>with</em> models, not <em>on</em> them.</li>
+<li><strong>Agent framework tourism.</strong> LangChain vs CrewAI vs AutoGen vs the five new ones this week. Build one agent loop by hand and you will understand all of them and need none of them.</li>
+<li><strong>Raw GLSL as a starting point.</strong> Learn TSL. Come back to GLSL only if you must maintain legacy shaders.</li>
+<li><strong>Rust / Go for agent infrastructure.</strong> Several of these tools are written in them. You do not need to switch languages to do this work.</li>
+</ul>
+
+<h2>🎓 FREE / CHEAP LEARNING</h2>
+
+<p><strong>NAME:</strong> MCP Specification 2026-07-28 + official TypeScript SDK<br>
+<strong>WHAT IS IT?</strong> The authoritative protocol spec plus the Tier 1 TypeScript SDK with migration notes for the breaking changes.<br>
+<strong>PROVIDER:</strong> Model Context Protocol (official)<br>
+<strong>COST:</strong> Free · <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> How to build a real MCP server and client; tool schema design; the stateless request model; MRTR; the auth model.<br>
+<strong>DIFFICULTY:</strong> Intermediate (easy if you know Express)<br>
+<strong>WHY RELEVANT TO ME?</strong> Primary source for your #1 learning priority, and the changelog explicitly lists what <em>not</em> to learn.<br>
+<strong>LINK:</strong> https://modelcontextprotocol.io/specification/2026-07-28 · changelog: https://modelcontextprotocol.io/specification/2026-07-28/changelog · release write-up: https://blog.modelcontextprotocol.io/posts/2026-07-28/</p>
+
+<p><strong>NAME:</strong> Next.js Caching &amp; Cache Components docs<br>
+<strong>WHAT IS IT?</strong> The official guides for the new caching model, including the migration guide.<br>
+<strong>PROVIDER:</strong> Vercel (official) · <strong>COST:</strong> Free · <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> Exactly when to cache at data level vs UI level, how cache keys are generated, tag invalidation, and the Suspense rules.<br>
+<strong>DIFFICULTY:</strong> Intermediate<br>
+<strong>WHY RELEVANT TO ME?</strong> This is your framework and this changed. Code examples are copy-runnable.<br>
+<strong>LINK:</strong> https://nextjs.org/docs/app/getting-started/caching and https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents</p>
+
+<p><strong>NAME:</strong> Three.js WebGPURenderer manual + official WebGPU/TSL examples<br>
+<strong>WHAT IS IT?</strong> The official overview of the new renderer, what it does not support, and a large set of runnable TSL/WebGPU examples (including the compute rasterizer and WebGPU skinning).<br>
+<strong>PROVIDER:</strong> Three.js (official) · <strong>COST:</strong> Free · <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> The migration constraints (no <code>ShaderMaterial</code>, no <code>EffectComposer</code>), how TSL compiles to WGSL/GLSL, and — most valuably — working source for every effect.<br>
+<strong>DIFFICULTY:</strong> Intermediate to Advanced<br>
+<strong>WHY RELEVANT TO ME?</strong> The examples page is the best creative-dev learning resource that exists, and it is free. Read source, change numbers, break things.<br>
+<strong>LINK:</strong> https://threejs.org/manual/en/webgpurenderer.html and https://threejs.org/examples/</p>
+
+<p><strong>NAME:</strong> CloudSEK GHAPPIER report + CrowdSec incident disclosure<br>
+<strong>WHAT IS IT?</strong> Two detailed, primary-source incident write-ups of this month's npm attacks.<br>
+<strong>PROVIDER:</strong> CloudSEK / CrowdSec · <strong>COST:</strong> Free · <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> How a real supply-chain compromise unfolds step by step, and why standard defences missed it. Reading real incident reports teaches security faster than any course.<br>
+<strong>DIFFICULTY:</strong> Beginner to Intermediate (well written, no deep security background needed)<br>
+<strong>WHY RELEVANT TO ME?</strong> Both attacks targeted your exact ecosystem.<br>
+<strong>LINK:</strong> https://cloudsek.com/blog/ghappier-malware-loader-npm-supply-chain-attack</p>
+
+<p><strong>NAME:</strong> MongoDB Atlas Vector Search documentation + free tier<br>
+<strong>WHAT IS IT?</strong> Vector/semantic search inside MongoDB, with a free M0 cluster.<br>
+<strong>PROVIDER:</strong> MongoDB (official) · <strong>COST:</strong> Free tier · <strong>CERTIFICATE:</strong> No (MongoDB University does offer free certifications separately)<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> Embeddings, vector indexes, and hybrid search — inside the database you already know.<br>
+<strong>DIFFICULTY:</strong> Beginner to Intermediate<br>
+<strong>WHY RELEVANT TO ME?</strong> It means you can build agent memory and RAG without learning a new database. Direct leverage on your existing skill.<br>
+<strong>LINK:</strong> https://www.mongodb.com/docs/atlas/atlas-vector-search/</p>
+
+<h2>▶️ YOUTUBE</h2>
+<p>No YouTube recommendations today — that section runs on Wednesday only. Today is Monday.</p>
+
+<h2>🧠 WHAT I SHOULD LEARN TODAY</h2>
+
+<h3>LEARN THIS #1 — Build one MCP server</h3>
+<p><strong>WHAT IS IT?</strong> A small HTTP server that exposes a few of your functions as tools an AI can call, following the stateless <code>2026-07-28</code> spec.</p>
+<p><strong>WHY NOW?</strong> The spec just stabilised into something that looks like a normal REST service, and the SDKs support it. The learning curve is at its lowest point and the demand is at its highest.</p>
+<p><strong>WHY ME?</strong> It is an Express server with a schema. You have built dozens of those. The only new parts are the tool schema format and the request metadata — an afternoon, not a month.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> The TypeScript SDK's server API; declaring a tool with input and output schemas; returning errors properly; a permission check before each tool executes; running it locally against a real MCP client.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> OAuth, MCP Apps (server-rendered UI), the Tasks extension, Roots/Sampling/Logging (deprecated), multi-tenant deployment, and gateway/header routing. Get three tools working first.</p>
+<p><strong>TIME:</strong> 2 hours for a working version.</p>
+<p><strong>FREE RESOURCE:</strong> https://modelcontextprotocol.io/specification/2026-07-28 + the official TypeScript SDK.</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> An MCP server over a MongoDB collection you already have, with exactly three tools: <code>searchItems(query)</code>, <code>getItem(id)</code>, <code>createNote(itemId, text)</code>. Make the third one require a confirmation via MRTR. Enforce that a read-only caller cannot reach <code>createNote</code>.</p>
+
+<h3>LEARN THIS #2 — Find the hidden state in your own Express app</h3>
+<p><strong>WHAT IS IT?</strong> An audit: locate every place your server keeps per-user data in process memory, and make it instance-independent.</p>
+<p><strong>WHY NOW?</strong> MCP just made this the headline change in a major protocol, with load balancing given as the explicit reason. It is the same lesson, handed to you with a real-world justification you can quote in an interview.</p>
+<p><strong>WHY ME?</strong> You deploy to platforms that scale horizontally. This bug class is invisible on one instance and brutal on two, and it is the gateway to everything else on your backend list.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> Grep your code for module-scope <code>Map</code>/<code>Set</code>/object caches, <code>MemoryStore</code>, in-memory rate limiters, local file writes, and WebSocket connection maps. Then fix each one.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> Kubernetes, service meshes, distributed consensus, CAP theorem. You just need "any instance can serve any request".</p>
+<p><strong>TIME:</strong> 1 hour to audit and fix one app.</p>
+<p><strong>FREE RESOURCE:</strong> Your own codebase. Plus the MCP release post as the motivating case study.</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> Run your API as three instances behind a round-robin proxy. Reproduce the random-logout bug. Fix it. Then add an <code>Idempotency-Key</code> to one POST route with a unique index in Mongo, and prove double-submitting returns the same result instead of creating two records.</p>
+
+<h2>🔮 WHERE TECHNOLOGY IS GOING</h2>
+
+<p><strong>TREND 1: AI agent infrastructure is converging on ordinary backend engineering.</strong><br>
+<strong>WHAT THAT MEANS:</strong> MCP dropped sessions to run on plain load balancers. Agent frameworks are adopting queues, durable tasks, retries, polling and per-tool permissions. Clouds are selling managed "agent runtimes" that are really just session management, identity and observability.<br>
+<strong>WHY IT MATTERS:</strong> The mystique is evaporating. The hard problems in agents are state, scaling, cost, reliability and authorisation — not machine learning.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Tool calling, MCP, stateless design, idempotency, queues and workers, authorisation, observability. Notice that this is the backend curriculum you were already planning.</p>
+
+<p><strong>TREND 2: Memory is the new frontier, and it is a database problem.</strong><br>
+<strong>WHAT THAT MEANS:</strong> The fastest-growing AI open-source projects right now are memory systems, not models. The interesting designs go beyond vector similarity to store <em>causal links</em> — why a decision was made and what it depended on.<br>
+<strong>WHY IT MATTERS:</strong> An agent that cannot remember cannot be trusted with real work, and an agent whose decisions cannot be traced cannot be deployed in any regulated setting.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Embeddings, vector search (in MongoDB Atlas — no new database needed), summarisation strategies, and audit-log schema design.</p>
+
+<p><strong>TREND 3: The software supply chain is now the primary attack surface, and cryptographic signing did not save it.</strong><br>
+<strong>WHAT THAT MEANS:</strong> This month gave us a malicious npm release with <em>valid provenance</em>, and a security company losing 170 private repos because of a poisoned package plus an un-revoked token. Attacks are moving to developer machines and CI pipelines because that is where the keys are.<br>
+<strong>WHY IT MATTERS:</strong> "Trusted publishing" made push access equal publish access. Defence has to shift to least-privilege tokens, version cooldowns, script isolation and disciplined offboarding — process, not tooling.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Lockfile discipline, <code>ignore-scripts</code>, fine-grained expiring tokens, CI secret hygiene, GitHub Actions safety, incident response basics.</p>
+
+<p><strong>TREND 4: The web is going GPU-native, and shaders are becoming JavaScript.</strong><br>
+<strong>WHAT THAT MEANS:</strong> WebGPU now reaches ~95% of users. Three.js is shipping game-engine features (compute rasterizers, GPU skinning with instancing) and moving its whole material and post-processing story to a node-based JavaScript shading language, with the old renderer explicitly in maintenance for large features.<br>
+<strong>WHY IT MATTERS:</strong> Work that required a native engine is becoming possible in a browser tab — and the barrier is no longer "learn GLSL", it is "compose functions in TypeScript".<br>
+<strong>WHAT I SHOULD LEARN:</strong> TSL, WebGPURenderer, node-based post-processing, and eventually compute shaders. Skip raw GLSL.</p>
+
+<p><strong>TREND 5: Frameworks are shipping explicit control back to developers, and MCP servers for themselves.</strong><br>
+<strong>WHAT THAT MEANS:</strong> Next.js 16 replaced invisible automatic caching with an opt-in directive, and simultaneously shipped a Devtools MCP so AI agents can understand its runtime semantics. The React Compiler took over manual memoisation.<br>
+<strong>WHY IT MATTERS:</strong> Two movements at once — <em>explicit</em> where correctness matters (caching), <em>automatic</em> where it is mechanical (memoisation) — plus a new expectation that every serious tool exposes a machine-readable interface for agents.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Cache Components deeply. And note the meta-lesson: "does my tool have an MCP server?" is becoming a normal product question. That is a real opportunity for a side project.</p>
+
+<h2>🚀 MY ACTION PLAN</h2>
+
+<h3>TODAY — 30 MINUTES</h3>
+<p>Harden your npm setup. Add <code>ignore-scripts=true</code> to your global <code>.npmrc</code>, switch your CI to <code>npm ci</code>, and replace one broad GitHub token with a fine-grained, expiring, single-repo one. Then grep your lockfiles for <code>@dforge-core/dforge-mcp@0.2.21</code> and the malicious <code>@tanstack/*</code> versions. Cheapest risk reduction available to you today.</p>
+
+<h3>TODAY — 1 HOUR</h3>
+<p>Build a minimal MCP server in TypeScript with three tools against a MongoDB collection you already have. Do not style anything, do not deploy it. Get an AI client to successfully call <code>searchItems</code> and see real data from your own database come back. That moment is the whole point.</p>
+
+<h3>THIS WEEK</h3>
+<p>Stateless service design and idempotency. Audit one existing Express app for hidden in-memory state, run it as three instances behind a round-robin proxy, watch it break, and fix it three different ways. Add an idempotency key to one POST route. This single topic unlocks queues, workers, serverless and agent orchestration.</p>
+
+<h3>THIS WEEK'S PROJECT</h3>
+<p><strong>"Agent-ready notes API"</strong> — one project that stacks everything you need:</p>
+<ol>
+<li><strong>Node + Express + MongoDB</strong> REST API for notes. Stateless: JWT auth, no memory store, idempotency key on create.</li>
+<li><strong>An MCP server layer</strong> over the same data with three tools, per-tool permission scoping, and MRTR confirmation on the one destructive tool.</li>
+<li><strong>A <code>memories</code> collection</strong> using MongoDB Atlas Vector Search, so an agent can recall relevant past notes instead of re-reading everything.</li>
+<li><strong>A Next.js 16 frontend</strong> using Cache Components — cached note list with <code>cacheTag('notes')</code>, dynamic user header streaming in via Suspense, and <code>revalidateTag</code> called from the API on write.</li>
+<li><strong>Stretch goal if time remains:</strong> a tiny model router — cheap model for classification, better model for summarisation, with per-request cost logging.</li>
+</ol>
+<p>Why this project: it demonstrates MERN + AI agents + system design + modern Next.js in one repo. It is a far stronger portfolio piece than four separate tutorials, and every piece is something employers are currently hiring for.</p>
+
+<h3>IGNORE FOR NOW</h3>
+<p>Do not spend a single hour comparing this month's frontier models, or reading interpretability and activation-steering research, or trying the five newest agent frameworks. Six frontier models shipped in September; there will be six more in October. Build one agent loop by hand and you will understand every framework without learning any of them.</p>
+
+<hr>
+
+<h3>🎯 IF I ONLY HAVE 1 HOUR TODAY</h3>
+<p><strong>Build the MCP server. Nothing else.</strong></p>
+<p>One hour, one file, one goal: an MCP server in TypeScript exposing one tool — <code>searchItems(query)</code> — that queries a MongoDB collection you already have, and getting an AI client to call it successfully and show you real rows from your own database.</p>
+<p><strong>Minute-by-minute:</strong></p>
+<ul>
+<li><strong>0-10:</strong> Skim the MCP spec changelog. You are only looking for one thing: every request is self-contained, there is no <code>initialize</code> handshake, no session ID. Do not read the whole spec.</li>
+<li><strong>10-20:</strong> Install the official TypeScript SDK. Get an empty server running that starts without errors and responds to <code>server/discover</code>.</li>
+<li><strong>20-40:</strong> Add one tool. Define its input schema (<code>{ query: string }</code>) and output schema. Wire the handler to a real Mongo <code>find()</code>.</li>
+<li><strong>40-55:</strong> Connect a real MCP client to it. Ask it something that forces the tool call. Debug until actual data from your database appears.</li>
+<li><strong>55-60:</strong> Write three sentences in a file: what surprised you, what you did not understand, what you will add next. That note is what turns an hour of tinkering into a week of direction.</li>
+</ul>
+<p><strong>Why this and not anything else:</strong> It converts the skill you already have (Express + MongoDB) into the skill the market wants (AI agent infrastructure), in one hour, with no new language, no new database, and no framework to learn. Everything else in today's briefing can wait a day. This cannot — it is the highest-leverage hour available to you right now.</p>
+
+<hr>
+<p><em>Source note: MCP spec changes, Next.js caching docs, Node.js releases and the Three.js PRs/manual are CONFIRMED from primary sources. The npm attack details are CONFIRMED from CloudSEK's and CrowdSec's own disclosures. Model release dates are CONFIRMED but vendor benchmark claims are ANNOUNCED (unverified by third parties). GitHub star counts and trending momentum are EARLY signals from third-party trackers — directional only. Learning priorities and career framing are ANALYSIS.</em></p>
 </body>
 </html>
