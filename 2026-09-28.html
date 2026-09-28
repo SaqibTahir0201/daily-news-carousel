@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Tech Intelligence – Sep 28, 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: #000;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    min-height: 100vh;
+  }
+
+  .carousel { width: 480px; position: relative; }
+
+  /* ── SLIDE ── */
+  .slide {
+    display: none;
+    width: 480px;
+    height: 620px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+  .slide.active { display: block; }
+
+  /* AI background image */
+  .slide-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.35) saturate(1.2);
+    transition: opacity 0.5s;
+  }
+
+  /* dark gradient overlay on top of image */
+  .slide-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0,0,0,0.2) 0%,
+      rgba(0,0,0,0.5) 40%,
+      rgba(0,0,0,0.9) 100%
+    );
+  }
+
+  .slide-content {
+    position: relative;
+    z-index: 2;
+    padding: 28px 26px 24px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* counter */
+  .counter {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  /* badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    width: fit-content;
+  }
+  .badge-green { background: rgba(0,230,118,0.15); border: 1px solid rgba(0,230,118,0.5); color: #00e676; }
+  .badge-blue  { background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.5); color: #38bdf8; }
+  .badge-red   { background: rgba(255,80,80,0.15);  border: 1px solid rgba(255,80,80,0.5);  color: #ff6060; }
+  .badge-gold  { background: rgba(255,200,0,0.15);  border: 1px solid rgba(255,200,0,0.5);  color: #ffc800; }
+  .badge-purple{ background: rgba(167,139,250,0.15);border: 1px solid rgba(167,139,250,0.5);color: #a78bfa; }
+
+  /* big headline */
+  .headline { font-size: 40px; font-weight: 900; color: #fff; line-height: 1.05; letter-spacing: -1px; text-transform: uppercase; }
+  .headline .hl-green  { color: #00e676; }
+  .headline .hl-red    { color: #ff5050; }
+  .headline .hl-gold   { color: #ffc800; }
+  .headline .hl-blue   { color: #38bdf8; }
+  .headline .hl-purple { color: #a78bfa; }
+  .subline { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 2.5px; text-transform: uppercase; margin-top: 6px; font-weight: 600; }
+
+  /* terminal panel */
+  .panel {
+    background: rgba(0,0,0,0.7);
+    border: 1px solid rgba(0,230,118,0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 14px;
+  }
+  .panel-head {
+    background: rgba(0,0,0,0.5);
+    border-bottom: 1px solid rgba(0,230,118,0.2);
+    padding: 7px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot-r{width:7px;height:7px;border-radius:50%;background:#ff5f57;flex-shrink:0;}
+  .dot-y{width:7px;height:7px;border-radius:50%;background:#ffbd2e;flex-shrink:0;}
+  .dot-g{width:7px;height:7px;border-radius:50%;background:#28c841;flex-shrink:0;}
+  .panel-title { font-size: 9px; color: rgba(255,255,255,0.35); letter-spacing: 2px; font-weight: 700; margin-left: 4px; }
+  .panel-body { padding: 12px 14px; }
+
+  .data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 12px;
+  }
+  .data-row:last-child { border-bottom: none; }
+  .data-label { color: rgba(255,255,255,0.45); font-weight: 600; display:flex;align-items:center;gap:7px; }
+  .data-val { font-weight: 800; font-size: 12px; }
+  .val-green  { color: #00e676; }
+  .val-red    { color: #ff5050; }
+  .val-gold   { color: #ffc800; }
+  .val-white  { color: #fff; }
+  .val-blue   { color: #38bdf8; }
+
+  /* terminal lines */
+  .term { padding: 10px 14px; font-family: 'Courier New', monospace; }
+  .term-line { font-size: 11px; color: rgba(255,255,255,0.35); line-height: 1.9; }
+  .term-line::before { content: '> '; color: #00e676; font-weight: 700; }
+  .term-hl { color: #00e676; font-weight: 700; }
+
+  /* bullets */
+  .bullets { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; }
+  .bullet {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: rgba(0,0,0,0.55);
+    border-left: 3px solid #00e676;
+    border-radius: 0 8px 8px 0;
+    padding: 9px 12px;
+  }
+  .bullet.red-border  { border-left-color: #ff5050; }
+  .bullet.blue-border { border-left-color: #38bdf8; }
+  .bullet-ico { font-size: 13px; flex-shrink:0; margin-top:1px; }
+  .bullet-text { font-size: 12px; color: rgba(255,255,255,0.8); line-height: 1.45; font-weight: 500; }
+  .bullet-text strong { color: #fff; }
+
+  /* stats */
+  .stat-row { display:flex; gap:10px; margin-top:14px; }
+  .stat-box {
+    flex:1;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 12px 8px;
+    text-align: center;
+  }
+  .stat-box.gb { border-color: rgba(0,230,118,0.35); }
+  .stat-val { font-size: 20px; font-weight: 900; color: #00e676; line-height:1; }
+  .stat-val.red { color: #ff5050; }
+  .stat-val.wh { color: #fff; }
+  .stat-lbl { font-size: 8px; color: rgba(255,255,255,0.3); margin-top:4px; letter-spacing:1.5px; text-transform:uppercase; font-weight:700; }
+
+  /* alert */
+  .alert {
+    display:flex; align-items:center; gap:10px;
+    border-radius: 8px; padding: 10px 14px;
+    font-size: 12px; font-weight: 700;
+    margin-top: 12px;
+  }
+  .alert-green { background:rgba(0,230,118,0.1); border:1px solid rgba(0,230,118,0.35); color:#00e676; }
+  .alert-red   { background:rgba(255,80,80,0.1);  border:1px solid rgba(255,80,80,0.35);  color:#ff6060; }
+  .alert-gold  { background:rgba(255,200,0,0.1);  border:1px solid rgba(255,200,0,0.35);  color:#ffc800; }
+
+  /* footer */
+  .slide-footer {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .foot-brand { font-size: 10px; color: rgba(255,255,255,0.25); font-weight: 700; letter-spacing:1px; }
+  .foot-swipe { font-size: 10px; color: rgba(255,255,255,0.2); }
+
+  /* cta */
+  .cta-box {
+    background: rgba(0,230,118,0.08);
+    border: 2px solid rgba(0,230,118,0.5);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    margin-top: 14px;
+  }
+  .cta-main { font-size: 15px; font-weight:900; color:#00e676; letter-spacing:1px; text-transform:uppercase; }
+  .cta-sub  { font-size: 10px; color:rgba(255,255,255,0.35); margin-top:4px; letter-spacing:1px; }
+
+  /* controls */
+  .controls {
+    display:flex; align-items:center; gap:16px;
+    margin-top:20px; justify-content:center;
+  }
+  .btn {
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.12);
+    color:#fff; width:40px; height:40px;
+    border-radius:50%; font-size:16px; cursor:pointer;
+    transition:all 0.2s; display:flex;align-items:center;justify-content:center;
+  }
+  .btn:hover { background:rgba(0,230,118,0.2); border-color:#00e676; }
+  .dots { display:flex; gap:6px; }
+  .dot { width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2);cursor:pointer;transition:all 0.3s; }
+  .dot.active { background:#00e676; width:22px; border-radius:3px; }
+
+  .tags { margin-top:16px; font-size:11px; color:rgba(0,230,118,0.45); text-align:center; line-height:2; max-width:480px; }
+
+  /* loading shimmer for images */
+  .slide-bg { background-color: #111; }
+  .slide-bg img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1s; }
+  .slide-bg img.loaded { opacity:1; }
+</style>
+</head>
+<body>
+
+<div class="carousel">
+
+  <!-- ══ SLIDE 1: COVER ══ -->
+  <div class="slide active">
+    <div class="slide-bg">
+      <img src="https://image.pollinations.ai/prompt/dark%20cinematic%20futuristic%20AI%20neural%20network%20glowing%20blue%20circuits%20bokeh%20professional%20photography%204k?width=480&height=620&nologo=true&seed=101" onload="this.classList.add('loaded')" />
+    </div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="counter"><span>01 / 06</span><span>@SAQIBTAHIR</span></div>
+      <div style="margin-top:auto;">
+        <div class="badge badge-purple">📡 Daily Intelligence Brief</div>
+        <div class="headline">TODAY'S<br>TECH WORLD<br><span class="hl-green">IN 6 SLIDES.</span></div>
+        <div class="subline">September 28, 2026 · AI · Security · Web · Creative</div>
+        <div class="panel" style="margin-top:16px;">
+          <div class="panel-head"><div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div><span class="panel-title">HERMES AI · BRIEFING v1.0</span></div>
+          <div class="term">
+            <div class="term-line">scanning 200+ sources...</div>
+            <div class="term-line">MCP protocol → <span class="term-hl">major update</span></div>
+            <div class="term-line">npm attack → <span class="term-hl">CONFIRMED</span></div>
+            <div class="term-line">Three.js WebGPU → <span class="term-hl">game changer</span></div>
+            <div class="term-line">brief ready. <span class="term-hl">swipe to read ▌</span></div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span class="foot-brand">DAILY TECH INTELLIGENCE</span>
+          <span class="foot-swipe">Swipe → to start</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2: MCP ══ -->
+  <div class="slide">
+    <div class="slide-bg">
+      <img src="https://image.pollinations.ai/prompt/dark%20server%20room%20glowing%20green%20cables%20API%20protocol%20cinematic%20dramatic%20lighting%204k%20professional?width=480&height=620&nologo=true&seed=202" onload="this.classList.add('loaded')" />
+    </div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="counter"><span>02 / 06</span><span>@SAQIBTAHIR</span></div>
+      <div class="badge badge-green">🤖 AI Protocol</div>
+      <div class="headline">MCP JUST<br><span class="hl-green">WENT</span><br>STATELESS.</div>
+      <div class="subline">Biggest protocol change since launch</div>
+      <div class="panel">
+        <div class="panel-head"><div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div><span class="panel-title">MODEL CONTEXT PROTOCOL · 2026-07-28</span></div>
+        <div class="panel-body">
+          <div class="data-row"><span class="data-label">🔄 Session IDs</span><span class="data-val val-red">REMOVED</span></div>
+          <div class="data-row"><span class="data-label">⚡ Load balancing</span><span class="data-val val-green">Plain round-robin</span></div>
+          <div class="data-row"><span class="data-label">📦 SDK</span><span class="data-val val-white">TypeScript 2.1.0</span></div>
+          <div class="data-row"><span class="data-label">🗑️ Deprecated</span><span class="data-val val-red">Roots, Sampling, Logging</span></div>
+        </div>
+      </div>
+      <div class="alert alert-green">⚡ MCP is now a plain HTTP API. If you know Express, you can build MCP servers.</div>
+      <div class="slide-footer"><span class="foot-brand">@SAQIBTAHIR</span><span class="foot-swipe">Swipe →</span></div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3: NPM ATTACK ══ -->
+  <div class="slide">
+    <div class="slide-bg">
+      <img src="https://image.pollinations.ai/prompt/dark%20cybersecurity%20hacker%20red%20warning%20code%20skull%20threat%20cinematic%20dramatic%20lighting%204k?width=480&height=620&nologo=true&seed=303" onload="this.classList.add('loaded')" />
+    </div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="counter"><span>03 / 06</span><span>@SAQIBTAHIR</span></div>
+      <div class="badge badge-red">🛡️ Cybersecurity</div>
+      <div class="headline">NPM GOT<br><span class="hl-red">POISONED.</span><br>YOUR TOOLS.</div>
+      <div class="subline">Confirmed supply-chain attack this month</div>
+      <div class="bullets">
+        <div class="bullet red-border"><span class="bullet-ico">💀</span><span class="bullet-text"><strong>@tanstack/react-query</strong> — 42 malicious packages published via hijacked CI. GitHub tokens + SSH keys stolen.</span></div>
+        <div class="bullet red-border"><span class="bullet-ico">🔓</span><span class="bullet-text"><strong>CrowdSec breach</strong> — 170 private repos leaked via ex-employee's never-revoked token</span></div>
+        <div class="bullet red-border"><span class="bullet-ico">✅</span><span class="bullet-text"><strong>Fix:</strong> use <code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:3px;">npm ci</code> + <code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:3px;">ignore-scripts=true</code> in .npmrc</span></div>
+      </div>
+      <div class="alert alert-red">🚨 Signed packages ≠ safe packages. Push access = publish access now.</div>
+      <div class="slide-footer"><span class="foot-brand">@SAQIBTAHIR</span><span class="foot-swipe">Swipe →</span></div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4: THREE.JS ══ -->
+  <div class="slide">
+    <div class="slide-bg">
+      <img src="https://image.pollinations.ai/prompt/stunning%203D%20WebGL%20render%20glowing%20particles%20GPU%20shader%20art%20dark%20background%20neon%20blue%20purple%20cinematic%204k?width=480&height=620&nologo=true&seed=404" onload="this.classList.add('loaded')" />
+    </div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="counter"><span>04 / 06</span><span>@SAQIBTAHIR</span></div>
+      <div class="badge badge-blue">🎨 Creative Dev</div>
+      <div class="headline">THREE.JS<br><span class="hl-blue">WENT</span><br>GPU-NATIVE.</div>
+      <div class="subline">WebGPU now reaches 95% of users · Safari 26</div>
+      <div class="panel">
+        <div class="panel-head"><div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div><span class="panel-title">THREE.JS r185 · WHAT CHANGED</span></div>
+        <div class="panel-body">
+          <div class="data-row"><span class="data-label">🌐 WebGPU coverage</span><span class="data-val val-green">~95% users</span></div>
+          <div class="data-row"><span class="data-label">⚡ TSL compile speed</span><span class="data-val val-green">3x faster</span></div>
+          <div class="data-row"><span class="data-label">🚀 GPU Rasterizer</span><span class="data-val val-white">Nanite-style</span></div>
+          <div class="data-row"><span class="data-label">❌ ShaderMaterial</span><span class="data-val val-red">Not supported</span></div>
+        </div>
+      </div>
+      <div class="alert alert-blue" style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.35);color:#38bdf8;">💡 Skip GLSL. Learn TSL — it's JavaScript-style shader coding.</div>
+      <div class="slide-footer"><span class="foot-brand">@SAQIBTAHIR</span><span class="foot-swipe">Swipe →</span></div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 5: AGENT MEMORY ══ -->
+  <div class="slide">
+    <div class="slide-bg">
+      <img src="https://image.pollinations.ai/prompt/AI%20brain%20neural%20network%20memory%20nodes%20glowing%20dark%20background%20cinematic%20digital%20art%204k%20professional?width=480&height=620&nologo=true&seed=505" onload="this.classList.add('loaded')" />
+    </div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="counter"><span>05 / 06</span><span>@SAQIBTAHIR</span></div>
+      <div class="badge badge-purple">🧠 AI Agents</div>
+      <div class="headline">AI AGENTS<br>NOW HAVE<br><span class="hl-purple">MEMORY.</span></div>
+      <div class="subline">The fastest growing open-source category right now</div>
+      <div class="bullets">
+        <div class="bullet" style="border-left-color:#a78bfa;"><span class="bullet-ico">🧩</span><span class="bullet-text"><strong>google/ax</strong> — agentic orchestration runtime, +1,379 GitHub stars in one day</span></div>
+        <div class="bullet" style="border-left-color:#a78bfa;"><span class="bullet-ico">💾</span><span class="bullet-text"><strong>MongoDB Atlas</strong> has vector search built-in — build agent memory in your existing DB</span></div>
+        <div class="bullet" style="border-left-color:#a78bfa;"><span class="bullet-ico">⚙️</span><span class="bullet-text"><strong>AWS Bedrock AgentCore</strong> — managed agent runtime replacing self-managed ECS</span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box gb"><div class="stat-val">+1.4k</div><div class="stat-lbl">Stars/Day</div></div>
+        <div class="stat-box gb"><div class="stat-val">3</div><div class="stat-lbl">Memory Layers</div></div>
+        <div class="stat-box gb"><div class="stat-val">$0</div><div class="stat-lbl">MongoDB Free</div></div>
+      </div>
+      <div class="slide-footer"><span class="foot-brand">@SAQIBTAHIR</span><span class="foot-swipe">Swipe →</span></div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 6: ACTION PLAN + CTA ══ -->
+  <div class="slide">
+    <div class="slide-bg">
+      <img src="https://image.pollinations.ai/prompt/dark%20cinematic%20developer%20workspace%20glowing%20monitors%20code%20futuristic%20dramatic%20lighting%20bokeh%204k?width=480&height=620&nologo=true&seed=606" onload="this.classList.add('loaded')" />
+    </div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="counter"><span>06 / 06</span><span>@SAQIBTAHIR</span></div>
+      <div class="badge badge-gold">🚀 Action Plan</div>
+      <div class="headline">TODAY'S<br><span class="hl-gold">ONE HOUR</span><br>CHALLENGE.</div>
+      <div class="subline">Build an MCP server in TypeScript — right now</div>
+      <div class="panel">
+        <div class="panel-head"><div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div><span class="panel-title">IF YOU ONLY HAVE 1 HOUR TODAY</span></div>
+        <div class="panel-body">
+          <div class="data-row"><span class="data-label">0–10 min</span><span class="data-val val-white">Read MCP spec changelog</span></div>
+          <div class="data-row"><span class="data-label">10–20 min</span><span class="data-val val-white">Install TypeScript SDK</span></div>
+          <div class="data-row"><span class="data-label">20–40 min</span><span class="data-val val-green">Build searchItems() tool</span></div>
+          <div class="data-row"><span class="data-label">40–60 min</span><span class="data-val val-green">Connect AI client → test</span></div>
+        </div>
+      </div>
+      <div class="cta-box">
+        <div class="cta-main">📖 Full Briefing</div>
+        <div class="cta-sub">saqibtahir0201.github.io/daily-news-carousel/2026-09-28.html</div>
+      </div>
+      <div class="slide-footer"><span class="foot-brand">FOLLOW FOR DAILY BRIEFS</span><span class="foot-swipe">#AI #TechNews</span></div>
+    </div>
+  </div>
+
+</div><!-- /carousel -->
+
+<div class="controls">
+  <button class="btn" onclick="change(-1)">&#8592;</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn" onclick="change(1)">&#8594;</button>
+</div>
+
+<div class="tags">
+  #AI #MCP #JavaScript #NodeJS #CyberSecurity #ThreeJS #WebGPU #TechNews #DeveloperTools #OpenSource
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+let cur = 0;
+
+slides.forEach((_,i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.onclick = () => go(i);
+  dotsEl.appendChild(d);
+});
+
+function go(n) {
+  slides[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('active');
+  cur = ((n%slides.length)+slides.length)%slides.length;
+  slides[cur].classList.add('active');
+  dotsEl.children[cur].classList.add('active');
+}
+function change(d) { go(cur+d); }
+
+let t = setInterval(()=>change(1), 5000);
+
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight'){clearInterval(t);change(1);}
+  if(e.key==='ArrowLeft'){clearInterval(t);change(-1);}
+});
+
+let sx=0;
+document.querySelector('.carousel').addEventListener('touchstart',e=>sx=e.touches[0].clientX);
+document.querySelector('.carousel').addEventListener('touchend',e=>{
+  const d=sx-e.changedTouches[0].clientX;
+  if(Math.abs(d)>40){clearInterval(t);change(d>0?1:-1);}
+});
+</script>
+</body>
+</html>
