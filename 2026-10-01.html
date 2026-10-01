@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Daily Tech Intelligence — 2026-10-01</title>
+<style>
+body { font-family: Segoe UI, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #0d1117; color: #c9d1d9; line-height: 1.7; }
+h1 { color: #58a6ff; border-bottom: 2px solid #30363d; padding-bottom: 10px; }
+h2 { color: #f0883e; margin-top: 40px; }
+h3 { color: #79c0ff; }
+strong { color: #ffa657; }
+code { background: #161b22; padding: 2px 6px; border-radius: 4px; }
+hr { border-color: #30363d; }
+</style>
+</head>
+<body>
+
+<h1>🌍 DAILY TECH INTELLIGENCE — 2026-10-01</h1>
+<p><strong>DATE:</strong> Thursday, 1 October 2026<br>
+<strong>FOR:</strong> MERN / Full-Stack JS developer moving into backend, system design, AI agents and creative development.</p>
+
+<hr>
+
+<h2>⚡ TODAY IN 60 SECONDS</h2>
+
+<h3>1. The "how do I plug an AI agent into my React app" problem finally got a standard</h3>
+<p><strong>WHAT HAPPENED:</strong> On 30 September 2026, CopilotKit released <strong>AG-UI 1.0</strong> — a finished, stable specification for how an AI agent running on a server talks to a user interface running in a browser. Google, Microsoft, Amazon and Oracle have adopted it. LangChain, Mastra and Anthropic's Claude Managed Agents support it. Microsoft contributed a .NET SDK. There are official TypeScript, Python and .NET SDKs. <em>(Status: CONFIRMED — official announcement.)</em></p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM: AG-UI (Agent-User Interaction Protocol)</strong><br>
+<strong>SIMPLE MEANING:</strong> A fixed list of message types that an AI agent sends to a frontend while it is working — "I started thinking", "I am calling a tool", "here is a chunk of text", "I need a human to approve this", "I used 1,200 tokens". Both sides agree on the shape of these messages in advance.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> You build a React chat UI. Today you invent your own JSON events, your own streaming format, your own "agent is thinking…" state. If you later swap LangChain for Mastra, you rewrite the frontend. With AG-UI, the agent emits 31 standard events over SSE/WebSocket and your React component just renders them. Swap the backend, the UI keeps working.<br>
+<strong>WHY IT MATTERS:</strong> Until now, every agent product re-invented this glue layer. MCP standardised <em>agent → tools</em>. AG-UI standardises <em>agent → user</em>. That is the last missing piece of the agent plumbing stack.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is literally React + Node + streaming HTTP. It is the part of the AI-agent world that uses the exact skills you already have. You do not need to train a model to build this — you need to understand event streams, React state, and Express/Next route handlers.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn and build. This is the highest-leverage AI topic on this list for a MERN developer.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+
+<h3>2. OpenAI put its whole coding-agent engine behind one API call</h3>
+<p><strong>WHAT HAPPENED:</strong> OpenAI launched the <strong>Agents API in public beta</strong>, exposing the Codex "harness" as a managed service. You can run it in OpenAI-hosted sandboxes, your own sandboxes, or partner sandboxes. Caveat: data stays in the US and <em>Zero Data Retention is not supported</em>. <em>(Status: ANNOUNCED / public beta.)</em></p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM: Agent harness</strong><br>
+<strong>SIMPLE MEANING:</strong> The code <em>around</em> the model that makes it actually useful — the loop that feeds it the task, lets it read/write files, run commands in a sandbox, see the output, and try again until done. The model is the brain; the harness is the hands, eyes and the "keep going until finished" loop.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> You send "fix the failing test in this repo". The harness clones the repo into a sandbox, lets the model run <code>npm test</code>, read the error, edit a file, re-run, and finally return a diff. You wrote none of that loop.<br>
+<strong>WHY IT MATTERS:</strong> The industry is moving from selling <em>model access</em> to selling <em>agent execution</em>. That is a much bigger, much stickier product.<br>
+<strong>WHY IT MATTERS TO ME:</strong> Two ways. (a) As a consumer — you can add "AI does a multi-step job" to a Node app without writing a sandbox. (b) As a builder — understanding what a harness does is how you build your own smaller one. The no-ZDR limitation also teaches you a real architecture lesson: for client work with data-residency rules, hosted agent APIs may be legally off the table and you will need a self-hosted loop.<br>
+<strong>WHAT I SHOULD DO:</strong> Understand the basics now; experiment only if you have a concrete use case. Do not rebuild your projects around a beta API.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🟠 MEDIUM</p>
+
+<h3>3. npm malware learned to skip install scripts — and the main defence stops working</h3>
+<p><strong>WHAT HAPPENED:</strong> 2026 has been a brutal year for npm. The short version: TanStack (May, 84 poisoned versions across 42 packages), Red Hat's <code>@redhat-cloud-services</code> (June, 32 packages), AsyncAPI (July), and the keyv/cacheable worm (August, 400+ packages, roughly 2 billion monthly downloads in blast radius). npm v12 shipped as a response — it <strong>disables install scripts by default</strong>. But the AsyncAPI payload declared <em>no install scripts at all</em>; it ran on <code>import</code>. <em>(Status: CONFIRMED — Unit 42, Microsoft Threat Intelligence, Socket, Orca.)</em></p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM: Import-time malware</strong><br>
+<strong>SIMPLE MEANING:</strong> Malicious code that does nothing during <code>npm install</code>, and instead runs the first time your application does <code>require('that-package')</code> or <code>import x from 'that-package'</code>.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> A poisoned <code>@asyncapi/specs</code> has zero <code>postinstall</code> hooks, so <code>npm install --ignore-scripts</code> does not save you. The moment your build imports it, it spawns a background process and pulls a second-stage payload.<br>
+<strong>WHY IT MATTERS:</strong> Everyone's mitigation advice for the last two years was "disable install scripts". That advice is now half-obsolete. The attacker moved one step later in the lifecycle.<br>
+<strong>WHY IT MATTERS TO ME:</strong> You run <code>npm install</code> every day. These attacks stole exactly the things sitting on your machine right now: <code>.npmrc</code> tokens, <code>GITHUB_TOKEN</code>, <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, AWS keys, and MCP/Claude config files. Your GitHub PAT and your LinkedIn/GitHub automation tokens are in scope.<br>
+<strong>WHAT I SHOULD DO:</strong> Act today. Enable a release-age cooldown and commit lockfiles. 15 minutes of work. See the Cybersecurity section for exact commands.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+
+<h3>4. MCP's hidden cost: your AI agent can run out of memory before it starts working</h3>
+<p><strong>WHAT HAPPENED:</strong> The Pi coding agent — which publicly refused to support MCP — shipped MCP support on 29 September via a design called <strong>Codemode</strong>, and hit #1 on Hacker News. The backstory is the interesting part: Perplexity's CTO reported that three MCP servers consumed <strong>143,000 of a 200,000-token context window</strong> before the agent did any work. A 72% tax. Perplexity dropped MCP internally over it. <em>(Status: CONFIRMED for the Pi release; the Perplexity figure is a reported public statement.)</em></p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM: Context window tax</strong><br>
+<strong>SIMPLE MEANING:</strong> An LLM can only "see" a fixed amount of text at once (the context window). Every tool you give it has to be described to it in that window. Each MCP tool definition costs roughly 550–1,400 tokens. Connect 60 tools and most of the model's attention is spent reading a manual instead of doing your task.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> You wire up a GitHub MCP server, a Linear MCP server and a Postgres MCP server. Before the user types anything, 70% of the window is tool schemas. The agent gets dumber and more expensive on every single request.<br>
+<strong>HOW CODEMODE SOLVES IT:</strong> Instead of dumping every tool schema into the prompt, the model writes small JavaScript that runs inside a <strong>QuickJS sandbox</strong> (a tiny, embeddable JS engine). Tools are <em>discoverable documentation</em> the model looks up when needed, not a wall of text loaded upfront. It also means the model can chain two tools in one script instead of two round-trips.<br>
+<strong>WHY IT MATTERS TO ME:</strong> You already use MCP in Hermes. If you ever build an agent product, this is the #1 thing that will silently destroy your quality and your bill. "Load tool definitions lazily" is an architecture decision, not an optimisation.<br>
+<strong>WHAT I SHOULD DO:</strong> Understand the basics. Audit how many MCP tools your own setups load.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+
+<h3>5. Three.js is building a bridge so you can write modern shaders without abandoning WebGL</h3>
+<p><strong>WHAT HAPPENED:</strong> Three.js PR #32851 adds a <strong>NodeMaterial/TSL compatibility layer to the old WebGLRenderer</strong>. Separately, PR #33120 made TSL shader compilation about <strong>3× faster</strong> (a demo scene went from ~1,550ms to ~515ms). <em>(Status: CONFIRMED for #33120, merged; #32851 is an active PR — EARLY.)</em></p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM: TSL (Three.js Shading Language)</strong><br>
+<strong>SIMPLE MEANING:</strong> A way to write GPU shader logic using normal JavaScript function calls instead of writing GLSL or WGSL as a big string. You compose small pieces — <code>uv()</code>, <code>sin()</code>, <code>mix()</code>, <code>texture()</code> — into a graph, and Three.js compiles that graph into the right shader language for whatever renderer is running.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> <code>material.colorNode = color(0x6366f1).mul(uv().y.add(pulse))</code> — that is a real shader. No GLSL string, no vertex/fragment split, no manually declaring varyings. It runs on WebGPU and falls back to WebGL unchanged.<br>
+<strong>WHY IT MATTERS:</strong> Until now, going WebGPU meant rewriting every custom shader. This PR means you can write TSL today on the renderer you already use, and switch to WebGPU later by changing one line.<br>
+<strong>WHY IT MATTERS TO ME:</strong> You want Awwwards-level work. Awwwards-level work means custom shaders. TSL is JavaScript, which is your native language — it removes the single biggest barrier between you and real shader work.<br>
+<strong>WHAT I SHOULD DO:</strong> Experiment. Write one TSL material this week.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT (creative dev) &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🟠 MEDIUM</p>
+
+<hr>
+
+<h2>🔥 BIGGEST DEVELOPMENTS</h2>
+
+<h3>A. Google's Android Bench 2.0 says AI agents collapse on long engineering work</h3>
+<p><strong>WHAT HAPPENED:</strong> Google released a benchmark that tests models on complex, <em>multi-day</em> engineering tasks instead of isolated coding puzzles. Top continuous-completion score: <strong>28%</strong>. Architectural code migrations were the hardest category.</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p><strong>TERM: Benchmark saturation</strong><br>
+<strong>SIMPLE MEANING:</strong> When every model scores 90%+ on a test, the test stops telling you anything useful. SWE-bench Verified is near this point. So labs build harder tests.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> A model that fixes a single failing test 95% of the time can still fail completely at "migrate this Express app to a modular monolith over three days", because the second task requires holding system-wide dependencies in mind across hundreds of steps.</p>
+<p><strong>WHY DOES IT MATTER?</strong> It is the clearest public evidence that "AI will replace developers" is not where we are. The gap is not code generation — it is <em>sustained architectural judgement</em>.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> Direct career signal. The skill the machines are worst at is exactly the skill you listed as your growth area: system design and software architecture. That is not a coincidence you should ignore. Keep learning to type code fast and you compete with a 90% machine. Learn to decide <em>what should exist and how it should be shaped</em> and you compete with a 28% machine.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH<br>
+<strong>WHAT SHOULD I LEARN?</strong> System design fundamentals. Not AI tooling — the thing AI is bad at.</p>
+
+<h3>B. Model routing became a product category</h3>
+<p><strong>WHAT HAPPENED:</strong> nexos.ai launched a "smart router" that matches each engineering task to the cheapest model that can handle it, claiming 60% cost reduction on AI coding. Several similar products shipped this quarter.</p>
+<p><strong>TERM: Model routing</strong><br>
+<strong>SIMPLE MEANING:</strong> A layer that sits between your app and many LLM providers, and decides per-request which model to call — a cheap fast one for easy jobs, an expensive smart one for hard jobs.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> "Reformat this JSON" → a $0.05/M model. "Redesign this auth flow" → a $15/M model. Same API surface to your code.<br>
+<strong>WHY IT MATTERS:</strong> Autonomous agents generate enormous background traffic. Model cost is now a real line item, so routing moved from "nice optimisation" to "core infrastructure layer".<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is a pure backend problem and it is yours to build. A router is: classify the request → pick a provider → call it → handle failure → fall back → log cost. That is Express middleware. You could build a basic one in an afternoon and it would teach you more about production AI than any course.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM<br>
+<strong>WHAT SHOULD I LEARN?</strong> Provider abstraction, fallback chains, per-request cost accounting.</p>
+
+<h3>C. Open-weight agent models are chasing the frontier</h3>
+<p><strong>WHAT HAPPENED:</strong> Shanghai AI Lab released <strong>Atria Dawn Preview</strong>, a 744-billion-parameter open-weight agent model under MIT licence, built on GLM-5.2, aimed at long research and coding loops. <em>(Status: ANNOUNCED — benchmark claims are NOT independently verified, and no pricing/hosting story was given.)</em></p>
+<p><strong>TERM: Open-weight</strong><br>
+<strong>SIMPLE MEANING:</strong> The trained model file is downloadable and you may run it yourself. It is not the same as open-source — the training data and training code are usually not released.<br>
+<strong>WHY IT MATTERS:</strong> If open-weight models stay within reach of frontier models, the price of agent inference keeps collapsing, and data-sensitive companies can self-host.<br>
+<strong>WHY IT MATTERS TO ME:</strong> Honestly? Not much right now. A 744B model needs a cluster you do not have. The practical takeaway is pricing pressure on the APIs you actually use.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> ⚪ LOW — <strong>WATCH ONLY.</strong></p>
+
+<h3>D. Research: agents that build their own tools (NeurIPS, Appier)</h3>
+<p><strong>WHAT HAPPENED:</strong> Appier's <strong>SMITH</strong> framework (accepted at NeurIPS) trains a model to <em>create</em> tools and <em>use</em> them in the same training loop. Headline result: a ~4B model built tools that outperformed tools built by a ~30B model, and repeated reasoning that previously cost 3,206 tokens dropped to about 100 tokens — roughly 32× cheaper.</p>
+<p><strong>WHY AM I TELLING YOU THIS?</strong> Not so you study reinforcement learning. The transferable idea is the one that matters.</p>
+<p><strong>TECHNOLOGY LESSON — TERM: Tool distillation / caching reasoning as code</strong><br>
+<strong>SIMPLE MEANING:</strong> If your agent keeps re-deriving the same answer by thinking step-by-step, stop letting it think. Freeze that reasoning into a deterministic function and let the agent call the function instead.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Your agent repeatedly reasons "convert this currency, apply tax, round to 2dp". After the 5th time, you write <code>calculateInvoiceTotal()</code> in Node and register it as a tool. The agent now calls it: 100 tokens instead of 3,000, and the answer is correct every time instead of usually.<br>
+<strong>WHY YOU CARE:</strong> This is the single cheapest way to make an agent faster, cheaper <em>and</em> more reliable. It requires no ML knowledge — just noticing a repeated pattern and writing a normal JavaScript function.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT (as an architecture pattern) &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM</p>
+
+<h3>E. Multi-agent orchestration is going open-source (openrig)</h3>
+<p><strong>WHAT HAPPENED:</strong> <code>openrig</code> trended on GitHub — an open-source framework that runs Claude Code and Codex together as one collaborative system instead of two separate terminals, with one agent planning and another implementing, and each reviewing the other.</p>
+<p><strong>TERM: Orchestration topology</strong><br>
+<strong>SIMPLE MEANING:</strong> The <em>shape</em> of how multiple agents are wired together — who talks to whom, who decides, who reviews. Same models, different wiring, very different results.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Planner → Implementer → Reviewer → back to Implementer. One model's blind spot gets caught by a different model's different training.<br>
+<strong>WHY IT MATTERS TO ME:</strong> You already orchestrate agents through Hermes. This is the same idea with a published architecture you can read. The valuable part is not the tool — it is seeing how state, task delegation boundaries and conflict arbitration are implemented in code.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM — <strong>READ THE CODE, don't adopt it.</strong></p>
+
+<h3>F. Interesting, but not important for you right now</h3>
+<ul>
+<li><strong>Logitech MX Keypad</strong> — a nine-LCD-key macro pad marketed at "AI developer workflows". It is a keyboard. ⚪ NOT IMPORTANT.</li>
+<li><strong>Casepoint IQ / SciencePro / enterprise vertical agents</strong> — legal and scientific AI platforms. Real businesses, zero learning value for you. ⚪ NOT IMPORTANT.</li>
+<li><strong>Advanced AI Society joins Linux Foundation</strong> — AI verification governance. Matters in 2 years, not this quarter. ⚪ WATCH ONLY.</li>
+</ul>
+
+<hr>
+
+<h2>🤖 AI &amp; AI AGENTS</h2>
+
+<h3>Deep dive: AG-UI 1.0 — the one you should actually learn</h3>
+
+<p><strong>WHAT IS IT?</strong><br>
+A specification (plus SDKs) that defines exactly what messages flow between an AI agent and a user interface. 31 event types across 8 categories, defined by a JSON Schema. The TypeScript, Python and .NET SDKs are generated <em>from</em> that schema, so they cannot drift apart.</p>
+
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong><br>
+Right now, if you build an agent chat UI, you invent everything yourself: how partial text streams in, how you show "calling tool: searchDatabase", how you pause and ask the human "approve this payment?", how you show token cost. Every team rebuilds it, incompatibly. Change your agent framework and the frontend breaks.</p>
+
+<p><strong>HOW DOES IT WORK? (simplified)</strong><br>
+The agent backend opens a stream to the browser (Server-Sent Events or WebSocket) and emits typed events in order:</p>
+<pre><code>RUN_STARTED
+TEXT_MESSAGE_START   → TEXT_MESSAGE_CONTENT (many) → TEXT_MESSAGE_END
+TOOL_CALL_START      → TOOL_CALL_ARGS → TOOL_CALL_RESULT
+INTERRUPT            (agent pauses, waits for human approval)
+STATE_DELTA          (partial state update, not a full resend)
+RUN_FINISHED         (+ token usage)</code></pre>
+<p>Your React app is a reducer over that event stream. That is the whole idea.</p>
+
+<p><strong>WHAT'S NEW IN 1.0:</strong> subagent support, custom metadata to the frontend, multimodal tool results, human-in-the-loop interrupts, token usage reporting. Backwards compatible — a 0.x agent works with a 1.0 client and vice versa.</p>
+
+<p><strong>TERM: Human-in-the-loop interrupt</strong><br>
+<strong>SIMPLE MEANING:</strong> The agent stops mid-run, sends the frontend a question, and waits for the user to approve, reject or edit before continuing.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> An agent is about to send 400 emails. It emits an INTERRUPT with the draft. Your React component renders Approve / Edit / Cancel. The run resumes only after the user clicks.<br>
+<strong>WHY IT MATTERS:</strong> It is the difference between a demo and something you can put in front of a paying customer.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is a <em>state machine over a stream</em> — a pure backend/frontend engineering problem. No ML required. This is your entry point into the agent industry using skills you already have.</p>
+
+<p><strong>WHY ARE PEOPLE USING IT?</strong> Because Google, Microsoft, Amazon and Oracle adopted it, and LangChain/Mastra/Anthropic support it. Standards win when the big players converge, and they have converged.</p>
+
+<p><strong>HOW COULD I USE IT IN A REAL PROJECT?</strong> Build a Next.js app with an API route that runs a simple Node agent loop and emits AG-UI events over SSE. Render it with a React hook that reduces the events into messages, tool-call cards, and an approval dialog. That is a portfolio project that proves you understand modern AI product engineering — not prompt engineering.</p>
+
+<p><strong>DO I NEED TO LEARN THIS NOW?</strong> Yes. Of everything on today's list, this is the best match between where the industry is going and what you can already do.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH &nbsp;|&nbsp; <strong>LEARN DEEPLY</strong></p>
+
+<h3>The MCP maturity signal</h3>
+<p>Supporting data from today's reporting: MCP now has <strong>17,000+ servers</strong>, ~<strong>400 million monthly SDK downloads</strong>, and a reported <strong>78% of enterprise AI teams</strong> running MCP-backed agents in production. The protocol was donated to the Linux Foundation in December 2025. A July 2026 <strong>stateless spec</strong> removed the initialize handshake and session layer, which were the main production pain points.</p>
+<p><strong>TERM: Stateless protocol</strong><br>
+<strong>SIMPLE MEANING:</strong> Every request carries everything the server needs; the server remembers nothing between requests.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> With sessions, you cannot easily put 5 MCP server instances behind a load balancer — request 2 might hit a server that never saw request 1. Stateless means any instance can answer any request, so you can scale horizontally and restart freely.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is a classic backend lesson arriving in AI clothing. Statelessness is <em>why</em> REST scales, and it is the same reason the MCP spec moved. Recognising that pattern across domains is what system design thinking actually is.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM</p>
+
+<hr>
+
+<h2>💻 MERN / JAVASCRIPT / WEB</h2>
+
+<h3>npm v12 — the biggest change to your daily workflow in years</h3>
+
+<p><strong>WHAT CHANGED?</strong> npm v12 flips three long-standing defaults:</p>
+<ol>
+<li><strong>Install scripts are disabled by default.</strong> <code>preinstall</code>, <code>install</code>, <code>postinstall</code> from dependencies no longer run unless you explicitly allowlist them in <code>package.json</code>.</li>
+<li><strong>Git and remote-URL dependencies no longer resolve by default.</strong></li>
+<li><strong>Native builds are included.</strong> A package with <code>binding.gyp</code> that triggers an implicit <code>node-gyp rebuild</code> is also blocked unless approved.</li>
+</ol>
+<p>Separately, GitHub is phasing out long-lived publish tokens: from early August 2026 granular access tokens can only <em>stage</em> a publish that a human approves with 2FA, with further tightening scheduled for January 2027.</p>
+
+<p><strong>WHAT IS IT? — TERM: Lifecycle script</strong><br>
+<strong>SIMPLE MEANING:</strong> A command a package can declare in its <code>package.json</code> that npm runs automatically at install time, with the same permissions as you.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> <code>"postinstall": "node build-native.js"</code> — legitimate for packages like <code>bcrypt</code> or <code>sharp</code> that compile C++. Also the exact mechanism that let the Axios, SAP and keyv worms steal credentials the instant you typed <code>npm install</code>.</p>
+
+<p><strong>WHY WAS IT CREATED?</strong> Because "arbitrary code from a stranger runs automatically on your machine" was the single most-exploited hole in the JavaScript ecosystem for two straight years.</p>
+
+<p><strong>WHAT EXISTING CONCEPT DOES IT REPLACE?</strong> It makes <code>--ignore-scripts</code> the default instead of an expert flag, and turns the exceptions into a committed, code-reviewable allowlist.</p>
+
+<p><strong>WHY SHOULD A MERN DEVELOPER CARE?</strong> Very practically: <strong>your CI pipeline will break on upgrade day</strong> if anything in your tree needs a build step. <code>bcrypt</code>, <code>sharp</code>, <code>canvas</code>, <code>node-sass</code>, <code>better-sqlite3</code>, Puppeteer, Playwright — all common, all affected. You can find out <em>now</em> instead of at 2am.</p>
+
+<p><strong>SHOULD I LEARN IT? HOW DEEPLY?</strong> Yes, shallow but immediate. It is a 15-minute config task, not a study topic.</p>
+
+<p><strong>SIMPLE EXAMPLE — do this today:</strong></p>
+<pre><code># Make sure you're on npm 11.16.0+ so you get warnings, not failures
+npm --version
+npm install -g npm@latest
+
+# In each project, run an install and read the warnings
+# about which packages WANT to run scripts.
+npm ci
+
+# Then add a cooldown so brand-new versions can't reach you
+# on day zero (this is what would have saved the Axios victims)
+npm config set min-release-age 1440   # 24 hours, in minutes
+</code></pre>
+<p>A 24-hour cooldown would have blocked the Axios compromise entirely — the malicious versions were live for about three hours.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH &nbsp;|&nbsp; <strong>UNDERSTAND THE BASICS + ACT</strong></p>
+
+<h3>Node.js status check</h3>
+<p>Current release line is <strong>Node 26.x</strong>; <strong>Node 24 (Krypton)</strong> and <strong>Node 22 (Jod)</strong> are the LTS lines. Node 20 (Iron) is now EOL. <em>(Status: CONFIRMED — nodejs.org.)</em></p>
+<p><strong>TERM: LTS (Long Term Support)</strong><br>
+<strong>SIMPLE MEANING:</strong> A version line that keeps getting security fixes for about three years and does not get risky new features.<br>
+<strong>WHY IT MATTERS TO ME:</strong> <strong>If any of your deployed projects are still on Node 20, they stopped receiving security patches.</strong> Move to Node 24. "Current" (26.x) is for experimenting, not production.<br>
+<strong>WHAT I SHOULD DO:</strong> Check your Dockerfiles, Railway config and <code>engines</code> fields today. 10 minutes.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH (it is maintenance, not learning)</p>
+
+<hr>
+
+<h2>🏗️ TODAY'S SYSTEM DESIGN CONCEPT</h2>
+
+<p><strong>CONCEPT:</strong><br>
+Idempotency (and idempotency keys)</p>
+
+<p><strong>IN ONE SENTENCE:</strong><br>
+An operation is idempotent if running it five times leaves the system in exactly the same state as running it once.</p>
+
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong><br>
+Networks lie. A request succeeds on the server but the response gets lost, so the client retries — and now the customer is charged twice. Every retry mechanism you add (and AI agents retry <em>constantly</em>) makes this worse. Idempotency is how you make retries safe.</p>
+
+<p><strong>SIMPLE REAL-WORLD EXAMPLE:</strong><br>
+An AI agent calls your <code>POST /api/send-invoice-email</code> tool. The call times out at 30s. The agent harness, being helpful, retries. The email actually sent the first time. Your customer gets two invoices. Scale that to a 950-agent system and you have sent 2,000 duplicate emails before anyone notices.</p>
+
+<p><strong>HOW IT WORKS:</strong><br>
+The caller generates a unique key and sends it with the request. The server does this:</p>
+<ol>
+<li>Look up the key in a store.</li>
+<li>If the key exists and the work is finished → return the <em>saved</em> response, do not re-run anything.</li>
+<li>If the key exists and is still <code>in_progress</code> → return 409 Conflict (a retry arrived while the first one is still running).</li>
+<li>If the key is new → insert it as <code>in_progress</code>, do the work, save the response against the key, return it.</li>
+</ol>
+<p>Step 4's insert must be atomic, or two simultaneous retries both see "new" and both do the work.</p>
+
+<p><strong>WHERE IS IT USED?</strong><br>
+Stripe's entire payments API (<code>Idempotency-Key</code> header). AWS SQS consumers. Every message queue, because almost all of them guarantee <em>at-least-once</em> delivery, never exactly-once. Webhook receivers. And now, agent tool endpoints.</p>
+
+<p><strong>TERM: At-least-once delivery</strong><br>
+<strong>SIMPLE MEANING:</strong> The queue promises your message will arrive — but possibly more than once. "Exactly once" is effectively impossible across a network, so systems give you at-least-once and expect <em>you</em> to handle duplicates.<br>
+<strong>WHY IT MATTERS:</strong> It means idempotency is not optional if you use queues. It is the price of admission.</p>
+
+<p><strong>HOW WOULD I USE IT WITH NODE / EXPRESS / MONGODB?</strong></p>
+<pre><code>// idempotency.js — Express middleware
+const Idem = mongoose.model('Idempotency', new mongoose.Schema({
+  key:      { type: String, unique: true, required: true },
+  status:   { type: String, enum: ['in_progress','done'], default: 'in_progress' },
+  response: mongoose.Schema.Types.Mixed,
+  createdAt:{ type: Date, default: Date.now, expires: '24h' }  // TTL index: auto-cleanup
+}));
+
+async function idempotent(req, res, next) {
+  const key = req.get('Idempotency-Key');
+  if (!key) return next();                      // optional: make it required
+
+  try {
+    await Idem.create({ key });                 // atomic: unique index decides the race
+  } catch (err) {
+    if (err.code !== 11000) throw err;          // 11000 = Mongo duplicate key
+    const existing = await Idem.findOne({ key });
+    if (existing.status === 'done') return res.status(200).json(existing.response);
+    return res.status(409).json({ error: 'Request already in progress' });
+  }
+
+  // Capture whatever the route sends, and store it against the key
+  const originalJson = res.json.bind(res);
+  res.json = async (body) => {
+    await Idem.updateOne({ key }, { status: 'done', response: body });
+    return originalJson(body);
+  };
+  next();
+}
+
+app.post('/api/send-invoice-email', idempotent, sendInvoiceHandler);
+</code></pre>
+<p>Two things make this work: the <strong>unique index</strong> (the database, not your code, resolves the race between two concurrent retries) and the <strong>TTL index</strong> (keys expire after 24h so the collection does not grow forever).</p>
+
+<p><strong>COMMON MISTAKE:</strong><br>
+Checking then writing in two steps: <code>const found = await Idem.findOne({key}); if (!found) await Idem.create({key});</code>. Two retries arriving 2ms apart both find nothing, both create, both do the work. You have written a race condition that only appears under load — the worst kind of bug. <strong>Always let the unique index arbitrate.</strong></p>
+<p>Second common mistake: generating the idempotency key on the <em>server</em>. It must come from the caller, because the whole point is that the retry carries the <em>same</em> key as the original.</p>
+
+<p><strong>WHAT I SHOULD BUILD TO LEARN IT:</strong><br>
+A tiny Express API with one slow endpoint (<code>await sleep(3000)</code>) that increments a counter in MongoDB. Hit it with 20 concurrent requests all carrying the same <code>Idempotency-Key</code>. Without the middleware the counter reads 20; with it, the counter reads 1 and 19 requests get the cached response or a 409. Seeing that number change from 20 to 1 teaches you more than an hour of reading.</p>
+
+<p><strong>DIFFICULTY:</strong> Intermediate</p>
+<p><strong>WHY TODAY:</strong> Because every item in today's AI section — agent harnesses, retry loops, the Agents API, multi-agent orchestration — multiplies the number of automated retries hitting your backend. Idempotency is the thing that stops agents from quietly corrupting your data.</p>
+
+<hr>
+
+<h2>🎨 CREATIVE DEVELOPMENT</h2>
+
+<h3>TSL is becoming usable on the renderer you already have</h3>
+
+<p><strong>WHAT IS IT?</strong><br>
+Three.js has two renderers now. <code>WebGLRenderer</code> is the old, stable, universally-supported one. <code>WebGPURenderer</code> (imported from <code>three/webgpu</code>) is the new one — faster, supports compute shaders, and is where all new development is going. Official guidance is blunt: <em>WebGLRenderer is still maintained but there are no plans to add large new features to it.</em></p>
+<p>The catch has been that WebGPURenderer does not support <code>ShaderMaterial</code>, <code>RawShaderMaterial</code>, or <code>onBeforeCompile()</code>. If your project has custom GLSL, switching renderers meant rewriting all of it. PR #32851 adds a compatibility layer so TSL node materials work on the <em>old</em> WebGLRenderer too:</p>
+<pre><code>const renderer = new WebGLRenderer();
+renderer.setNodesHandler( new WebGLNodesHandler() );
+// TSL materials now build and render here</code></pre>
+
+<p><strong>WHY IS IT BECOMING IMPORTANT?</strong><br>
+It converts a terrifying all-or-nothing migration into a gradual one. Write new materials in TSL today on WebGL, and when you are ready, swap in WebGPURenderer with no shader rewrite.</p>
+
+<p><strong>WHAT CAN IT DO?</strong><br>
+TSL compiles the same node graph to <strong>WGSL</strong> (WebGPU's shader language) or <strong>GLSL</strong> (WebGL's) depending on which backend is running. It also auto-optimises the shader graph, and you inherit every compiler improvement the Three.js team ships — like the 3× compile-speed win in PR #33120.</p>
+
+<p><strong>TERM: Node-based shader graph</strong><br>
+<strong>SIMPLE MEANING:</strong> Instead of one big text shader, you build a tree of small operations and the library turns the tree into shader code.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> If you have ever used Blender's shader editor or Unreal's material editor, it is that — except written as JavaScript function calls instead of dragged with a mouse.<br>
+<strong>WHY IT MATTERS TO ME:</strong> GLSL is a whole separate C-like language with its own types, its own vertex/fragment split and its own debugging misery. TSL is <code>sin()</code>, <code>mul()</code>, <code>mix()</code> in JavaScript, with your normal editor, your normal autocomplete, your normal TypeScript types. The barrier to shader work just dropped by an order of magnitude <em>for you specifically</em>, because JavaScript is your first language.</p>
+
+<p><strong>HONEST LIMITATIONS (don't get surprised):</strong></p>
+<ul>
+<li>WebGPURenderer is still officially described as experimental, though much more mature than a year ago.</li>
+<li><code>EffectComposer</code> and the classic post-processing passes do <em>not</em> work — WebGPU has an entirely new node-based post-processing stack. Bloom, DoF, SSGI, SSS exist, but as node classes, not passes.</li>
+<li>The compat-layer PR has real gaps: VSM shadows, MRT nodes, storage textures, transmissive materials, and <code>renderer.compile()</code> all have limitations.</li>
+<li>There is no reliable automatic GLSL→TSL converter. Porting is mechanical but manual.</li>
+</ul>
+
+<p><strong>WHAT CAN I BUILD WITH IT?</strong><br>
+Start small and real: a gradient that animates with time, a UV-scrolling texture, a vertex displacement wave. Those three cover 80% of what makes a landing page feel expensive.</p>
+
+<p><strong>WHAT SHOULD I LEARN FIRST?</strong><br>
+Four TSL concepts, in this order: <code>uniform()</code> (values you pass from JS), <code>uv()</code> (position across a surface, 0→1), <code>colorNode</code> (what GLSL called <code>gl_FragColor</code>), <code>positionNode</code> (what GLSL called <code>gl_Position</code>). Do not touch compute shaders or post-processing yet.</p>
+
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM &nbsp;|&nbsp; <strong>EXPERIMENT</strong><br>
+Medium rather than high only because it does not pay your bills this quarter. For your long-term creative-developer goal it is one of the most important things on this page.</p>
+
+<hr>
+
+<h2>🛡️ CYBERSECURITY</h2>
+
+<h3>The 2026 npm supply-chain campaign — what a MERN developer must actually do</h3>
+
+<p><strong>WHAT HAPPENED?</strong> A continuous, escalating campaign through 2026. The notable waves:</p>
+<ul>
+<li><strong>31 March — Axios</strong> (83M weekly downloads). The lead maintainer was socially engineered over two weeks by a North Korean group (Sapphire Sleet) into installing malware during a fake business call. Malicious versions live ~3 hours.</li>
+<li><strong>11 May — TanStack</strong>. 84 poisoned versions across 42 packages in about six minutes. No credentials were stolen and no one was phished.</li>
+<li><strong>1 June — Red Hat</strong> <code>@redhat-cloud-services</code>, 32 packages, ~600k monthly downloads.</li>
+<li><strong>14 July — AsyncAPI</strong>, 5 poisoned versions, import-time payload.</li>
+<li><strong>4 August — keyv / cacheable / flat-cache</strong>, spreading to 400+ packages, roughly 2 billion monthly downloads of blast radius.</li>
+</ul>
+
+<p><strong>WHAT IS THE VULNERABILITY?</strong> There isn't one. That is the point — these were <em>configuration</em> failures in CI, not code bugs. The TanStack chain is worth understanding in full because it is the most instructive:</p>
+
+<p><strong>TERM: <code>pull_request_target</code></strong><br>
+<strong>SIMPLE MEANING:</strong> A GitHub Actions trigger that runs a workflow <em>with the base repository's permissions and secrets</em> when someone opens a pull request. Normal <code>pull_request</code> runs with no secrets. <code>pull_request_target</code> was created so maintainers could label/comment on PRs from forks — but if the workflow checks out and builds the fork's code, you have just executed a stranger's code with your repo's secrets.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> A renamed fork opened "WIP: simplify history build" against TanStack/router. The bundle-size workflow ran on <code>pull_request_target</code>, checked out the fork's merge ref, and built it. Attacker code executed.</p>
+
+<p><strong>TERM: CI cache poisoning</strong><br>
+<strong>SIMPLE MEANING:</strong> Writing malicious content into the shared build cache under the exact key a later, trusted build will look up.<br>
+<strong>HOW IT WENT:</strong> The attacker's code saved a 1.1 GB poisoned pnpm store under a cache key pre-computed from the <em>public</em> lockfile using the same <code>hashFiles()</code> formula the release workflow uses. Then the PR was force-pushed empty, closed, and the branch deleted. The poisoned cache sat dormant for eight hours. A legitimate maintainer merge triggered the release workflow, which restored the poisoned cache and ran the attacker's binaries.<br>
+<strong>THE NASTY DETAIL:</strong> <code>actions/cache</code>'s post-job save uses a runner-internal token, <em>not</em> your workflow's <code>GITHUB_TOKEN</code> — so setting <code>permissions: contents: read</code> does not prevent the cache write.</p>
+
+<p><strong>TERM: OIDC token / trusted publishing</strong><br>
+<strong>SIMPLE MEANING:</strong> Instead of storing a long-lived npm token as a secret, your CI asks GitHub for a short-lived identity token (<code>id-token: write</code>) and npm trusts it. Generally a <em>better</em> practice.<br>
+<strong>HOW IT WAS DEFEATED:</strong> The token is minted lazily into the runner process's memory. Attacker binaries read <code>/proc/&lt;Runner.Worker&gt;/mem</code> and extracted it, then POSTed packages straight to the registry. The workflow's own Publish step never even ran — tests failed and it was skipped. npm accepted 84 signed publishes anyway.<br>
+<strong>ROOT CAUSE:</strong> The trusted-publisher binding trusted the <em>entire repository</em> rather than one specific workflow on a protected branch.</p>
+
+<p><strong>TERM: SLSA provenance</strong><br>
+<strong>SIMPLE MEANING:</strong> A cryptographic receipt proving "this package was built by this pipeline from this commit".<br>
+<strong>WHY IT FAILED:</strong> The receipts were <em>completely valid</em>. Sigstore correctly attested the packages were built by <code>release.yml</code> from <code>refs/heads/main</code> of TanStack/router — because they were. <strong>Provenance proves which pipeline built a package. It proves nothing about whether that pipeline's internal state was clean.</strong> This was the first documented case of a worm publishing npm packages with valid SLSA Build Level 3 provenance.</p>
+
+<p><strong>WHO IS AFFECTED?</strong> Anyone who ran <code>npm install</code> in the exposure windows. For the keyv wave most victims never installed it directly — it arrived transitively via <code>eslint → file-entry-cache → flat-cache → keyv</code>.</p>
+
+<p><strong>WHY SHOULD A MERN DEVELOPER CARE?</strong> The payloads harvested: npm tokens from <code>.npmrc</code>, GitHub tokens (including <code>gh auth token</code> output), full environment variable blocks, GitHub Actions secrets, AWS/GCP/Azure credentials, Kubernetes service account tokens, HashiCorp Vault tokens, and <strong>Claude and MCP configuration files</strong>. The AsyncAPI variant specifically targeted <code>ANTHROPIC_API_KEY</code> and <code>OPENAI_API_KEY</code>. If you have AI API keys in a <code>.env</code>, you are a named target.</p>
+
+<p><strong>⚠️ ONE SAFETY NOTE WORTH KNOWING:</strong> The TanStack worm installed a daemon called <code>gh-token-monitor</code> that polls GitHub every 60 seconds and, <em>if it detects the token has been revoked</em>, executes <code>rm -rf ~/</code>. Security guidance is explicit: on a confirmed-infected machine, find and remove the daemon <em>before</em> revoking tokens. Knowing this exists is worth remembering even if you never meet it.</p>
+
+<p><strong>HOW DO I PROTECT MY APPLICATION?</strong> In priority order — the first three take 15 minutes total:</p>
+<ol>
+<li><strong>Set a release-age cooldown.</strong> <code>npm config set min-release-age 1440</code> (needs npm ≥ 11.10.0). This alone defeats every attack above, because all of them were detected within hours.</li>
+<li><strong>Commit lockfiles, install with <code>npm ci</code>, never <code>npm install</code> in CI.</strong></li>
+<li><strong>Get secrets out of <code>.env</code> files on your dev machine</strong> for anything that can spend money or publish code.</li>
+<li><strong>Audit your GitHub Actions for <code>pull_request_target</code>.</strong> If a workflow uses it <em>and</em> checks out PR code, that is an active hole. Fix: never check out the untrusted ref in a <code>pull_request_target</code> job.</li>
+<li><strong>Scope trusted publishing to a specific workflow on a protected branch</strong>, not to the whole repo.</li>
+<li><strong>Add a behavioural scanner</strong> (Socket or OSV-Scanner) that flags packages suddenly adding network calls or import-time execution — signature and SBOM checks demonstrably did not catch these.</li>
+</ol>
+
+<p><strong>SAFE PRACTICAL LAB (no malware involved):</strong><br>
+Create an empty folder. Write a local package with <code>"postinstall": "node -e \"console.log('I just ran as you:', process.env.HOME)\""</code>. <code>npm install ./that-package</code> and watch it print. Then run <code>npm install --ignore-scripts</code> and watch it not print. Then move the same <code>console.log</code> to the top level of <code>index.js</code> and <code>require()</code> it — and watch <code>--ignore-scripts</code> fail to stop it. In five minutes you will have personally demonstrated why npm v12 is necessary <em>and</em> why it is insufficient. That lesson will stick for years.</p>
+
+<p><strong>WHAT SHOULD I LEARN?</strong> GitHub Actions trigger security (<code>pull_request_target</code> vs <code>pull_request</code>), the difference between provenance and integrity, and secret scoping in CI.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<hr>
+
+<h2>🧩 OPEN SOURCE</h2>
+
+<h3>1. AG-UI — github.com/ag-ui-protocol/ag-ui</h3>
+<p><strong>WHAT IS IT?</strong> The protocol from item 1, plus reference SDKs in TypeScript, Python and .NET.<br>
+<strong>WHAT PROBLEM DOES IT SOLVE?</strong> The agent↔UI glue layer that everyone rebuilds badly.<br>
+<strong>WHY IS IT INTERESTING?</strong> The TypeScript SDK is generated from a JSON Schema. Reading how they did schema-first, multi-language SDK generation is a genuinely useful pattern on its own, separate from AI.<br>
+<strong>WHAT CAN I LEARN BY READING THE CODE?</strong> Event-stream design, how to model an interruptible long-running process as discrete typed events, and schema-driven codegen.<br>
+<strong>VERDICT:</strong> <strong>Clone it and build something with it.</strong> This is the one project on today's list where hands-on time converts directly into employable skill.</p>
+
+<h3>2. openrig — multi-agent orchestration harness</h3>
+<p><strong>WHAT IS IT?</strong> A framework that runs Claude Code and Codex together as coordinated subsystems under a supervisor.<br>
+<strong>WHAT PROBLEM DOES IT SOLVE?</strong> Manually copying context between two AI coding tools; single-model blind spots and hallucination loops.<br>
+<strong>WHY DOES IT MATTER TO ME?</strong> You already run multi-agent workflows. This is a published implementation of the orchestration layer you have been using as a black box.<br>
+<strong>WHAT CAN I LEARN BY READING THE CODE?</strong> How task delegation boundaries are enforced, how shared state is kept consistent when two agents write to the same codebase, and how conflicts are arbitrated.<br>
+<strong>VERDICT:</strong> <strong>Read it, do not adopt it.</strong> It is early, it burns two API subscriptions, and the value for you is architectural, not operational.</p>
+
+<h3>3. three.js PR #32851 — WebGLRenderer NodeMaterial compatibility</h3>
+<p><strong>WHY IT MATTERS TO ME:</strong> Reading an active PR on a major library is an underrated skill. The discussion thread contains real bundle-size tradeoff analysis, cache-key design, and honest limitation lists. That is what senior engineering conversation actually looks like.<br>
+<strong>VERDICT:</strong> <strong>Read the PR description and the limitations section.</strong> 20 minutes, not a weekend.</p>
+
+<hr>
+
+<h2>📈 SKILLS TO LEARN</h2>
+
+<h3>SKILLS I SHOULD LEARN NOW</h3>
+
+<p><strong>1. Skill: Streaming agent↔UI architecture (AG-UI pattern)</strong><br>
+<strong>Why:</strong> It is the fastest-standardising layer in AI product engineering, and it is made entirely of skills you already have — React state, Node streaming, typed events. Google, Microsoft, Amazon and Oracle just agreed on the spec, so this is not a bet on a trend.<br>
+<strong>What exactly to learn:</strong> Server-Sent Events in a Next.js route handler; modelling a run as a reducer over typed events; implementing a human-in-the-loop interrupt (pause → ask → resume).</p>
+
+<p><strong>2. Skill: Reliability patterns for retried operations — idempotency first</strong><br>
+<strong>Why:</strong> Every AI agent retries. Every queue delivers at-least-once. Without idempotency your data quietly corrupts under load, and it is the kind of bug that never shows up in development. It is also a staple system-design interview topic.<br>
+<strong>What exactly to learn:</strong> Idempotency keys, unique-index-as-lock, TTL cleanup, and the difference between at-least-once and exactly-once delivery.</p>
+
+<p><strong>3. Skill: Supply-chain hygiene for JS projects</strong><br>
+<strong>Why:</strong> Not glamorous. But four major compromises in 2026 took credentials from developers exactly like you, and the fix is a config file. Highest ratio of safety-gained to time-spent on this entire page.<br>
+<strong>What exactly to learn:</strong> npm v12 allowlists, <code>min-release-age</code>, <code>npm ci</code> discipline, and GitHub Actions trigger security.</p>
+
+<h3>SKILLS I SHOULD WATCH</h3>
+<ul>
+<li><strong>TSL / WebGPU</strong> — becoming the default path in Three.js, but still experimental with real gaps. Experiment with it; do not bet a client project on it yet.</li>
+<li><strong>Model routing and cost control</strong> — will matter a lot the moment you ship an AI product with real traffic. Not before.</li>
+<li><strong>Agent verification and governance frameworks</strong> — enterprises will demand them in 18 months. Too early to study.</li>
+</ul>
+
+<h3>SKILLS I CAN IGNORE FOR NOW</h3>
+<ul>
+<li><strong>Self-hosting giant open-weight models</strong> (Atria 744B and similar). You do not have the hardware and the economics do not work for a solo developer. Use APIs.</li>
+<li><strong>Training / fine-tuning / reinforcement learning</strong> (the SMITH paper's actual method). Extract the architectural idea; skip the ML.</li>
+<li><strong>Chasing every new model release.</strong> Six frontier models shipped in the last month. Learning each one's quirks is a treadmill with no destination. Build things that are model-agnostic instead.</li>
+<li><strong>AI hardware peripherals.</strong> Yes, really. Ignore.</li>
+</ul>
+
+<hr>
+
+<h2>🎓 FREE / CHEAP LEARNING</h2>
+
+<p><strong>NAME:</strong> Three.js Shading Language (TSL) Wiki<br>
+<strong>WHAT IS IT?</strong> The official, continuously-updated TSL reference maintained by sunag (the person who actually built it) — 170+ revisions, last updated June 2026.<br>
+<strong>PROVIDER:</strong> mrdoob/three.js GitHub wiki &nbsp;|&nbsp; <strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> The full node vocabulary, how NodeBuilder compiles a graph to WGSL/GLSL, and the render pipeline model.<br>
+<strong>DIFFICULTY:</strong> Intermediate (assumes you know what a shader is conceptually).<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> Primary source, written by the author, free, and the single best entry point into shader work for a JavaScript developer.<br>
+<strong>LINK:</strong> https://github.com/mrdoob/three.js/wiki/Three.js-Shading-Language</p>
+
+<p><strong>NAME:</strong> Three.js WebGPURenderer Manual<br>
+<strong>WHAT IS IT?</strong> Official migration guide — what works, what breaks, what is still missing.<br>
+<strong>PROVIDER:</strong> threejs.org &nbsp;|&nbsp; <strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> The honest limitations list — more valuable than any tutorial, because it tells you what will waste your time.<br>
+<strong>DIFFICULTY:</strong> Beginner to read, Intermediate to apply.<br>
+<strong>LINK:</strong> https://threejs.org/manual/en/webgpurenderer.html</p>
+
+<p><strong>NAME:</strong> The AG-UI Protocol Developer's Guide<br>
+<strong>WHAT IS IT?</strong> A long-form walkthrough (26 September 2026) of all 31 events across 8 categories, with a worked flight-booking example.<br>
+<strong>PROVIDER:</strong> CopilotKit &nbsp;|&nbsp; <strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> Every event type, how they are encoded and decoded, transports, capabilities, and a complete real-world flow.<br>
+<strong>DIFFICULTY:</strong> Intermediate — comfortable if you know React and HTTP streaming.<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> It is the exact documentation for skill #1 above.<br>
+<strong>LINK:</strong> https://www.copilotkit.ai/blog/ag-ui-1.0</p>
+
+<p><strong>NAME:</strong> Unit 42 — The npm Threat Landscape<br>
+<strong>WHAT IS IT?</strong> Palo Alto Networks' continuously-updated technical breakdown of the 2026 npm campaigns with full attack chains.<br>
+<strong>PROVIDER:</strong> Palo Alto Unit 42 &nbsp;|&nbsp; <strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> Real attack chains with real commit hashes and MITRE ATT&amp;CK mappings. Reading a professional incident writeup teaches security thinking far better than a course.<br>
+<strong>DIFFICULTY:</strong> Intermediate.<br>
+<strong>LINK:</strong> https://unit42.paloaltonetworks.com/monitoring-npm-supply-chain-attacks/</p>
+
+<p><em>Deliberately not recommending any certificate today. Nothing currently available in these specific areas is worth the time purely for the certificate.</em></p>
+
+<hr>
+
+<h2>▶️ YOUTUBE</h2>
+<p>Not Wednesday — today is Thursday. No YouTube recommendations today, as agreed.</p>
+
+<hr>
+
+<h2>🧠 WHAT I SHOULD LEARN TODAY</h2>
+
+<h3>LEARN THIS #1 — Idempotency keys in Express + MongoDB</h3>
+<p><strong>WHAT IS IT?</strong> A pattern that makes an API endpoint safe to call repeatedly: the second, third and twentieth identical call return the first call's result instead of doing the work again.</p>
+<p><strong>WHY NOW?</strong> Because the entire direction of today's news — agent harnesses, the Agents API, multi-agent orchestration, retry loops — multiplies automated retries against backends. This is the defence.</p>
+<p><strong>WHY ME?</strong> It sits at the intersection of all three of your goals: backend depth, system design, and AI agents. And it is implementable tonight with the exact stack you already know.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> Caller-generated keys; using a MongoDB unique index as the atomic lock; the three states (new / in_progress / done); TTL indexes for cleanup; and <em>why</em> find-then-create is a race condition.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> Distributed locks across multiple services, Redis-backed implementations, exactly-once semantics, and saga patterns. One service, one database, one pattern.</p>
+<p><strong>TIME:</strong> 1 hour</p>
+<p><strong>FREE RESOURCE:</strong> Stripe's idempotency documentation (stripe.com/docs/api/idempotent_requests) — the clearest explanation anywhere, and it is the production reference implementation.</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> The counter test described in the System Design section. Twenty concurrent requests, one key, counter must read 1.</p>
+
+<h3>LEARN THIS #2 — Your first TSL material</h3>
+<p><strong>WHAT IS IT?</strong> Writing a Three.js shader as JavaScript function calls instead of a GLSL string.</p>
+<p><strong>WHY NOW?</strong> The compatibility layer and the 3× compile-speed improvement mean the awkward transition period is ending. Learning TSL now means you never have to learn GLSL under pressure later.</p>
+<p><strong>WHY ME?</strong> Shaders are the dividing line between "nice React site" and "Awwwards site". TSL removes the language barrier for a JavaScript-native developer.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> Only four things: <code>uniform()</code>, <code>uv()</code>, <code>colorNode</code>, <code>positionNode</code>.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> WebGPU compute shaders, the node post-processing stack, porting existing GLSL, MRT, storage textures. None of it. Four nodes.</p>
+<p><strong>TIME:</strong> 30 minutes</p>
+<p><strong>FREE RESOURCE:</strong> The TSL wiki linked above.</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> A full-screen plane whose colour is a gradient driven by <code>uv().y</code>, animated over time with a sine wave. Roughly eight lines. It is the "hello world" of shaders and it will feel like a door opening.</p>
+
+<hr>
+
+<h2>🔮 WHERE TECHNOLOGY IS GOING</h2>
+
+<p><strong>TREND 1: The AI agent stack is finishing its plumbing.</strong><br>
+<strong>WHAT THAT MEANS:</strong> Three layers are now standardised. MCP handles agent→tools (17,000 servers, Linux Foundation governance). AG-UI 1.0 handles agent→user. Hosted harnesses like the OpenAI Agents API handle the execution loop. The improvisation phase is over.<br>
+<strong>WHY IT MATTERS:</strong> When plumbing standardises, value moves <em>up</em> to the application layer — and application layer means product engineering, which means you.<br>
+<strong>WHAT I SHOULD LEARN:</strong> The protocols, not the models.</p>
+
+<p><strong>TREND 2: Agent infrastructure is converging on ordinary backend engineering.</strong><br>
+<strong>WHAT THAT MEANS:</strong> Look at what the AI industry worried about this week — context budgets (memory limits), stateless protocols (horizontal scaling), model routing (load balancing), tool distillation (caching), retry safety (idempotency), capability scoping (authorization). Every single one is a 20-year-old backend concept wearing a new name.<br>
+<strong>WHY IT MATTERS:</strong> There is no separate "AI engineer" skill tree you are locked out of. There is backend engineering, applied to a weird non-deterministic dependency.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Backend fundamentals, deeply. They transfer directly and they do not expire.</p>
+
+<p><strong>TREND 3: Trust in the software supply chain is being rebuilt from scratch.</strong><br>
+<strong>WHAT THAT MEANS:</strong> 2026 proved that signatures and provenance are necessary but not sufficient — attackers got valid SLSA Build Level 3 attestations on malware. The response is defence in depth: install scripts off by default, no git dependencies, staged publishes requiring human 2FA approval, release-age cooldowns, and behavioural analysis at install time.<br>
+<strong>WHY IT MATTERS:</strong> Your build is going to get stricter and slower, and that is correct. Teams that prepared will upgrade smoothly; teams that did not will have a very bad week in CI.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Dependency hygiene, CI secret scoping, and the distinction between "who built this" and "is this safe".</p>
+
+<p><strong>TREND 4: AI is excellent at tasks and bad at projects.</strong><br>
+<strong>WHAT THAT MEANS:</strong> Models score near-90% on SWE-bench Verified's isolated fixes, and 28% on Android Bench 2.0's multi-day engineering work, with architectural migrations the weakest category. The limit is sustained coherence across hundreds of interdependent decisions.<br>
+<strong>WHY IT MATTERS:</strong> The job description for developers is shifting from "write the code" toward "decide the shape of the system and verify the machine's work". That shift is measurable, not speculative.<br>
+<strong>WHAT I SHOULD LEARN:</strong> System design and architecture — precisely the gap the benchmarks expose.</p>
+
+<p><strong>TREND 5: Open-weight models are compressing the price of intelligence.</strong><br>
+<strong>WHAT THAT MEANS:</strong> MIT-licensed models in the hundreds of billions of parameters now ship within months of frontier releases. Combined with routing, the per-token cost of "good enough" keeps collapsing.<br>
+<strong>WHY IT MATTERS:</strong> AI features that were uneconomical in a side project last year are affordable this year. But cost control becomes an architectural concern you have to design for.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Provider abstraction so you can switch models in one config change. Not how to host a 744B model.</p>
+
+<hr>
+
+<h2>🚀 MY ACTION PLAN</h2>
+
+<p><strong>TODAY — 30 MINUTES</strong><br>
+Harden your npm setup and check your Node versions. Run <code>npm config set min-release-age 1440</code>, verify npm ≥ 11.16.0, run <code>npm ci</code> in your two main projects and read the install-script warnings so you know what npm v12 will break. Then check whether anything you deploy is still on Node 20 (EOL — no security patches) and plan the move to Node 24 LTS. Least exciting item on this page, highest expected value.</p>
+
+<p><strong>TODAY — 1 HOUR</strong><br>
+Build the idempotency middleware. One Express route, one MongoDB collection with a unique index and a TTL index, one artificially slow handler. Fire 20 concurrent requests with the same <code>Idempotency-Key</code>. Watch the counter say 1 instead of 20. Then deliberately break it by replacing the atomic insert with find-then-create, and watch the race condition appear. Seeing the bug you were warned about is what makes the lesson permanent.</p>
+
+<p><strong>THIS WEEK</strong><br>
+Go deep on AG-UI. Read the 1.0 spec and the developer's guide, understand all 31 events, and specifically understand the interrupt flow and <code>STATE_DELTA</code>. This is the week's real investment.</p>
+
+<p><strong>THIS WEEK'S PROJECT — "Agent Console"</strong><br>
+A Next.js app with:</p>
+<ul>
+<li>An API route running a small Node agent loop with two or three real tools (one of them deliberately slow and retried).</li>
+<li>AG-UI-shaped events streamed over SSE.</li>
+<li>A React UI that renders streaming text, live tool-call cards, and an <strong>approval dialog</strong> for any destructive tool, resuming only on click.</li>
+<li>Your idempotency middleware protecting the tool endpoints, so the agent's retries cannot double-execute anything.</li>
+<li>A token/cost counter in the corner, fed by the usage events.</li>
+</ul>
+<p>Why this project specifically: it uses only your existing stack, it produces something visibly impressive, and it demonstrates the three things employers currently cannot find together — streaming UI, agent orchestration, and <em>production safety thinking</em>. Most AI portfolio projects are a chat box wrapping an API key. This one shows engineering judgement.</p>
+
+<p><strong>IGNORE FOR NOW</strong><br>
+Every new model release. Six frontier models shipped in the last month and more will ship next month. Reading comparison articles about GPT-6 Astra vs Claude Fable 5.1 vs GLM 5.3 feels productive and teaches you nothing durable. Build model-agnostic systems and swap the model name in a config file when a leaderboard moves.</p>
+
+<hr>
+
+<h3>🎯 IF I ONLY HAVE 1 HOUR TODAY</h3>
+
+<p><strong>Build the idempotency middleware.</strong></p>
+<p>Not reading about AG-UI. Not TSL. Not the security articles. Those are all valuable and they will still be there tomorrow.</p>
+<p>Spend the hour this way:</p>
+<ul>
+<li><strong>0–10 min:</strong> Express route + MongoDB model with a unique index on <code>key</code> and a 24h TTL index. Handler does <code>await sleep(3000)</code> then increments a counter.</li>
+<li><strong>10–20 min:</strong> Fire 20 concurrent requests with the same <code>Idempotency-Key</code>. Confirm the counter reads 20. Feel the bug.</li>
+<li><strong>20–40 min:</strong> Add the middleware using <code>Idem.create()</code> and catching Mongo error code 11000. Re-run. Counter reads 1.</li>
+<li><strong>40–50 min:</strong> Break it on purpose — swap the atomic create for find-then-create. Re-run and watch duplicates reappear under concurrency.</li>
+<li><strong>50–60 min:</strong> Write five lines in your notes explaining why the unique index is the lock and the application code is not.</li>
+</ul>
+<p>At the end of that hour you will have built something, broken it, understood <em>why</em> it broke, and learned a pattern that appears in Stripe's API, in every message queue, in system design interviews, and in every agent tool endpoint you will ever write.</p>
+<p>That is a much better hour than reading about six new models.</p>
+
+<hr>
+<p><em>Sources: CopilotKit (AG-UI 1.0 announcement, 30 Sep 2026) · OpenAI Agents API public beta · threejs.org manual &amp; mrdoob/three.js PRs #32851, #33120 · Palo Alto Unit 42 npm threat landscape · Microsoft Threat Intelligence · Socket &amp; Orca Security advisories · Cloud Security Alliance npm/AI toolchain whitepaper · nodejs.org release archive · Appier/NeurIPS SMITH paper announcement · Google Android Bench 2.0. Claims marked CONFIRMED come from primary sources; items marked ANNOUNCED or EARLY are not independently verified.</em></p>
+
+<p><em>Generated by Hermes AI agent — 2026-10-01.</em></p>
+
+</body>
+</html>
