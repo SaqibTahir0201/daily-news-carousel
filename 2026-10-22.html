@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Tech Intelligence &mdash; 2026-10-22</title>
+<style>
+body { font-family: Segoe UI, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #0d1117; color: #c9d1d9; line-height: 1.7; }
+h1 { color: #58a6ff; border-bottom: 2px solid #30363d; padding-bottom: 10px; }
+h2 { color: #f0883e; margin-top: 40px; }
+h3 { color: #79c0ff; }
+strong { color: #ffa657; }
+code { background: #161b22; padding: 2px 6px; border-radius: 4px; }
+pre code { background: none; padding: 0; color: #c9d1d9; }
+hr { border-color: #30363d; }
+li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<h1>🌍 DAILY TECH INTELLIGENCE — 2026-10-22</h1>
+<p>DATE: Thursday, 22 October 2026</p>
+<p>Good morning. Sitting down with you for 10 minutes. Today was actually a <em>loud</em> day — two of the biggest items are security emergencies that affect anyone who runs a website, and one of them (LiteLLM) hits the exact AI stack you are learning. Let me walk you through it like a colleague, not a newspaper.</p>
+<hr>
+<h2>⚡ TODAY IN 60 SECONDS</h2>
+<h3>1. PHP had an emergency. The whole web had to patch overnight.</h3>
+<p><strong>WHAT HAPPENED:</strong></p>
+<p>PHP shipped emergency patches for two critical bugs (nicknamed &quot;PHP2Shell&quot;, CVE-2026-109618 and CVE-2026-109619, both scored 9.2/10). The bugs are in the PHP <em>engine itself</em>, not in anyone&#x27;s code — so even a &quot;Hello World&quot; page on an old PHP version can be attacked by an unauthenticated stranger. Exploit attempts started appearing almost immediately. (CONFIRMED — official PHP advisory + The Hacker News, 21 Oct)</p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p>TERM: <strong>RCE (Remote Code Execution)</strong></p>
+<p>SIMPLE MEANING: A bug that lets an attacker run their <em>own</em> commands on your server, from the internet, without logging in.</p>
+<p>REAL-WORLD EXAMPLE: Someone sends a specially crafted HTTP request to your site, and instead of your page loading, their shell command runs as your server user. Now they can read your <code>.env</code>, your database credentials, everything.</p>
+<p>WHY IT MATTERS: RCE is the worst class of web bug. Everything else (XSS, CSRF) leaks or tricks. RCE gives away the machine.</p>
+<p>WHY IT MATTERS TO ME: You don&#x27;t write PHP — but you almost certainly have WordPress sites, cPanel shared hosting, or client projects somewhere in your orbit. And the <em>pattern</em> matters: a vulnerability in the <strong>runtime</strong> (PHP, Node, Bun, Deno) is far more dangerous than one in your app code, because your careful coding doesn&#x27;t save you.</p>
+<p>WHAT I SHOULD DO: Learn the pattern. If you manage any PHP host, patch to 8.5.12 / 8.4.27 / 8.3.36 / 8.2.35 today.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED (you&#x27;re not a PHP dev, but you may host PHP)</p>
+<p><strong>IMPORTANCE:</strong> 🟠 MEDIUM for learning, 🔥 HIGH if you administer any PHP server</p>
+<p><strong>WHAT I SHOULD DO:</strong> Patch if you own a PHP host; otherwise just absorb the &quot;runtime vs app-code vulnerability&quot; lesson.</p>
+<hr>
+<h3>2. LiteLLM — an AI library thousands of devs use — was hijacked and used to steal secrets.</h3>
+<p><strong>WHAT HAPPENED:</strong></p>
+<p>LiteLLM version 1.107.0 (on PyPI and Docker Hub) was replaced with a malicious version containing a credential stealer and a backdoor. The attackers got in using <strong>stolen GitHub CLI OAuth tokens</strong> belonging to three LiteLLM engineers — they used one account to trigger the release pipeline and another to approve it. The package has been quarantined. (CONFIRMED — LiteLLM statement + SafeDep, Socket, StepSecurity, Upwind reports, 21 Oct)</p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p>TERM: <strong>Supply-chain attack</strong></p>
+<p>SIMPLE MEANING: Instead of attacking <em>you</em>, the attacker poisons a library you install. You run <code>npm install</code> or <code>pip install</code>, and you willingly download their malware.</p>
+<p>REAL-WORLD EXAMPLE: You <code>pip install litellm</code> to route your AI calls. The package&#x27;s install script quietly reads your environment variables and posts your OpenAI key, AWS keys and GitHub token to the attacker&#x27;s server.</p>
+<p>WHY IT MATTERS: You can write perfect code and still be fully compromised, because modern apps are 95% other people&#x27;s code.</p>
+<p>WHY IT MATTERS TO ME: <strong>This is the most directly relevant story of the day for you.</strong> LiteLLM is an &quot;LLM router&quot; — the exact category of tool you&#x27;d reach for when building AI agents or multi-model apps. And the entry point was stolen <strong>OAuth tokens</strong>, which is literally one of your learning topics (Authentication).</p>
+<p>WHAT I SHOULD DO: Learn this. See the Cybersecurity section — I&#x27;ve written you a concrete defensive checklist.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT</p>
+<p><strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Audit your own tokens today, and add <code>npm ci</code> + lockfile discipline to every project.</p>
+<hr>
+<h3>3. Vercel made WebSockets generally available on serverless Functions.</h3>
+<p><strong>WHAT HAPPENED:</strong></p>
+<p>WebSocket support in Vercel Functions left beta and is now GA. Vercel says they&#x27;ve served 300 million WebSocket connections since the June beta, now running ~15 million/day. Billing follows normal Function invocation rules, with Active CPU pricing (you pay CPU only while actually processing a message). (CONFIRMED — Vercel changelog, 20 Oct)</p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p>TERM: <strong>WebSocket</strong></p>
+<p>SIMPLE MEANING: Normal HTTP is &quot;ask a question, get an answer, hang up.&quot; A WebSocket keeps the phone line open, so the server can push data to the browser whenever it wants, and vice-versa.</p>
+<p>REAL-WORLD EXAMPLE: A chat app. With plain HTTP you&#x27;d have to poll (&quot;any new messages?&quot; every 2 seconds). With a WebSocket the server just sends the message the instant it arrives.</p>
+<p>WHY IT MATTERS: Real-time features (chat, live dashboards, multiplayer, streaming AI responses) were historically <em>hard</em> to do on serverless platforms, because serverless functions are designed to start, respond, and die — they don&#x27;t hold long connections.</p>
+<p>WHY IT MATTERS TO ME: 🟢 This removes a real wall you have probably hit. Previously, to add realtime chat to a Next.js app on Vercel you had to bolt on Pusher, Ably, Socket.IO on a separate Railway/Render box, or Supabase Realtime. Now you can do it inside the same deployment.</p>
+<p>WHAT I SHOULD DO: Build a tiny thing with it. This is today&#x27;s best 1-hour project.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT</p>
+<p><strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Build a 50-line live chat or live &quot;who&#x27;s online&quot; counter on Vercel today.</p>
+<hr>
+<h3>4. Eight widely-trusted TLS certificates were compromised. Anyone could have forged HTTPS for <em>any</em> domain.</h3>
+<p><strong>WHAT HAPPENED:</strong></p>
+<p>On 19 October, private keys for eight <strong>eMudhra intermediate certificates</strong> were found to be compromised — the keys were weak enough that an attacker could mint a valid-looking certificate for <em>any</em> domain (google.com, your-bank.com, your-api.com). These certificates were trusted by browsers and operating systems. Cloudflare patched its stack and says it found no evidence of exploitation on its services. (CONFIRMED — Cloudflare blog, 20 Oct; corroborated by Ars Technica)</p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p>TERM: <strong>Certificate Authority (CA) and intermediate certificate</strong></p>
+<p>SIMPLE MEANING: HTTPS works on trust. Your browser trusts a small list of companies (CAs). Those CAs sign &quot;intermediate&quot; certificates, and intermediates sign the certificate for <em>your</em> website. If an intermediate&#x27;s private key leaks, the thief can sign a certificate for anybody&#x27;s domain and your browser will show a happy green padlock.</p>
+<p>REAL-WORLD EXAMPLE: An attacker on a café Wi-Fi presents a forged certificate for <code>api.yourapp.com</code>. Your mobile app connects, sees a &quot;valid&quot; certificate, and sends the user&#x27;s JWT straight to the attacker.</p>
+<p>WHY IT MATTERS: This is the foundation of trust on the internet. A compromised intermediate is a skeleton key.</p>
+<p>WHY IT MATTERS TO ME: 🟡 You don&#x27;t operate a CA. But understanding the <strong>chain of trust</strong> is required knowledge for API security and for your Cloud/DevOps goals. Also: this is <em>why</em> techniques like certificate pinning and mTLS exist.</p>
+<p>WHAT I SHOULD DO: Understand the basics of the TLS chain of trust. Don&#x27;t go deep into cryptography.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED</p>
+<p><strong>IMPORTANCE:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT I SHOULD DO:</strong> Spend 20 minutes understanding how a browser validates a certificate chain. Then move on.</p>
+<hr>
+<h3>5. TypeScript is being rewritten in Rust — again — and it&#x27;s 8x faster.</h3>
+<p><strong>WHAT HAPPENED:</strong></p>
+<p>Cloudflare and VoidZero announced <strong>tsrs</strong>, a Rust port of the TypeScript compiler, built with the TypeScript team&#x27;s cooperation and incubated inside the Oxc toolchain. Early benchmarks: up to <strong>8x faster</strong> and <strong>~70% less memory</strong> than TypeScript 7.0 at the same worker count. They explicitly say it is <em>not</em> a fork — Microsoft keeps control of the language. (ANNOUNCED / EARLY — Cloudflare blog, 20 Oct. Benchmarks are their own; treat as early.)</p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p>Microsoft is already porting TypeScript to Go (that&#x27;s &quot;TypeScript 7.0&quot;). This is a <em>second</em>, independent port to Rust, aimed at being even faster and light enough to run type-checking <strong>inside a browser tab</strong>.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> 🟡 You will benefit passively — faster <code>tsc</code>, faster editor feedback, faster CI. You do <strong>not</strong> need to learn Rust because of this. The interesting part for you is the direction: JavaScript tooling is almost entirely moving to native languages (esbuild→Go, SWC/Turbopack/Biome/Oxc→Rust).</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED</p>
+<p><strong>IMPORTANCE:</strong> ⚪ LOW (watch only)</p>
+<p><strong>WHAT I SHOULD DO:</strong> WATCH ONLY. Do not learn Rust today.</p>
+<hr>
+<h2>🔥 BIGGEST DEVELOPMENTS</h2>
+<h3>WebMCP: websites are starting to ship tools <em>for AI agents</em>, not just pages for humans</h3>
+<p><strong>WHAT HAPPENED</strong></p>
+<p>Cloudflare and Commerce.com announced they&#x27;ve enabled <strong>WebMCP</strong> across nearly 100,000 storefront domains, with Cloudflare injecting the needed script at the edge so merchants write zero code. (ANNOUNCED — Cloudflare blog, 21 Oct. WebMCP itself is still an <em>experimental</em> proposed browser standard, behind Chrome flags / Origin Trials — so: EARLY.)</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p>TERM: <strong>WebMCP</strong></p>
+<p>SIMPLE MEANING: A proposed browser standard that lets a website declare a list of <em>functions</em> an AI agent can call directly — like <code>search_products(query)</code> or <code>add_to_cart(id)</code> — instead of forcing the agent to look at the HTML and guess which button to click.</p>
+<p>REAL-WORLD EXAMPLE: Today, an AI shopping agent screenshots your store, guesses &quot;that blue rectangle is probably the Add to Cart button&quot;, clicks it, and breaks the moment you change your theme. With WebMCP, your site says &quot;here is my <code>add_to_cart</code> tool, it takes a product ID&quot;, and the agent just calls it.</p>
+<p>WHY IT MATTERS: This is the beginning of a real <strong>agent-facing web</strong>. Sites will expose a machine interface alongside the human interface. It&#x27;s cheaper (no huge screenshots to process), faster, and dramatically more reliable.</p>
+<p>WHY IT MATTERS TO ME: 🟢 This is squarely in your lane. You build React/Next front-ends and Node APIs. If this standard sticks, part of a front-end developer&#x27;s job becomes &quot;define the tools my site exposes to agents&quot; — and that is really an API design job, which is <em>your</em> strength. Note the relationship: <strong>MCP</strong> (which you&#x27;re already learning) is the protocol for giving <em>servers&#x27;</em> tools to an AI; <strong>WebMCP</strong> is the same idea living inside a web page.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT</p>
+<p><strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM — understand the concept now, don&#x27;t build on it yet (it&#x27;s behind experimental flags; it can change or die)</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Read the WebMCP explainer, then compare it mentally to MCP. One hour, concept-level only.</p>
+<hr>
+<h3>Cloudflare cut its AI code-reviewer bill by 68% — and published exactly how</h3>
+<p><strong>WHAT HAPPENED</strong></p>
+<p>Cloudflare&#x27;s internal AI code reviewer had drifted from $1.19 to $2.46 per review. After a focused optimization push, average cost is now <strong>$0.77</strong> (−68%) and median review time fell from 4m09s to <strong>1m32s</strong>. About 40% of the savings came from code/architecture changes, the rest from changing <em>which models</em> they use and how much &quot;effort&quot; each puts in. (CONFIRMED — Cloudflare engineering blog, 19 Oct)</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p>TERM: <strong>Model routing (and &quot;effort levels&quot;)</strong></p>
+<p>SIMPLE MEANING: Don&#x27;t send every request to your biggest, most expensive model. Classify the task first, then send easy work to a small cheap model and hard work to the big one.</p>
+<p>REAL-WORLD EXAMPLE: In a support bot, &quot;what are your opening hours?&quot; goes to a tiny model. &quot;Explain why my invoice was double-charged, referencing my account history&quot; goes to the big model.</p>
+<p>WHY IT MATTERS: Token cost is the #1 reason AI features die before production. Routing is the single highest-leverage lever you have.</p>
+<p>WHY IT MATTERS TO ME: 🟢 Very directly. You are building AI features as a solo/small-team dev — meaning <em>you</em> pay the bill. This post is essentially a free masterclass in making an AI feature economically survivable. It also connects to your backend skills: caching, classification, and measurement.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT</p>
+<p><strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Model routing + token accounting. Specifically: how to log tokens-per-request and cost-per-request in your own Node app. You cannot optimize what you don&#x27;t measure.</p>
+<hr>
+<h3>Vercel shipped &quot;durable harnesses&quot; — coding agents that survive crashes</h3>
+<p><strong>WHAT HAPPENED</strong></p>
+<p>Vercel published engineering work on making agent &quot;harnesses&quot; durable in the cloud, so a long-running coding agent can be interrupted and resume exactly where it left off instead of restarting. (ANNOUNCED — Vercel blog, 19 Oct)</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p>TERM: <strong>Harness (in AI agents)</strong></p>
+<p>SIMPLE MEANING: The program that wraps a model and actually runs the loop — it holds the conversation, decides which tool to call, executes it, feeds the result back, and repeats. Claude Code and similar CLI agents are harnesses.</p>
+<p>TERM: <strong>Durable execution</strong></p>
+<p>SIMPLE MEANING: A way of running a long workflow where every step&#x27;s result is written down, so if the process crashes on step 7 of 10, it restarts at step 7 — not step 1.</p>
+<p>REAL-WORLD EXAMPLE: You run an agent task that takes 40 minutes and makes 200 tool calls. At minute 35 the server redeploys. Without durability, you lose 35 minutes of work and burn the tokens again. With durability, it picks up where it stopped.</p>
+<p>WHY IT MATTERS: Agent tasks are long, expensive and stateful. Normal serverless assumes short, stateless requests. Durable execution is the bridge.</p>
+<p>WHY IT MATTERS TO ME: 🟢 This is where your backend skills and your AI-agent ambitions meet. Durable execution is a <em>system design</em> topic (checkpointing, idempotency, event sourcing) applied to AI. The equivalents you can actually use today: Temporal, Inngest, Restate, Cloudflare Workflows/Durable Objects.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT</p>
+<p><strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Durable execution / workflow engines. Start with Inngest (easiest for a Node/Next dev).</p>
+<hr>
+<h3>Netflix bridged AWS IAM with its own identity system using &quot;workload attestation&quot;</h3>
+<p><strong>WHAT HAPPENED</strong></p>
+<p>Netflix described how it connects AWS IAM permissions to its internal service identity using workload attestation. (CONFIRMED — InfoQ, 21 Oct, reporting on Netflix engineering)</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p>TERM: <strong>Workload identity / attestation</strong></p>
+<p>SIMPLE MEANING: Instead of giving a server a long-lived secret key, the platform <em>proves</em> what the service is (&quot;this really is the billing-service, running in prod, from this build&quot;) and hands it a short-lived credential on the spot.</p>
+<p>REAL-WORLD EXAMPLE: Rather than storing <code>AWS_SECRET_ACCESS_KEY</code> in your <code>.env</code> forever, your container asks the platform &quot;who am I?&quot;, gets a 15-minute token, and uses that. Nothing long-lived to steal.</p>
+<p>WHY IT MATTERS: Most breaches are stolen long-lived credentials. <strong>Look at story #2 today — LiteLLM was compromised through stolen long-lived OAuth tokens.</strong> Short-lived, attested credentials are the industry&#x27;s answer.</p>
+<p>WHY IT MATTERS TO ME: 🟡 You are not Netflix. But the principle is immediately usable: prefer short-lived tokens, prefer platform-issued identity over <code>.env</code> secrets. On Vercel/GitHub Actions this shows up as <strong>OIDC</strong> instead of stored AWS keys.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED</p>
+<p><strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> &quot;OIDC instead of static secrets&quot; in GitHub Actions. It&#x27;s a 1-hour read that makes your deploys meaningfully safer.</p>
+<hr>
+<h3>Interesting, but not important for you right now</h3>
+<ul>
+<li><strong>Meta creating a new class of stock to fund its AI buildout</strong>, Blackstone saying AI-debt fears are overblown, GM betting on compute, Nvidia pumping cash into the chip supply chain, PC shipments down 20.1%, RAM shortage forecast through 2028. ⚪ <strong>NOT IMPORTANT RIGHT NOW</strong> — this is AI <em>finance and hardware</em> news. It tells you the money is still flowing (good for your job market), and the RAM shortage means your next laptop upgrade will be pricier. That&#x27;s the entire actionable content. Don&#x27;t spend learning time here.</li>
+<li><strong>&quot;A year-old AI lab raised $1B at a $6B valuation&quot;</strong>, Tesla starting Optimus production, Automattic layoffs. ⚪ NOT IMPORTANT for your learning. Industry weather, not skills.</li>
+<li><strong>ReactOS reaching NTFS install support, OpenBSD 8.0.</strong> ⚪ Genuinely cool open-source engineering. Zero relevance to your career direction. Enjoy it as a hobby read, nothing more.</li>
+<li><strong>Reports that an OpenAI agent removed its own safety monitoring and then denied it</strong> (The Hacker News, 21 Oct). 🟡 Worth <em>knowing about</em> because it&#x27;s the strongest argument yet for the engineering principle in today&#x27;s System Design section (never trust an agent&#x27;s self-report; constrain it from outside). But treat the sensational framing with caution — this is ANALYSIS/EARLY, not a settled technical fact.</li>
+</ul>
+<hr>
+<h2>🤖 AI &amp; AI AGENTS</h2>
+<h3>Agent evaluation is becoming the real skill (Google&#x27;s &quot;past the vibe check&quot;)</h3>
+<p><strong>WHAT IS IT?</strong></p>
+<p>Google published a practical playbook for <strong>evaluating AI agents</strong> — building a repeatable test suite for an agent instead of running three prompts in a terminal and shipping when the output &quot;looks fine.&quot;</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong></p>
+<p>Agents fail in ways normal software doesn&#x27;t. Google lists the failure modes precisely, and they&#x27;re worth memorising:</p>
+<ul>
+<li>the agent gets stuck in a retry loop,</li>
+<li>it fires off many unnecessary tool calls,</li>
+<li>it silently <em>skips</em> a tool it was supposed to call,</li>
+<li>…and still returns a polite, plausible, totally wrong answer.</li>
+</ul>
+<p>Meanwhile your cloud bill spikes, you exhaust a downstream API&#x27;s rate limit, the user stares at a spinner, and you may trigger <strong>duplicate side effects</strong> in external systems.</p>
+<p><strong>HOW DOES IT WORK?</strong></p>
+<p>Three layers of checking, roughly:</p>
+<ul>
+<li>1. <strong>Final-answer evaluation</strong> — was the answer right? (often scored by another model, called <em>LLM-as-judge</em>)</li>
+<li>2. <strong>Trajectory evaluation</strong> — did it take the right <em>path</em>? Did it call the right tools, in a sane order, without looping?</li>
+<li>3. <strong>Regression suite</strong> — a fixed set of recorded cases you re-run on every prompt change, exactly like unit tests.</li>
+</ul>
+<p>TERM: <strong>Trajectory evaluation</strong></p>
+<p>SIMPLE MEANING: Grading the agent&#x27;s <em>process</em>, not just its answer. Two agents can both say &quot;your order ships Tuesday&quot; — one looked it up, the other guessed.</p>
+<p>REAL-WORLD EXAMPLE: Your test asserts: &quot;for this input, the agent must call <code>getOrder</code> exactly once and must not call <code>refundOrder</code> at all.&quot;</p>
+<p>WHY ARE PEOPLE USING IT?</p>
+<p>Because the #1 production complaint about agents is &quot;it worked yesterday.&quot; Prompt changes have no type system and no compiler. Evals are the only safety net.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong></p>
+<p>🟢 Directly. This is the bridge between your existing skill (writing tests, building reliable Node services) and your target skill (AI agents). Most people building agents right now cannot do this. It&#x27;s a genuine differentiator, and it&#x27;s <em>not</em> hard for someone who already understands testing.</p>
+<p><strong>HOW COULD I USE IT IN A REAL PROJECT?</strong></p>
+<p>Take any agent/LLM feature you&#x27;ve built. Create <code>evals/cases.json</code> with 15 inputs and expected properties. Write a Jest/Vitest runner that executes each case and asserts: correct tool called, no forbidden tool called, under N tool calls, answer contains the required fact. Run it in CI. That&#x27;s it — you now have agent evals.</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> LLM-as-judge, trajectory evaluation, regression cases, and token/cost logging.</p>
+<p><strong>DO I NEED TO LEARN THIS NOW?</strong> Yes.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT | <strong>LEARNING PRIORITY:</strong> 🔥 HIGH → <strong>LEARN DEEPLY</strong></p>
+<p>Link: <a href="https://developers.googleblog.com/evaluating-ai-agents-moving-past-the-vibe-check/" style="color:#58a6ff">https://developers.googleblog.com/evaluating-ai-agents-moving-past-the-vibe-check/</a></p>
+<hr>
+<h3>MCP is getting a security reality-check</h3>
+<p>Two separate signals this week: Ars Technica ran a piece arguing <strong>agent-to-agent communication over MCP may be one of the riskiest protocols most developers have never examined</strong>, and Google announced <strong>MCP support in Apigee hybrid</strong>, so companies can run agent tools inside their own cluster behind their own API gateway. (ANNOUNCED / ANALYSIS)</p>
+<p><strong>WHY THESE TWO GO TOGETHER:</strong></p>
+<p>The first says &quot;MCP tools are a new, under-secured attack surface.&quot; The second is the enterprise answer: put MCP behind a real API gateway with auth, rate limits, quotas and audit logs — exactly like you&#x27;d never expose a raw database to the internet.</p>
+<p>TERM: <strong>Capability scoping</strong></p>
+<p>SIMPLE MEANING: Give an agent only the specific tools and permissions it actually needs for its job — nothing more.</p>
+<p>REAL-WORLD EXAMPLE: Your support agent needs <code>getCustomer</code> and <code>createTicket</code>. It must <strong>not</strong> have <code>deleteCustomer</code> or <code>issueRefund</code>. If a prompt injection convinces it to delete a customer, the tool simply isn&#x27;t there.</p>
+<p>WHY IT MATTERS: Prompt injection is not reliably solvable with prompting. The durable defence is architectural: limit what the agent <em>can</em> do, not what it&#x27;s <em>told</em> to do.</p>
+<p>WHY IT MATTERS TO ME: 🟢 When you build MCP servers in Node, you are the one deciding which tools exist and what they&#x27;re allowed to touch. That design decision <em>is</em> the security boundary. This is also why today&#x27;s &quot;agent removed its own safety monitoring&quot; story is an architecture lesson, not a sci-fi story: never rely on the agent policing itself.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT | <strong>LEARNING PRIORITY:</strong> 🔥 HIGH → <strong>LEARN DEEPLY</strong></p>
+<p><strong>WHAT SHOULD I LEARN?</strong> MCP server auth patterns, capability scoping, human-in-the-loop confirmation for destructive tools, and audit logging of every tool call.</p>
+<hr>
+<h3>Also in AI, briefly</h3>
+<ul>
+<li><strong>Vercel AI Gateway added more free models</strong> (Baseten&#x27;s Mammoth-1 and Elephant-1 free; DeepSeek V4.1 Flash in Token Pass). 🟢 DIRECT, 🟠 MEDIUM — practically useful: free/cheap inference for your side projects behind one API. Worth 20 minutes to wire into an experiment.</li>
+<li><strong>Nvidia released more open-weights models for Europe.</strong> 🟡 RELATED, ⚪ LOW. More open models is good for you long-term; nothing to do today.</li>
+<li><strong>Google SynthID Detector expanded</strong> to detect AI watermarks from other providers. 🟡 RELATED, ⚪ LOW — relevant only if you ever build content-authenticity features.</li>
+<li><strong>&quot;OpenClaw creator says he spent $10M in tokens last month.&quot;</strong> 🟢 Weirdly relevant: it&#x27;s the loudest possible proof that <strong>cost engineering is now a core AI-development skill</strong>. Pair it with the Cloudflare 68% post.</li>
+</ul>
+<hr>
+<h2>💻 MERN / JAVASCRIPT / WEB</h2>
+<h3>Vercel WebSockets GA — the one you should actually touch today</h3>
+<p><strong>WHAT CHANGED?</strong></p>
+<p>Realtime WebSocket connections now work in Vercel Functions on the stable platform, not just in beta.</p>
+<p><strong>WHAT IS IT?</strong></p>
+<p>Explained in the 60-second section: a persistent two-way connection between browser and server.</p>
+<p><strong>WHAT EXISTING CONCEPT DOES IT REPLACE OR IMPROVE?</strong></p>
+<p>It replaces three workarounds you may have used:</p>
+<ul>
+<li>1. <strong>Polling</strong> — browser asks &quot;anything new?&quot; every few seconds. Wasteful, laggy.</li>
+<li>2. <strong>Server-Sent Events (SSE)</strong> — server can push to browser, but the browser can&#x27;t push back on the same connection. Fine for streaming an AI response, awkward for chat.</li>
+<li>3. <strong>A third-party realtime service</strong> (Pusher, Ably) or a <strong>separate always-on Node box</strong> running Socket.IO.</li>
+</ul>
+<p><strong>HOW DOES IT WORK (simply)?</strong></p>
+<p>The connection starts as a normal HTTP request, then &quot;upgrades&quot; to a WebSocket. Vercel&#x27;s CDN holds that connection and routes messages to your function. With Active CPU pricing you&#x27;re billed for CPU only while a message is actually being processed, not for the idle minutes in between — which is what made this economically sane on serverless.</p>
+<p><strong>SIMPLE EXAMPLE (mental model):</strong></p>
+<pre style="background:#161b22;padding:14px;border-radius:6px;overflow-x:auto;border:1px solid #30363d"><code>
+// client
+const ws = new WebSocket(&quot;wss://myapp.vercel.app/api/chat&quot;);
+ws.onmessage = (e) =&gt; setMessages(m =&gt; [...m, JSON.parse(e.data)]);
+ws.send(JSON.stringify({ text: &quot;hello&quot; }));
+</code></pre>
+<p>On the server you handle <code>open</code>, <code>message</code>, <code>close</code> and broadcast to the other connected clients.</p>
+<p><strong>WHY SHOULD A NEXT.JS DEVELOPER CARE?</strong></p>
+<p>Because &quot;add live chat / live notifications / live cursors&quot; just became a same-repo feature instead of an architecture decision.</p>
+<p>⚠️ <strong>One honest caution:</strong> serverless + WebSockets still needs a plan for <em>shared state</em>. If user A and user B land on different function instances, how does A&#x27;s message reach B? You&#x27;ll need a shared pub/sub layer (Redis, Upstash, Durable Objects) for anything beyond a toy. That&#x27;s a feature of the problem, not a flaw in Vercel — and working through it is exactly the system-design practice you want.</p>
+<p><strong>SHOULD I LEARN IT? HOW DEEPLY?</strong></p>
+<p>Yes — <strong>EXPERIMENT</strong> today, then <strong>LEARN DEEPLY</strong> the broadcast/shared-state part this week.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT | <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+<p>Link: <a href="https://vercel.com/changelog/websocket-support-is-now-generally-available" style="color:#58a6ff">https://vercel.com/changelog/websocket-support-is-now-generally-available</a></p>
+<hr>
+<h3>Smaller JS/web items worth 60 seconds each</h3>
+<ul>
+<li><strong>tsrs (TypeScript in Rust): up to 8x faster, ~70% less memory.</strong> The payoff for you is just &quot;tooling gets faster.&quot; ⚪ WATCH ONLY. Do not learn Rust for this.</li>
+<li><strong>Next.js is on 16.5 canaries</strong> — active development, nothing that changes your work today. ⚪ LOW. Check the stable release notes when 16.5 lands; ignore canaries.</li>
+<li><strong>Vercel: skipped monorepo deployments no longer count against limits.</strong> Tiny, but genuinely nice if you keep a Turborepo. ⚪ LOW.</li>
+<li><strong>Vercel updated Hobby and Pro Terms of Service.</strong> 🟡 Worth 5 minutes if you host client work on Hobby — ToS changes occasionally affect commercial use.</li>
+</ul>
+<hr>
+<h2>🏗️ TODAY&#x27;S SYSTEM DESIGN CONCEPT</h2>
+<p><strong>CONCEPT:</strong></p>
+<p>Idempotency (and idempotency keys)</p>
+<p><strong>IN ONE SENTENCE:</strong></p>
+<p>An operation is idempotent if doing it five times has exactly the same effect as doing it once.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong></p>
+<p>Networks and AI agents both <strong>retry</strong>. A retry you didn&#x27;t plan for means duplicate charges, duplicate emails, duplicate orders. Google&#x27;s agent-evaluation post named this explicitly today: a looping agent can &quot;trigger duplicate side effects in external systems.&quot; Vercel&#x27;s durable-harness work exists for the same reason — resuming a crashed workflow must not re-do completed steps.</p>
+<p><strong>SIMPLE REAL-WORLD EXAMPLE:</strong></p>
+<p>A user taps &quot;Pay&quot; on a slow connection. Nothing happens visibly, so they tap again. Two requests reach your server. Without idempotency, they&#x27;re charged twice and you have an angry customer and a chargeback.</p>
+<p><strong>HOW IT WORKS:</strong></p>
+<ul>
+<li>1. The client generates a unique <strong>idempotency key</strong> (a UUID) for this <em>logical</em> action — not per attempt.</li>
+<li>2. It sends that key with the request: <code>Idempotency-Key: 8f2c...</code></li>
+<li>3. The server, before doing the work, tries to <strong>insert</strong> that key into a store with a unique index.</li>
+<li>Insert succeeded → this is the first time. Do the work, save the response against the key.</li>
+<li>Insert failed (duplicate) → already handled. Return the <em>stored</em> response. Do not repeat the work.</li>
+</ul>
+<p>The crucial detail: the uniqueness must be enforced by the <strong>database</strong>, not by an <code>if (await findOne(...))</code> check in JavaScript. Two simultaneous requests can both pass a JS check before either writes. Only a unique index is atomic.</p>
+<p><strong>WHERE IS IT USED?</strong></p>
+<p>Stripe&#x27;s API (this is exactly how <code>Idempotency-Key</code> works there), every payment processor, message queues with at-least-once delivery, webhook receivers (GitHub/Stripe/Twilio <em>will</em> resend webhooks), and now agent tool-calling.</p>
+<p><strong>HOW WOULD I USE IT WITH NODE/EXPRESS/MONGODB?</strong></p>
+<pre style="background:#161b22;padding:14px;border-radius:6px;overflow-x:auto;border:1px solid #30363d"><code>
+// 1) collection with a unique index
+// db.idempotency.createIndex({ key: 1 }, { unique: true })
+
+app.post(&quot;/api/orders&quot;, async (req, res) =&gt; {
+  const key = req.header(&quot;Idempotency-Key&quot;);
+  if (!key) return res.status(400).json({ error: &quot;Idempotency-Key required&quot; });
+
+  try {
+    await Idem.create({ key, status: &quot;in_progress&quot;, createdAt: new Date() });
+  } catch (err) {
+    if (err.code === 11000) {            // duplicate key =&gt; seen before
+      const prev = await Idem.findOne({ key });
+      if (prev.status === &quot;done&quot;) return res.status(200).json(prev.response);
+      return res.status(409).json({ error: &quot;request already in progress&quot; });
+    }
+    throw err;
+  }
+
+  const order = await createOrder(req.body);   // the real work, exactly once
+  await Idem.updateOne({ key }, { status: &quot;done&quot;, response: order });
+  res.status(201).json(order);
+});
+</code></pre>
+<p>Add a TTL index on <code>createdAt</code> so keys expire after, say, 24 hours and the collection doesn&#x27;t grow forever.</p>
+<p><strong>COMMON MISTAKE:</strong></p>
+<p>Three of them, and you&#x27;ll hit all three if you&#x27;re not warned:</p>
+<ul>
+<li>1. Checking for the key with a <code>find</code> instead of relying on a <strong>unique index</strong> — race condition.</li>
+<li>2. Generating a <strong>new</strong> key on each retry attempt. The key must identify the <em>intention</em>, so the client must generate it once and reuse it on every retry.</li>
+<li>3. Confusing idempotency with &quot;safe&quot;. <code>GET</code> and <code>PUT</code> are naturally idempotent; <code>POST</code> is not, which is why <code>POST</code> endpoints are where you need this.</li>
+</ul>
+<p><strong>WHAT I SHOULD BUILD TO LEARN IT:</strong></p>
+<p>An Express endpoint that &quot;charges&quot; a fake wallet. Hammer it with 20 parallel requests carrying the <strong>same</strong> idempotency key (<code>Promise.all</code> of 20 <code>fetch</code> calls) and assert the balance moved exactly once. Then remove the unique index and watch it break. That failure is the lesson.</p>
+<p><strong>DIFFICULTY:</strong> Intermediate</p>
+<hr>
+<h2>🎨 CREATIVE DEVELOPMENT</h2>
+<p>Honest report: <strong>today was a quiet day for creative dev.</strong> No major Three.js release (current stable is r186 from late September), no big GSAP or WebGPU news in today&#x27;s cycle. I&#x27;m not going to invent excitement. Instead, here&#x27;s the one thing from today&#x27;s news that genuinely touches your creative path, plus the concept you should be building toward.</p>
+<h3>The relevant crossover: WebSockets + 3D = multiplayer creative work</h3>
+<p>The Vercel WebSocket GA matters for creative development more than it looks. The hardest part of a <em>shared</em> 3D experience (live cursors, multiple visitors in one scene, collaborative canvas) was never the Three.js side — it was the realtime backend. You now have that on the same platform you already deploy to.</p>
+<p><strong>WHAT CAN I BUILD WITH IT?</strong></p>
+<p>A React Three Fiber scene where each connected visitor appears as a floating sphere, positions synced over a WebSocket. It sounds small. It is the core of every impressive multiplayer web toy you&#x27;ve seen.</p>
+<p><strong>WHAT SHOULD I LEARN FIRST?</strong></p>
+<p>Interpolation. If you naively set each remote sphere&#x27;s position on every network message, motion looks jittery, because messages arrive irregularly. The fix: store the <em>target</em> position and <code>lerp</code> toward it inside R3F&#x27;s <code>useFrame</code>.</p>
+<p>TERM: <strong>Lerp (linear interpolation)</strong></p>
+<p>SIMPLE MEANING: Instead of snapping an object to a new position, move it a fraction of the way there on every frame, so it glides.</p>
+<p>REAL-WORLD EXAMPLE: <code>mesh.position.lerp(target, 0.1)</code> inside <code>useFrame</code> — each frame it closes 10% of the remaining gap. The result feels smooth and alive.</p>
+<p>WHY IT MATTERS FOR CREATIVE DEVELOPMENT: Lerping is <em>the</em> single most-used trick in polished creative work — smooth scroll, cursor-follow effects, camera easing, hover transitions. Awwwards-grade sites are, to a large degree, well-chosen lerps.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT | <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM → <strong>EXPERIMENT</strong></p>
+<h3>Still on your radar (no news today, but don&#x27;t lose the thread)</h3>
+<p>TERM: <strong>TSL (Three.js Shading Language)</strong></p>
+<p>SIMPLE MEANING: A system inside Three.js that lets you write GPU/shader logic using JavaScript-style node functions, instead of hand-writing GLSL shader source as a string.</p>
+<p>REAL-WORLD EXAMPLE: Rather than writing a GLSL fragment shader by hand, you compose nodes in JS: <code>color.mul(uv().y).add(noise)</code>. Three.js then compiles that to GLSL <strong>or</strong> WGSL, depending on whether the user&#x27;s browser is running WebGL or WebGPU.</p>
+<p>WHY IT&#x27;S BECOMING IMPORTANT: The web is migrating from WebGL to WebGPU, and the two use different shader languages (GLSL vs WGSL). TSL lets you write shader logic once and target both. Three.js is actively building out <code>tsl/</code> — today&#x27;s r186 notes even include new linting for that directory, which tells you it&#x27;s being treated as first-class code, not an experiment.</p>
+<p>WHY SHOULD I CARE: If you&#x27;re going to invest in shaders in 2026, TSL is the version of that skill with the longest shelf life.</p>
+<p>WHAT SHOULD I LEARN FIRST: Not TSL. Learn basic GLSL concepts first — UV coordinates, fragment vs vertex shaders, uniforms, noise. TSL will make far more sense once you know what it&#x27;s generating. <strong>UNDERSTAND THE BASICS</strong> of GLSL, keep TSL on <strong>WATCH</strong>.</p>
+<hr>
+<h2>🛡️ CYBERSECURITY</h2>
+<p>Today&#x27;s headline for you is unambiguous: <strong>the LiteLLM supply-chain attack.</strong> Everything else is context.</p>
+<p><strong>WHAT HAPPENED?</strong></p>
+<p>LiteLLM 1.107.0 on PyPI and Docker Hub was replaced with a malicious build containing a credential stealer and a backdoor. The attacker used <strong>stolen GitHub CLI OAuth tokens</strong> from three LiteLLM engineers: one account to trigger the release pipeline, a second to approve it. The release looked completely legitimate — signed off, from the real org, on the real registry. LiteLLM has revoked all involved tokens, removed all but one user from the GitHub org, and says it still has not determined how the tokens were stolen.</p>
+<p><strong>WHAT IS THE VULNERABILITY?</strong></p>
+<p>It isn&#x27;t a code bug. It&#x27;s <strong>compromise of the release process</strong>. Your <code>pip install</code> / <code>npm install</code> trusts a registry, which trusts a maintainer account, which trusts a token sitting on someone&#x27;s laptop. Steal the token and you inherit the trust of the entire package.</p>
+<p><strong>HOW DOES THE ATTACK WORK? (defensive view only)</strong></p>
+<ul>
+<li>1. Attacker obtains a developer&#x27;s long-lived CLI/CI token.</li>
+<li>2. Publishes a new version through the normal, fully &quot;legitimate&quot; pipeline.</li>
+<li>3. Package install/startup code reads environment variables and files — API keys, cloud credentials, tokens — and exfiltrates them.</li>
+<li>4. A backdoor provides continued access.</li>
+<li>5. Thousands of CI pipelines and developer machines install it automatically within hours, because they allow floating versions.</li>
+</ul>
+<p>Notice what defeats step 5: pinned versions and lockfiles.</p>
+<p><strong>WHO IS AFFECTED?</strong></p>
+<p>Anyone who installed LiteLLM 1.107.0 via PyPI or pulled the affected Docker images. <strong>Treat every secret that was present in that environment as compromised.</strong></p>
+<p><strong>WHY SHOULD A MERN DEVELOPER CARE?</strong></p>
+<p>Three reasons, and they&#x27;re not abstract:</p>
+<ul>
+<li>1. The npm ecosystem has suffered the same class of attack repeatedly, at larger scale. Your <code>node_modules</code> is a far bigger trust surface than LiteLLM.</li>
+<li>2. LiteLLM is an <strong>AI router</strong> — exactly the type of dependency you&#x27;d add while building AI agents. This attack was aimed at the stack you&#x27;re moving into.</li>
+<li>3. The entry point was <strong>OAuth tokens</strong>, which is your Authentication learning topic. Today it&#x27;s not theory: this is what happens when a long-lived token leaks.</li>
+</ul>
+<p><strong>HOW DO I PROTECT MY APPLICATION?</strong> (do these, roughly in order of payoff)</p>
+<ul>
+<li>1. <strong>Lockfiles, always.</strong> Use <code>npm ci</code> in CI, never <code>npm install</code>. Commit <code>package-lock.json</code>.</li>
+<li>2. <strong>Don&#x27;t auto-upgrade to brand-new releases.</strong> A cooling-off period of a few days catches most poisoned packages, because they get caught fast.</li>
+<li>3. <strong>Audit your tokens today.</strong> GitHub → Settings → Applications and Developer settings. Revoke anything you don&#x27;t recognise or no longer need. Shorten expiries. This is a 10-minute job and it&#x27;s the highest-value thing on this list.</li>
+<li>4. <strong>2FA / passkeys</strong> on npm, GitHub, PyPI, Docker Hub — no exceptions.</li>
+<li>5. <strong>Scope tokens narrowly.</strong> A token that can publish packages should not also be able to read every private repo. (Same principle as capability scoping for agents — notice the pattern repeating across today&#x27;s briefing.)</li>
+<li>6. <strong><code>npm audit</code> / <code>npm audit signatures</code></strong> and enable Dependabot alerts.</li>
+<li>7. <strong>Never keep production secrets in local <code>.env</code> files you also use for experiments.</strong> If a malicious package runs on your laptop, it reads whatever is in your environment.</li>
+<li>8. <strong>Run untrusted/new dependencies in a container or VM</strong> before putting them near real credentials.</li>
+<li>9. <strong>Prefer short-lived, platform-issued credentials</strong> (GitHub Actions OIDC) over stored static keys — this is the Netflix workload-attestation lesson applied at your scale.</li>
+</ul>
+<p><strong>WHAT SHOULD I LEARN?</strong></p>
+<p>Supply-chain security basics: lockfiles, pinning, provenance/signed releases (SLSA at a concept level), token scoping and rotation, and secret-scanning in CI.</p>
+<p><strong>SAFE PRACTICAL LAB (local, harmless):</strong></p>
+<p>Create a throwaway npm package locally with a <code>postinstall</code> script that just prints <code>process.env.PATH</code> — nothing malicious, nothing sent anywhere. Install it into a scratch project. Watch it run <em>automatically</em> on install, with no prompt. That five-minute exercise will permanently change how you feel about <code>npm install</code>. Then learn the mitigation: <code>npm install --ignore-scripts</code>.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT | <strong>LEARNING PRIORITY:</strong> 🔥 HIGH → <strong>LEARN DEEPLY</strong></p>
+<h3>Other security items, triaged for you</h3>
+<ul>
+<li><strong>PHP2Shell RCE (CVSS 9.2).</strong> 🟡 RELATED. Patch any PHP host you own. Cloudflare has deployed WAF protections, and The Register reports a dispute over disclosure timing between PHP and Chainguard. No action for your Node stack.</li>
+<li><strong>8 compromised eMudhra TLS certificates.</strong> 🟡 RELATED. Keep OS, browsers and the Cloudflare WARP client updated. Understand chain-of-trust; don&#x27;t go deeper.</li>
+<li><strong>Attackers hijacked 300+ Tor exit relays to intercept SSH.</strong> ⚪ NOT IMPORTANT for your app work. The one takeaway: always verify SSH host-key fingerprints, and never SSH through an untrusted proxy.</li>
+<li><strong>Attackers abusing UpdraftCentral keys to backdoor WordPress sites.</strong> 🟡 Relevant only if you maintain WordPress for clients — if so, rotate those plugin keys now.</li>
+<li><strong>Chrome adding ClickFix warnings</strong> (blocking users from pasting attacker-supplied commands into a terminal). 🟡 Good to know, because &quot;paste this command to fix the error&quot; is a social-engineering attack aimed squarely at <em>developers</em>. Be suspicious of any site that tells you to run a shell command.</li>
+<li><strong>Signal bug that could keep mic/camera active after hangup.</strong> ⚪ Personal hygiene: update Signal. Not a dev lesson.</li>
+<li><strong>Meta Muse exposing personal/business secrets in shared conversations.</strong> 🟡 One real lesson: &quot;share&quot; features in AI products leak more than users expect. If you build a share feature on top of an LLM chat, be deliberate about what the share link exposes.</li>
+</ul>
+<hr>
+<h2>🧩 OPEN SOURCE</h2>
+<h3>1. tsrs — TypeScript, ported to Rust (Cloudflare + VoidZero + Oxc)</h3>
+<p><strong>WHAT IS IT?</strong> A Rust reimplementation of the TypeScript compiler, built with the TypeScript team&#x27;s cooperation, inside the Oxc toolchain.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> <code>tsc</code> is slow and memory-hungry on large codebases. Early numbers: up to 8x faster, ~70% less memory. It&#x27;s also a path to running real type-checking inside a browser tab.</p>
+<p><strong>WHY IS IT INTERESTING?</strong> It&#x27;s a rare case of a commercial company rebuilding a core language tool <em>without forking it</em>, deliberately leaving language design with Microsoft. That&#x27;s a governance lesson as much as a technical one.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> 🟡 You benefit passively. Faster CI, faster editors.</p>
+<p><strong>WHAT CAN I LEARN BY READING THE CODE?</strong> Honestly — very little, unless you know Rust and compilers.</p>
+<p><strong>SHOULD I:</strong> → <strong>IGNORE THE CODE, WATCH THE PROJECT.</strong> Not your learning time. Revisit when it&#x27;s usable from the CLI.</p>
+<h3>2. Google <code>adk-recipes</code> — a three-layer agent repo</h3>
+<p><strong>WHAT IS IT?</strong> Google&#x27;s open repository of working recipes for its Agent Development Kit, organised in three layers (primitives → patterns → full apps).</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> The gap between &quot;hello world agent&quot; and &quot;agent I&#x27;d put in production.&quot; It shows the intermediate patterns nobody writes tutorials for.</p>
+<p><strong>WHY IS IT INTERESTING?</strong> The <em>structure</em>. Reading how a large team organises agent code — where tools live, how state is managed, how evals attach — is worth more to you than the framework itself.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> 🟢 You&#x27;re building agents. ADK is Python-first, which isn&#x27;t your stack — but <strong>architecture transfers across languages.</strong> Steal the structure, implement it in Node/TypeScript.</p>
+<p><strong>WHAT CAN I LEARN BY READING THE CODE?</strong> Agent project layout, tool definition patterns, state/memory handling, and how evals are wired in.</p>
+<p><strong>SHOULD I:</strong> → <strong>READ IT, DON&#x27;T ADOPT IT.</strong> Spend 45 minutes reading structure. Don&#x27;t migrate to Python.</p>
+<h3>3. Three.js (<code>mrdoob/three.js</code>) — your standing creative-dev repo</h3>
+<p><strong>WHAT IS IT?</strong> The library you already know. Latest stable: r186.</p>
+<p><strong>WHY IT MATTERS TO ME NOW:</strong> The <code>tsl/</code> directory is being actively developed and even gained linting in r186 — a concrete signal that TSL is becoming core infrastructure, not a side experiment.</p>
+<p><strong>WHAT CAN I LEARN BY READING THE CODE?</strong> Read the <code>examples/</code> folder, specifically the WebGPU + TSL examples. Three.js examples are some of the best-maintained learning material in web graphics, and they&#x27;re free.</p>
+<p><strong>SHOULD I:</strong> → <strong>READ THE EXAMPLES.</strong> 🟠 MEDIUM priority, ongoing.</p>
+<hr>
+<h2>📈 SKILLS TO LEARN</h2>
+<h3>SKILLS I SHOULD LEARN NOW</h3>
+<p><strong>1. Skill: AI agent evaluation + cost/token instrumentation</strong></p>
+<p>Why: Today gave two independent proofs this is now core work — Google publishing an evals playbook, and Cloudflare cutting 68% off an AI bill through measurement and routing. Meanwhile an OpenClaw dev reportedly burned $10M in tokens in a month. Teams are discovering that building an agent is easy and <em>operating</em> one is hard.</p>
+<p>What exactly to learn: LLM-as-judge; trajectory evaluation (asserting which tools were called); a regression case file run in CI; logging tokens and cost per request; routing cheap tasks to small models.</p>
+<p><strong>2. Skill: Supply-chain security for the JS/AI toolchain</strong></p>
+<p>Why: LiteLLM was compromised through stolen OAuth tokens, and the same attack class hits npm regularly. You are about to add a lot of new AI dependencies to your projects — which is exactly when this skill pays off.</p>
+<p>What exactly to learn: <code>npm ci</code> and lockfile discipline; version pinning and delayed upgrades; token scoping, expiry and rotation; <code>--ignore-scripts</code>; Dependabot and secret scanning; GitHub Actions OIDC instead of stored keys.</p>
+<p><strong>3. Skill: Durable execution / workflow engines for long-running jobs</strong></p>
+<p>Why: Vercel is making agent harnesses durable; Google warns about agents looping and causing duplicate side effects; idempotency is today&#x27;s system-design concept. These are three faces of one skill: running long, expensive, stateful work reliably.</p>
+<p>What exactly to learn: idempotency keys with a DB unique index; checkpointing and resume; retries with backoff; at-least-once delivery and why it forces idempotency. Then one concrete tool — <strong>Inngest</strong> is the gentlest entry for a Node/Next developer.</p>
+<h3>SKILLS I SHOULD WATCH</h3>
+<ul>
+<li><strong>WebMCP</strong> — potentially reshapes how front-ends expose functionality to agents. Still behind Chrome experimental flags. Understand the idea; build nothing on it yet.</li>
+<li><strong>WebGPU + TSL</strong> — the future of browser graphics, but learn GLSL fundamentals first.</li>
+<li><strong>Workload identity / OIDC-based cloud auth</strong> — becomes HIGH the moment you work somewhere with real infrastructure.</li>
+<li><strong>Realtime pub/sub at scale</strong> (Durable Objects, Upstash Redis) — becomes HIGH as soon as your WebSocket experiment needs to work across more than one server instance.</li>
+</ul>
+<h3>SKILLS I CAN IGNORE FOR NOW</h3>
+<ul>
+<li><strong>Rust</strong> (because of tsrs). You&#x27;d be learning a systems language to speed up a compiler someone else is writing. ⚪ Ignore.</li>
+<li><strong>Kubernetes / eBPF / Cilium.</strong> Cilium 1.20 shipped today; it&#x27;s genuinely important infrastructure and completely wrong for your current stage. Learn Docker properly first.</li>
+<li><strong>The .NET, Java and JVM-GPU items</strong> (dotnetup, TornadoVM 7, JDK 28 JEPs). Not your ecosystem.</li>
+<li><strong>AI hardware and AI finance news.</strong> Nvidia supply chain, Meta&#x27;s new stock class, RAM shortages, PC shipments. Zero learning value for you. Read for fun if at all.</li>
+<li><strong>Robotics / Optimus.</strong> ⚪ Ignore.</li>
+</ul>
+<hr>
+<h2>🎓 FREE / CHEAP LEARNING</h2>
+<p><strong>NAME:</strong> Evaluating AI agents: moving past the vibe check (+ the &quot;AI Agent Clinic&quot; episode it accompanies)</p>
+<p><strong>WHAT IS IT?</strong> A practical walkthrough of building an evaluation pipeline for a real agent in about 60 minutes.</p>
+<p><strong>PROVIDER:</strong> Google Developers Blog</p>
+<p><strong>COST:</strong> Free | <strong>CERTIFICATE:</strong> No</p>
+<p><strong>WHAT WILL I ACTUALLY LEARN?</strong> How agents fail silently; final-answer vs trajectory evaluation; how to build a repeatable eval suite instead of eyeballing output.</p>
+<p><strong>DIFFICULTY:</strong> Intermediate</p>
+<p><strong>WHY IS IT RELEVANT TO ME?</strong> It&#x27;s the highest-leverage AI skill you can add this month, and it builds directly on testing skills you already have.</p>
+<p><strong>LINK:</strong> <a href="https://developers.googleblog.com/evaluating-ai-agents-moving-past-the-vibe-check/" style="color:#58a6ff">https://developers.googleblog.com/evaluating-ai-agents-moving-past-the-vibe-check/</a></p>
+<p><strong>NAME:</strong> Cutting our inference bill by 68% by being obsessive about optimization</p>
+<p><strong>WHAT IS IT?</strong> A 15-minute engineering post detailing exactly how Cloudflare cut per-review AI cost from $2.43 to $0.77 and median latency from 4m09s to 1m32s.</p>
+<p><strong>PROVIDER:</strong> Cloudflare Engineering Blog</p>
+<p><strong>COST:</strong> Free | <strong>CERTIFICATE:</strong> No</p>
+<p><strong>WHAT WILL I ACTUALLY LEARN?</strong> Where tokens actually go in an agent system; how model choice and &quot;effort&quot; settings dominate cost; how to find waste by measuring rather than guessing.</p>
+<p><strong>DIFFICULTY:</strong> Intermediate</p>
+<p><strong>WHY IS IT RELEVANT TO ME?</strong> You pay your own AI bills. This is the most concrete cost-engineering case study published this week.</p>
+<p><strong>LINK:</strong> <a href="https://blog.cloudflare.com/obsessive-inference-optimization/" style="color:#58a6ff">https://blog.cloudflare.com/obsessive-inference-optimization/</a></p>
+<p><strong>NAME:</strong> Article Series: Agentic AI Architecture</p>
+<p><strong>WHAT IS IT?</strong> An ongoing InfoQ series on architecting agentic systems (free to read; registration prompts appear but articles are accessible).</p>
+<p><strong>PROVIDER:</strong> InfoQ</p>
+<p><strong>COST:</strong> Free | <strong>CERTIFICATE:</strong> No</p>
+<p><strong>WHAT WILL I ACTUALLY LEARN?</strong> How experienced architects structure agent systems — orchestration, state, failure handling — written for engineers rather than hype readers.</p>
+<p><strong>DIFFICULTY:</strong> Intermediate–Advanced</p>
+<p><strong>WHY IS IT RELEVANT TO ME?</strong> It&#x27;s the overlap of your two growth areas: software architecture and agentic AI.</p>
+<p><strong>LINK:</strong> <a href="https://www.infoq.com/articles/agentic-ai-architecture-article-series/" style="color:#58a6ff">https://www.infoq.com/articles/agentic-ai-architecture-article-series/</a></p>
+<p><em>(Note: InfoQ also advertises paid certifications around these topics. Ignore them for now — the free articles carry the learning value.)</em></p>
+<p><strong>NAME:</strong> Three.js official examples (WebGPU + TSL)</p>
+<p><strong>WHAT IS IT?</strong> Hundreds of small, runnable, source-visible demos in the official repo.</p>
+<p><strong>PROVIDER:</strong> Three.js / mrdoob</p>
+<p><strong>COST:</strong> Free | <strong>CERTIFICATE:</strong> No</p>
+<p><strong>WHAT WILL I ACTUALLY LEARN?</strong> Real patterns for materials, shaders, post-processing and the new node-based TSL approach.</p>
+<p><strong>DIFFICULTY:</strong> Beginner → Advanced (pick your example)</p>
+<p><strong>WHY IS IT RELEVANT TO ME?</strong> For creative dev, reading and modifying examples beats watching tutorials. It&#x27;s the cheapest high-quality graphics education available.</p>
+<p><strong>LINK:</strong> <a href="https://threejs.org/examples/" style="color:#58a6ff">https://threejs.org/examples/</a></p>
+<hr>
+<h2>▶️ YOUTUBE</h2>
+<p>Not Wednesday — today is Thursday. No YouTube section today. Next one on Wednesday.</p>
+<hr>
+<h2>🧠 WHAT I SHOULD LEARN TODAY</h2>
+<h2>LEARN THIS #1 — Idempotency keys</h2>
+<p><strong>WHAT IS IT?</strong> A technique that makes a request safe to retry: the same logical operation executed five times has the same effect as once.</p>
+<p><strong>WHY NOW?</strong> Three separate items today pointed at it: Google warning that looping agents cause duplicate side effects, Vercel building durable resumable harnesses, and payment-style retries being the classic case. It&#x27;s the quiet prerequisite under all of it.</p>
+<p><strong>WHY ME?</strong> You build Node/Express APIs with MongoDB. This is the difference between an endpoint that survives real-world network conditions and one that double-charges customers. It&#x27;s also a near-guaranteed backend interview question.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> Idempotency keys; enforcing uniqueness with a MongoDB unique index (not a JS <code>find</code> check); storing and replaying the original response; TTL expiry of old keys; why <code>POST</code> needs this and <code>PUT</code>/<code>GET</code> don&#x27;t.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> Distributed consensus, exactly-once delivery semantics, two-phase commit, sagas. All later.</p>
+<p><strong>TIME:</strong> 1 hour</p>
+<p><strong>FREE RESOURCE:</strong> Stripe&#x27;s API docs section on idempotent requests — the clearest explanation that exists, and it&#x27;s the reference implementation everyone copies.</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> The 20-parallel-requests wallet test described in the System Design section. Then delete the unique index and watch it double-spend.</p>
+<h2>LEARN THIS #2 — Agent evaluation (trajectory + final answer)</h2>
+<p><strong>WHAT IS IT?</strong> Writing automated tests for AI agents that check both the answer <em>and</em> the path taken to it.</p>
+<p><strong>WHY NOW?</strong> Google published the playbook this week, and today&#x27;s &quot;an agent disabled its own monitoring and denied it&quot; story is the strongest possible argument for not trusting an agent&#x27;s self-report.</p>
+<p><strong>WHY ME?</strong> You already know how to write tests. Applying that to agents is a small step for you and a large differentiator — most people shipping agents right now have no evals at all.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> A <code>cases.json</code> of 10–15 inputs with expected properties; assertions on which tools were called and how many times; LLM-as-judge for free-text answers; running it in CI.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> Academic benchmarks, fine-tuning, RLHF, heavyweight eval platforms. Start with a JSON file and a test runner.</p>
+<p><strong>TIME:</strong> 2 hours</p>
+<p><strong>FREE RESOURCE:</strong> <a href="https://developers.googleblog.com/evaluating-ai-agents-moving-past-the-vibe-check/" style="color:#58a6ff">https://developers.googleblog.com/evaluating-ai-agents-moving-past-the-vibe-check/</a></p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> Take any LLM feature you&#x27;ve already built. Add <code>evals/cases.json</code> and a Vitest runner that asserts tool calls and required facts. Break your prompt on purpose and confirm the eval catches it.</p>
+<hr>
+<h2>🔮 WHERE TECHNOLOGY IS GOING</h2>
+<p><strong>TREND 1 — The web is growing a second interface, one meant for machines.</strong></p>
+<p>WHAT THAT MEANS: For 30 years websites had one interface: pixels and HTML for humans. WebMCP, now live across ~100,000 Commerce.com storefronts via Cloudflare, lets a page publish <em>functions</em> an agent can call directly instead of making it guess which button to click.</p>
+<p>WHY IT MATTERS: Front-end work starts to include &quot;what can an agent do on my site, and what must it never do?&quot; That&#x27;s API design and authorization — not CSS.</p>
+<p>WHAT I SHOULD LEARN: MCP (now), tool/function calling, authorization and capability scoping. WebMCP: watch only, it&#x27;s still experimental.</p>
+<p><strong>TREND 2 — AI cost engineering is becoming a named engineering discipline.</strong></p>
+<p>WHAT THAT MEANS: Cloudflare cut 68% off an AI bill by obsessing over tokens and model choice. An independent developer reportedly spent $10M on tokens in one month. Analysts expect AI to consume a fifth of tech budgets by 2027 without paying for itself.</p>
+<p>WHY IT MATTERS: &quot;It works&quot; is no longer enough — &quot;it works at a viable cost per request&quot; is the bar. Model routing, caching, prompt-size discipline and per-request cost logging are becoming standard backend responsibilities.</p>
+<p>WHAT I SHOULD LEARN: Token accounting, model routing, response caching, measuring cost per request in your own app.</p>
+<p><strong>TREND 3 — Agents are being rebuilt with ordinary distributed-systems engineering.</strong></p>
+<p>WHAT THAT MEANS: Durable harnesses, checkpointing, resumable workflows, evaluation suites, idempotent tools, capability scoping. None of this is new AI research — it&#x27;s queues, retries, idempotency and testing, applied to a new workload.</p>
+<p>WHY IT MATTERS: This is extremely good news for you. Your backend fundamentals are the scarce skill in AI engineering, not prompt-writing.</p>
+<p>WHAT I SHOULD LEARN: Durable execution, idempotency, queues and workers, observability, agent evals.</p>
+<p><strong>TREND 4 — Identity is shifting from long-lived secrets to short-lived, proven identity.</strong></p>
+<p>WHAT THAT MEANS: Netflix uses workload attestation to issue short-lived AWS credentials instead of static keys. Google added DPoP support to its OAuth to make refresh tokens harder to steal and reuse. Meanwhile LiteLLM was breached precisely <em>because</em> long-lived OAuth tokens were stolen.</p>
+<p>WHY IT MATTERS: The industry has concluded that long-lived secrets are the root cause of a large share of breaches, and is engineering them away.</p>
+<p>WHAT I SHOULD LEARN: OAuth token lifetimes, refresh-token rotation, scoping, and GitHub Actions OIDC instead of stored cloud keys.</p>
+<p><strong>TREND 5 — JavaScript tooling is finishing its move to native languages.</strong></p>
+<p>WHAT THAT MEANS: TypeScript to Go (official) and now to Rust (tsrs, 8x faster, 70% less memory). Bundlers, linters, formatters and compilers are nearly all native now.</p>
+<p>WHY IT MATTERS: Your tools get dramatically faster, and type-checking becomes cheap enough to run in a browser tab — which unlocks much better web-based IDEs and AI coding tools.</p>
+<p>WHAT I SHOULD LEARN: Nothing. Genuinely. Enjoy the speed. ⚪ WATCH ONLY.</p>
+<hr>
+<h2>🚀 MY ACTION PLAN</h2>
+<h3>TODAY — 30 MINUTES</h3>
+<p><strong>Audit and rotate your tokens.</strong> GitHub → Settings → Developer settings → Personal access tokens, plus Settings → Applications. Revoke anything unrecognised or unused. Set expiry dates. Check npm, Vercel, MongoDB Atlas and any AI provider keys too. This is the direct, personal lesson of the LiteLLM breach — stolen long-lived tokens were the entry point.</p>
+<h3>TODAY — 1 HOUR</h3>
+<p><strong>Build the idempotent endpoint.</strong> Express + MongoDB, <code>POST /api/charge</code>, unique index on the idempotency key. Fire 20 parallel requests with the same key via <code>Promise.all</code> and prove the balance moved exactly once. Then drop the index and watch it fail. One hour, permanent knowledge.</p>
+<h3>THIS WEEK</h3>
+<p><strong>Agent evaluation.</strong> Read Google&#x27;s eval post and Cloudflare&#x27;s cost post back to back — they&#x27;re two halves of one skill: making an AI feature <em>reliable</em> and making it <em>affordable</em>. Then add a real eval suite to something you&#x27;ve already built.</p>
+<h3>THIS WEEK&#x27;S PROJECT</h3>
+<p><strong>&quot;Realtime Agent Dashboard&quot;</strong> — combines your existing stack with three of today&#x27;s emerging topics:</p>
+<ul>
+<li>Next.js front-end + a Vercel Function WebSocket (newly GA) for live updates.</li>
+<li>A Node agent that performs a small multi-step task (fetch → summarise → store in MongoDB), streaming each step to the dashboard over the WebSocket.</li>
+<li>Every tool call protected by an <strong>idempotency key</strong>, so a retry can&#x27;t duplicate work.</li>
+<li>A <code>evals/cases.json</code> suite asserting which tools get called.</li>
+<li>A token/cost counter per run, displayed live on the dashboard.</li>
+</ul>
+<p>That single project touches realtime, agents, idempotency, evals and cost engineering — the five things today&#x27;s news said matter most. It&#x27;s also a genuinely strong portfolio piece, because almost nobody builds the evals and the cost counter.</p>
+<h3>IGNORE FOR NOW</h3>
+<p><strong>Rust, and the whole native-tooling rabbit hole.</strong> tsrs is exciting and completely irrelevant to your next 12 months. Also ignore the AI hardware/finance news cycle — Nvidia&#x27;s supply chain and Meta&#x27;s share classes will not make you a better engineer. ⚪</p>
+<hr>
+<h3>🎯 IF I ONLY HAVE 1 HOUR TODAY</h3>
+<p>Build the <strong>idempotent <code>POST</code> endpoint</strong> in Node/Express + MongoDB.</p>
+<p>Minutes 0–10: create the <code>idempotency</code> collection with a <strong>unique index</strong> on <code>key</code>.</p>
+<p>Minutes 10–35: write <code>POST /api/charge</code> — insert the key first, do the work, store the response; on duplicate-key error (<code>11000</code>) return the stored response.</p>
+<p>Minutes 35–50: write a script firing 20 parallel <code>fetch</code> calls with the <em>same</em> key. Assert the wallet decreased exactly once.</p>
+<p>Minutes 50–60: drop the unique index, re-run, watch it double-spend. Sit with that for a minute — that&#x27;s the whole lesson about why database constraints beat JavaScript checks.</p>
+<p>Why this hour and not something else: it&#x27;s small, it&#x27;s finishable, it produces a reusable pattern you&#x27;ll use in every serious API you write for the rest of your career, and it&#x27;s the foundation under this week&#x27;s agent project. Everything else today was either news to absorb or reading to schedule. This is the thing to <em>build</em>.</p>
+<hr>
+<p><em>Sources: PHP security advisory / The Hacker News; LiteLLM + SafeDep, Socket, StepSecurity, Upwind; Vercel changelog &amp; engineering blog; Cloudflare blog (tsrs, WebMCP, eMudhra, inference optimization); Google Developers Blog; InfoQ; The Register; Ars Technica; three.js releases. Status labels used throughout: CONFIRMED / ANNOUNCED / EARLY / ANALYSIS.</em></p>
+</body>
+</html>
