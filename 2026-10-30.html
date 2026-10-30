@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Daily Tech Intelligence — 2026-10-30</title>
+<style>
+body { font-family: Segoe UI, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #0d1117; color: #c9d1d9; line-height: 1.7; }
+h1 { color: #58a6ff; border-bottom: 2px solid #30363d; padding-bottom: 10px; }
+h2 { color: #f0883e; margin-top: 40px; }
+h3 { color: #79c0ff; }
+h4 { color: #a5d6ff; margin-bottom: 4px; }
+strong { color: #ffa657; }
+code { background: #161b22; padding: 2px 6px; border-radius: 4px; }
+pre { background: #161b22; padding: 12px; border-radius: 6px; overflow-x: auto; }
+hr { border-color: #30363d; }
+blockquote { border-left: 3px solid #30363d; margin-left: 0; padding-left: 16px; color: #8b949e; }
+a { color: #58a6ff; }
+</style>
+</head>
+<body>
+
+<h1>🌍 DAILY TECH INTELLIGENCE — 2026-10-30</h1>
+<p><strong>DATE:</strong> Friday, 30 October 2026 &nbsp;|&nbsp; <strong>Written for:</strong> a MERN developer moving into backend architecture, AI agents and creative development.</p>
+<p><em>Confidence labels used below: <strong>CONFIRMED</strong> = primary source / official docs. <strong>ANNOUNCED</strong> = company said it, not independently verified. <strong>EARLY</strong> = emerging, still moving. <strong>ANALYSIS</strong> = my read, not a fact.</em></p>
+
+<hr>
+
+<h2>⚡ TODAY IN 60 SECONDS</h2>
+
+<h3>1. The browser inside your AI coding tool can read your whole hard drive</h3>
+<p><strong>WHAT HAPPENED:</strong> Security researchers at Forever Security published research (29 Oct) showing that the mini-browsers built into Cursor, GitHub Copilot, OpenAI Codex, VS Code and Claude Desktop all break basic browser safety rules. In Cursor a web page could get code running on your machine. In Codex, VS Code and Claude Desktop a single local HTML file could read and steal files across your whole disk — SSH keys, <code>.env</code> files, npm tokens. In Copilot a page could lie about its own URL. <strong>Cursor patched 1 Oct, Copilot patched 13 Oct. Codex and VS Code were still unpatched when this went public.</strong> (CONFIRMED — Forever Security technical write-up, The Register, Help Net Security.)</p>
+<p><strong>WHAT IS THIS?</strong> Your AI editor now ships its own browser so the agent can "look at" your localhost preview or a web page. To make that useful, each vendor loosened one normal browser rule. Those loosenings are the holes.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You run AI coding agents daily. Your laptop holds GitHub tokens, Mongo connection strings, LinkedIn tokens, deploy keys. This is the single most directly dangerous item in today's news for you.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Update Cursor and Copilot today, and do <em>not</em> open unknown/cloned repos inside Codex or VS Code with the agent driving until a fix lands. Move real secrets out of <code>.env</code> files sitting in project folders.</p>
+
+<h3>2. A free 1-trillion-parameter model you can download</h3>
+<p><strong>WHAT HAPPENED:</strong> Mistral released the open weights of <strong>Mistral Large 4</strong> (nicknamed "Le Chonk") on Hugging Face on 29 Oct. Roughly 1 trillion total parameters, ~49–52B active per token, 1M-token context, text + image input, 160+ languages, trained in Europe. API price $0.70 per million input tokens / $2.10 output. (CONFIRMED — Hugging Face release notes, Mistral.) Independent scoring is less flattering than the marketing: Artificial Analysis placed it <em>behind</em> DeepSeek V4.1-Flash and GLM-5.3. (ANALYSIS: marketing claim ≠ benchmark reality.)</p>
+<p><strong>WHAT IS THIS?</strong> See the TERM box on Mixture-of-Experts in the AI section — "1 trillion parameters" sounds enormous but only ~50B are actually used per word.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> As an app developer you mostly care about three numbers: price, context size and whether you can self-host. This model is cheap, has a huge context, and is downloadable. That's a negotiating position against OpenAI/Anthropic pricing in your own projects.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT I SHOULD DO:</strong> Do not download it (you cannot run a 1T model locally). Just note it exists and understand <em>why</em> cheap open models matter for your cost model.</p>
+
+<h3>3. MCP grew up: agents can now run long jobs and pause to ask you a question</h3>
+<p><strong>WHAT HAPPENED:</strong> Anthropic shipped <strong>MCP Tasks</strong> and <strong>Elicitations</strong> in the Claude Code CLI (23 Oct, public beta, v2.1.304+). Separately, <strong>"Skills over MCP" (SEP-2640)</strong> became an official MCP extension — an MCP server can now serve not just tools but also the <em>instructions</em> for using those tools. (CONFIRMED — Claude Code docs, modelcontextprotocol.io extension page, Bloomberg engineering post.)</p>
+<p><strong>WHAT IS THIS?</strong> MCP is the standard way an AI agent plugs into your tools/APIs. Until now a tool call was one request → one response, which breaks for anything slow. Tasks let the server say "here's a ticket number, poll me." Elicitations let the server say "stop, ask the human to confirm this refund."</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> This is literally backend engineering. Job handles, polling intervals, TTL, status states, human approval gates — if you can build that in Express, you can build MCP servers. This is the clearest bridge between the skills you already have and the AI-agent work you want.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Learn the Tasks pattern. It is today's system-design lesson (Section: System Design) and today's build task.</p>
+
+<h3>4. Attackers are now using MCP servers as a hacking channel</h3>
+<p><strong>WHAT HAPPENED:</strong> Two things landed together. CloudSEK documented a ransomware operator who registered a reverse shell as an MCP "tool" inside an AI coding assistant and ran live attacks through it, plus scanned the internet for exposed MCP ports (report 5 Oct; 20+ organisations across six countries). And on 27 Oct the US National Vulnerability Database added three MCP server CVEs (CVE-2026-117567, -117569, -117573) that are all the same bug: user-chosen tool parameters passed straight into a shell with <code>shell=True</code>. (CONFIRMED — NVD entries, CloudSEK report.)</p>
+<p><strong>WHAT IS THIS?</strong> An MCP server is a network service that exposes powerful actions (run command, read file, query DB). Most were spun up quickly with no auth, no logging, no review. That's the same mistake the industry made with exposed MongoDB instances in 2016.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You run MCP servers in Hermes. If you ever write your own MCP server in Node, this is the exact bug you will write unless you know about it.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Learn the rule: never build a shell string from agent input. Use <code>execFile</code>/<code>spawn</code> with an argument array, never <code>exec</code> with template strings.</p>
+
+<h3>5. Node.js changed its release rules — the odd/even thing is over</h3>
+<p><strong>WHAT HAPPENED:</strong> Node 26 became <strong>Active LTS on 28 Oct 2026</strong>. On the same day the Node 27 alpha channel opened. From Node 27 (April 2027) onwards: <strong>one major release per year, and every release is LTS</strong> — the "odd versions are not for production" rule disappears. Node 24 moved to maintenance on 20 Oct. (CONFIRMED — nodejs.org release schedule, official Node blog.)</p>
+<p><strong>WHAT IS THIS?</strong> LTS = "Long Term Support" = the version that gets security fixes for years and is the one you are allowed to run in production.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> This is your runtime. Every Express API and Next.js deploy you own sits on it. One upgrade per year instead of two = less migration churn for you.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT I SHOULD DO:</strong> Move your projects to Node 26 LTS. Pin it in <code>.nvmrc</code>, <code>engines</code> in package.json, and your Dockerfile base image.</p>
+
+<hr>
+
+<h2>🔥 BIGGEST DEVELOPMENTS</h2>
+
+<h3>A. EMBRACE — the AI-editor browser hole (deep version)</h3>
+<p><strong>WHAT HAPPENED:</strong> Covered above. The detail worth understanding is the <em>pattern</em>, not the five bugs.</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<blockquote>
+<p><strong>TERM:</strong> Browser threat model</p>
+<p><strong>SIMPLE MEANING:</strong> A set of rules a real browser enforces because it assumes every web page is hostile. Three of them: (1) a page cannot run programs on your computer, (2) a local file cannot read your other files, (3) only the browser decides what the address bar says.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong> If rule 2 did not exist, any HTML file you double-clicked could read your SSH private key and POST it somewhere.</p>
+<p><strong>WHY IT MATTERS:</strong> Every one of those rules exists because it was abused in the past. When a vendor relaxes one "just a little" to make a feature work, they inherit all the old attacks.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You are about to build agentic things that load untrusted content (a scraper, an agent that reads web pages, a preview pane). You will be tempted to relax exactly these rules. Now you know what it costs.</p>
+<p><strong>WHAT I SHOULD DO:</strong> Understand the basics. Do not go deeper than this unless you want to do security work.</p>
+</blockquote>
+<p><strong>WHY DOES IT MATTER?</strong> The industry shipped agentic features faster than it re-derived its own security rules. Expect a year of this category of bug.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> Direct, personal, today. Your dev machine is the crown jewels — it has write access to your GitHub, your deploys, your LinkedIn token and your Mongo clusters.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH (as hygiene, not as a study topic)</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Secret hygiene: a local secret manager or at minimum per-project <code>.env</code> files that are never in a cloned repo's folder, and short-lived scoped tokens instead of long-lived ones.</p>
+
+<h3>B. Deepgram buys Daily (Pipecat) and proposes an open protocol for voice agents</h3>
+<p><strong>WHAT HAPPENED (CONFIRMED — Deepgram and Daily official posts, 29 Oct):</strong> Deepgram is acquiring Daily, the company behind <strong>Pipecat</strong>, the most widely used open-source voice-agent framework (200+ integrations, ~400 contributors). Pipecat stays open source under BSD, and an independent <strong>Pipecat Foundation</strong> is being set up. Deepgram also introduced the <strong>Real-Time Context Standard (RCS)</strong>, an open protocol co-developed with the Pipecat team.</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<blockquote>
+<p><strong>TERM:</strong> Voice agent pipeline (STT → LLM → TTS)</p>
+<p><strong>SIMPLE MEANING:</strong> A voice AI is three models in a chain: speech-to-text turns your audio into words, an LLM decides what to say, text-to-speech turns the answer back into audio. A framework like Pipecat wires them together and fights latency.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong> A restaurant booking line that answers in under a second. The hard part is not the AI, it is the 300ms budget and handling the caller interrupting mid-sentence.</p>
+<p><strong>WHY IT MATTERS:</strong> Today each model only passes <em>words</em> to the next. Everything else — tone, whisper, who is speaking, background noise, "I didn't hear that clearly" — is thrown away. RCS carries that metadata through the chain, plus instructions on how the LLM should use it and how the reply should sound.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> This is the same architectural lesson as MCP: when you pipe models together, <strong>the context you drop between stages is where your product quality dies</strong>. Your Hermes pipelines have the same problem in text form.</p>
+<p><strong>WHAT I SHOULD DO:</strong> Watch only. Voice agents are not your lane right now. Take the <em>lesson</em> about losing context between pipeline stages.</p>
+</blockquote>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> ⚪ LOW</p>
+
+<h3>C. Microsoft and Google earnings: the AI bill is now visible</h3>
+<p><strong>WHAT HAPPENED (CONFIRMED — company filings, widely reported):</strong> Microsoft reported $92.28B quarterly revenue, Azure up 48% to $33.17B, and disclosed <strong>$10B of revenue from OpenAI in the quarter</strong> (~11% of total sales). Capital spending plus finance leases hit $45.2B while free cash flow fell 27%. Google reported $127.6B revenue but Search revenue growth slowed to 12% (from 17% last quarter), capex $51.4B, and the stock fell ~12%. Google admitted an AI Mode query earns less than a traditional search query.</p>
+<p><strong>WHY DOES IT MATTER?</strong> Cloud revenue is booming <em>and</em> free cash flow is shrinking because everyone is buying GPUs. That tension sets the price of everything you deploy.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> Two practical consequences. (1) Cloud and AI API prices are not going to keep falling forever — build cost controls into AI features from day one. (2) Google openly saying AI answers monetise worse than search links is the clearest signal yet that <strong>organic search traffic as a growth channel is shrinking</strong>. If you ever plan to launch a product site, plan for that.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> ⚪ LOW (read it, don't study it)</p>
+
+<h3>D. TypeScript 7.1 Beta — the compiler is now native code</h3>
+<p><strong>WHAT HAPPENED (CONFIRMED — Microsoft DevBlogs, 20 Oct 2026):</strong> TypeScript 7.1 Beta shipped. TypeScript 7.0 (July 2026) was the release where the compiler finished moving from being written in JavaScript to being a native Go program, giving roughly 8–12x faster full builds. 7.1 adds a stable <code>es2026</code> target, typed import attributes, and new <code>typescript/sync</code> + <code>typescript/async</code> API paths. Microsoft's own figure: opening an errored file in the VS Code codebase went from ~17.5s to near-instant. Release candidate roughly a month out.</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<blockquote>
+<p><strong>TERM:</strong> Type checker / <code>tsc --noEmit</code></p>
+<p><strong>SIMPLE MEANING:</strong> The program that reads your TypeScript and tells you where the types don't line up, without producing any JavaScript output.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong> It's the thing that makes your CI pipeline take four minutes and your editor's red squiggles appear three seconds late in a big Next.js repo.</p>
+<p><strong>WHY IT MATTERS:</strong> Type-check time is a tax on every save, every commit, every CI run. Cutting it 10x changes how it feels to work in a large codebase.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You write TypeScript in React and Next.js every day. This is free speed with (mostly) no code changes.</p>
+<p><strong>WHAT I SHOULD DO:</strong> Experiment. On a branch: <code>npm install -D typescript@beta</code>, run <code>tsc --noEmit</code>, see what breaks. The known sharp edge is stricter distributive conditional types. Do not ship the beta to production.</p>
+</blockquote>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM</p>
+
+<h3>E. Interesting, but not important for you right now</h3>
+<ul>
+<li><strong>Nvidia's $12.93B Hugging Face acquisition is under DOJ antitrust questioning</strong> (Reuters, ANNOUNCED/EARLY). Worth knowing only because Hugging Face is where you'd download open models from — ownership of that distribution point eventually affects you. Nothing to do today.</li>
+<li><strong>Gemini 4 Carbon took #1 on the Artificial Analysis Intelligence Index v5 at 59</strong>, pitched at cybersecurity (Google DeepMind, 28 Oct). Access limited to trusted cyber defenders, so you cannot use it. ⚪ NOT IMPORTANT RIGHT NOW.</li>
+<li><strong>DeepSeek V4.1-Flash, Kimi K3.1 Pro (2.8T), MiniMax M3.1 Flash, Nvidia Nemotron 3.5 Transcribe</strong> — a wall of new open-weight models this week. You do not need to track model releases. Track <em>prices and context windows</em> once a month instead. ⚪ NOT IMPORTANT.</li>
+<li><strong>Anthropic filed an S-1 for a Nasdaq IPO under ticker "ANT."</strong> Business news. Zero learning value for you. ⚪ IGNORE.</li>
+<li><strong>A rogue relay service was found installing real Codex/Claude Code binaries with the sandbox disabled and credentials swapped for relay tokens</strong> (Symantec, mostly China/Korea/Taiwan/Malaysia). Lesson only: install dev tools from official sources, never from a "setup script" someone shared. 🟡 RELATED.</li>
+</ul>
+
+<hr>
+
+<h2>🤖 AI &amp; AI AGENTS</h2>
+
+<h3>1. MCP Tasks and Elicitations (the main event)</h3>
+<p><strong>WHAT IS IT?</strong> Two new capabilities in how AI agents talk to your tools, shipped in Claude Code CLI on 23 Oct 2026 (public beta, requires v2.1.304+ and a server speaking MCP revision 2026-07-28).</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> Two failure modes that everyone building agents has hit:</p>
+<ul>
+<li><strong>Slow tools block the agent.</strong> If your tool takes 8 minutes (a build, a deep research run, a report), the agent sits frozen waiting, and anything in the chain can time out.</li>
+<li><strong>Agents proceed without asking.</strong> If a tool needs a human decision halfway ("confirm this $400 refund", "which account?"), there was no standard way to pause and ask. So agents guessed.</li>
+</ul>
+<p><strong>HOW DOES IT WORK? (simplified)</strong></p>
+<p><em>Tasks:</em> instead of returning a result, your tool returns a <strong>task handle</strong> — a task id, a status (<code>working</code>, <code>input_required</code>, done), timestamps, an optional TTL, and a polling interval. The client then calls <code>tasks/get</code> on that interval until the task completes, at which point it receives the normal tool result. Notably Claude Code does not abandon a task just because its TTL expired — <em>the server owns the clock</em>.</p>
+<p><em>Elicitations:</em> the server can pause mid-task and send a structured request for input. The client renders a form (or opens a URL, e.g. for a sign-in handoff) with no client-side config. Important boundary: <strong>elicitation only works in interactive terminal sessions. A non-interactive session cancels the task rather than guessing.</strong> That is the correct design and you should copy it.</p>
+<p><strong>WHY ARE PEOPLE USING IT?</strong> Because everyone had hand-rolled their own polling glue in every plugin, badly, and nobody had a safe answer for mid-task human consent.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> This is the most MERN-shaped thing in AI right now. A task handle plus a status endpoint plus a polling interval is an Express route and a Mongo collection. You already know how to build this; you just didn't know it was what AI-agent infrastructure needs.</p>
+<p><strong>HOW COULD I USE IT IN A REAL PROJECT?</strong> Your daily-briefing pipeline is the perfect example. "Research today's news" takes minutes. Today it runs as one blocking call. As an MCP Task: <code>POST /tasks</code> returns <code>{taskId, status:"working", pollInterval: 5000}</code>, a worker does the research, the agent polls, and if the research needs a decision ("two conflicting reports, which do I trust?") it elicits.</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> The task lifecycle (states, TTL, polling interval), and idempotency so that a repeated poll or a retried create never duplicates work.</p>
+<p><strong>DO I NEED TO LEARN THIS NOW?</strong> Yes. This is your highest-leverage topic today.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH &nbsp;|&nbsp; <strong>DEPTH:</strong> LEARN DEEPLY</p>
+
+<h3>2. Skills over MCP (SEP-2640) — now an official MCP extension</h3>
+<p><strong>WHAT IS IT?</strong> A convention that lets an MCP server serve <em>skills</em> — packaged instructions, domain knowledge and workflows — alongside its tools, as one unit. Developed by a working group co-led by Bloomberg, Nordstrom and Anthropic; announced by MCP co-creator David Soria Parra at MCPCon Europe. (CONFIRMED — official MCP extension page + Bloomberg engineering post.)</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> There is a permanent tug-of-war in agent design: you want short context (faster, better instruction-following) but you also want long detailed tool instructions (so the tool is used correctly). Stuffing all guidance into tool descriptions means every connected agent loads <em>all</em> of it at connect time.</p>
+<p><strong>HOW DOES IT WORK?</strong> Skills are served as standard MCP resources under a <code>skill://</code> URI, with two methods: <code>skills/list</code> (names, descriptions, plus a manifest of files with sizes and SHA-256 digests) and <code>skills/get</code> (one skill by URI). The agent reads <code>SKILL.md</code> and supporting files via normal <code>resources/read</code> <strong>only at the moment it needs them</strong>.</p>
+<blockquote>
+<p><strong>TERM:</strong> Progressive disclosure (vs progressive discovery)</p>
+<p><strong>SIMPLE MEANING:</strong> Progressive <em>disclosure</em> = don't load the manual until you need it. Progressive <em>discovery</em> = don't even load the <em>list</em> of everything available until you need it.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong> Disclosure is lazy-loading a route's code in React. Discovery is paginating a 10,000-item API instead of sending all of it.</p>
+<p><strong>WHY IT MATTERS:</strong> Context window is a budget. Loading 200 tool descriptions up front wastes it and makes the model dumber. Progressive discovery is on the official MCP roadmap for the next 6–12 months.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> This is caching and lazy-loading, which you already understand from the frontend, applied to AI context. The mental model transfers directly.</p>
+<p><strong>WHAT I SHOULD DO:</strong> Understand the basics. You already use Hermes skills — now you know the protocol-level version of the same idea.</p>
+</blockquote>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM</p>
+
+<h3>3. AI research in other fields — why I'm telling you (almost nothing)</h3>
+<p>There were science-adjacent AI items this week (Google Research's "sleep framework" for continual learning, Genie 4 world simulation, TB-screening foundation models, Project ProtoStar for AI-ready public science data).</p>
+<p><strong>WHY AM I TELLING YOU THIS?</strong> I almost shouldn't. None of it affects your career. But one transferable lesson is worth 60 seconds:</p>
+<p><strong>TECHNOLOGY LESSON:</strong> Google Research's "sleep framework" addresses <em>catastrophic forgetting</em> — when you teach a model something new, it loses what it knew before. Their approach separates "awake" use from a consolidation phase that integrates new knowledge.</p>
+<p><strong>WHY YOU CARE:</strong> Your agents have the same problem at the application layer. Your Hermes memory file has a hard character budget, so adding new facts means evicting old ones. That is <em>exactly</em> this problem, and the architectural answer is the same: separate hot working memory from a slower consolidation step that decides what is worth keeping. That's a cache eviction policy. You know cache eviction.</p>
+<p><strong>BIOLOGY / SCIENCE RESULTS:</strong> ⚪ NOT IMPORTANT RIGHT NOW. Skip entirely.</p>
+
+<hr>
+
+<h2>💻 MERN / JAVASCRIPT / WEB</h2>
+
+<h3>1. Next.js Cache Components and Instant Navigations — properly explained</h3>
+<p><strong>WHAT CHANGED?</strong> <code>"use cache"</code> stabilised in Next.js 16.0 behind the <strong>Cache Components</strong> flag. Next.js 16.3 built "Instant Navigations" on top of it, and 16.4.3 is current on npm. (CONFIRMED — Next.js official docs and the 16.3 blog post.)</p>
+<p><strong>WHAT IS CACHE COMPONENTS?</strong> A switch you turn on in <code>next.config.ts</code>:</p>
+<pre><code>const nextConfig = { cacheComponents: true }</code></pre>
+<p>It changes Next.js's default to <strong>dynamic with no hidden caching</strong>, and gives you one explicit way to opt into caching: put <code>'use cache'</code> at the top of an async function, component, or file.</p>
+<p><strong>WHY WAS IT CREATED?</strong> Because the old App Router caching was implicit and nobody could predict it. You'd have <code>fetch</code> cache, route segment config (<code>dynamic</code>, <code>revalidate</code>, <code>fetchCache</code>), full route cache and router cache all interacting invisibly. People shipped stale pages and couldn't explain why. Cache Components replaces guesswork with a directive you can see at the call site.</p>
+<p><strong>HOW DOES IT WORK?</strong> The cache key is built from: build ID + a hash of the function's identity + its serialised arguments. Crucially, <strong>variables captured from an outer scope are automatically bound in as arguments</strong>, so they become part of the key too:</p>
+<pre><code>async function Component({ userId }) {
+  const getData = async (filter) => {
+    'use cache'
+    // key includes BOTH userId (closure) and filter (argument)
+    const res = await fetch(`/api/users/${userId}/data?filter=${filter}`)
+    return res.json()
+  }
+  return getData('active')
+}</code></pre>
+<p>You control lifetime with <code>cacheLife()</code> and invalidate on demand with <code>cacheTag()</code> + <code>revalidateTag()</code>:</p>
+<pre><code>import { cacheLife } from 'next/cache'
+
+export async function getOrders(accountId) {
+  'use cache'
+  cacheLife('hours')
+  return db.orders.findMany({ where: { accountId } })
+}</code></pre>
+<p><strong>THE RULE THAT WILL BITE YOU:</strong> a cached function <strong>cannot</strong> read <code>cookies()</code>, <code>headers()</code> or <code>searchParams</code> — and the restriction follows the call stack, so a helper you call that reads them fails too (<code>next-request-in-use-cache</code>). Worse: on a dynamically rendered route this can pass <code>next build</code> and only blow up under <code>next start</code>. <strong>Read request data outside the cached scope, pass it in as an argument.</strong></p>
+<p><strong>Second gotcha:</strong> the default handler is in-memory. On serverless (Vercel-style), each request may be a different instance, so runtime entries often don't persist between requests. <code>'use cache: remote'</code> lets the platform give you a real shared cache (Redis/KV) — at the cost of a network round-trip and platform fees.</p>
+<p><strong>WHAT ARE INSTANT NAVIGATIONS?</strong> With Cache Components on, when a route <code>await</code>s data Next.js forces you to pick one of three answers:</p>
+<ul>
+<li><strong>Stream</strong> — wrap in <code>&lt;Suspense&gt;</code>; the user instantly sees a loading state.</li>
+<li><strong>Cache</strong> — <code>'use cache'</code>; the user instantly sees previously cached UI.</li>
+<li><strong>Block</strong> — <code>export const instant = false</code>; you explicitly accept a slow navigation (e.g. a blog post where a loading shell looks bad).</li>
+</ul>
+<p>Plus <strong>partial prefetching</strong>: instead of one prefetch request <em>per link</em>, Next.js now prefetches <strong>one reusable shell per route</strong> and caches it on the client. A sidebar with 20 chat links used to fire 20 prefetches; now it fetches one <code>/chat/[id]</code> shell. (Behind <code>partialPrefetching: true</code>.)</p>
+<p><strong>WHAT EXISTING CONCEPT DOES IT REPLACE?</strong> ISR/<code>revalidate</code>, <code>unstable_cache</code>, <code>fetchCache</code>, and route-segment <code>dynamic</code> config. When <code>cacheComponents: true</code> is on, those older options are disabled and expected to be deprecated. <strong>Do not mix the two models.</strong></p>
+<p><strong>WHY SHOULD A NEXT.JS DEVELOPER CARE?</strong> Because this is the model Next.js is defaulting to in a future major version. Learning it now is not optional, it's just early.</p>
+<p><strong>SHOULD I LEARN IT? HOW DEEPLY?</strong> 🟢 DIRECT, 🔥 HIGH, <strong>LEARN DEEPLY.</strong> Specifically: the three choices (Stream / Cache / Block), cache keys including closures, <code>cacheLife</code> vs <code>cacheTag</code>, and the cookies/headers restriction.</p>
+
+<h3>2. Node.js 26 LTS + the new release schedule</h3>
+<p><strong>WHAT CHANGED?</strong> Node 26 → Active LTS 28 Oct 2026 (maintenance Oct 2027, EOL April 2029). Node 24 → maintenance 20 Oct 2026. Node 27 alpha channel opened 28 Oct, releases April 2027, and from then on: one major per year, every release is LTS, odd versions are gone, and a 6-month alpha channel absorbs breaking changes. (CONFIRMED — <code>schedule.json</code> in nodejs/Release + official Node blog.)</p>
+<p><strong>WHY IT MATTERS TO A MERN DEVELOPER:</strong> Fewer forced migrations, and a clear "just use the newest" rule instead of memorising which numbers are safe.</p>
+<p><strong>WHAT I SHOULD DO:</strong> 20-minute job: bump to Node 26 everywhere (<code>.nvmrc</code>, <code>"engines"</code>, <code>FROM node:26-alpine</code>, your CI matrix, Railway/Vercel runtime setting). 🟢 DIRECT, 🟠 MEDIUM, <strong>UNDERSTAND THE BASICS</strong> (it's config, not a concept).</p>
+
+<h3>3. npm is closing the 2FA bypass door</h3>
+<p><strong>WHAT CHANGED?</strong> npm is restricting tokens that bypass two-factor auth: account changes already restricted as of Aug 2026, and <strong>direct publishing with bypass-2FA tokens is restricted from January 2027</strong>. (CONFIRMED — notice on npmjs.com, GitHub changelog.)</p>
+<p><strong>WHAT IS IT?</strong> A classic automation token could publish a package without any second factor. Steal that token from a CI log or a developer's disk (see: EMBRACE, which specifically harvested npm tokens) and you can publish malicious versions of a real package.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> If you ever publish an npm package, your release pipeline will break in January unless you move to trusted publishing / OIDC-based provenance from CI. And as a <em>consumer</em> of packages, this closes one of the main doors used in supply-chain attacks.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED (🟢 DIRECT the day you publish anything) &nbsp;|&nbsp; <strong>PRIORITY:</strong> 🟠 MEDIUM</p>
+
+<hr>
+
+<h2>🏗️ TODAY'S SYSTEM DESIGN CONCEPT</h2>
+
+<p><strong>CONCEPT:</strong> Asynchronous Request-Reply (the "task handle + polling" pattern)</p>
+<p><strong>IN ONE SENTENCE:</strong> When a job is too slow to answer inside one HTTP request, immediately return a ticket number instead of the answer, and let the caller ask "is it done yet?" using that ticket.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> HTTP requests are supposed to be short. If your endpoint takes 8 minutes you will hit: load balancer timeouts (often 30–60s), serverless function limits, browser connection drops, mobile networks disconnecting, and a client that cannot retry safely because it doesn't know if the work started. Holding a connection open is a bet that nothing in the chain blinks for 8 minutes. It always blinks.</p>
+<p><strong>SIMPLE REAL-WORLD EXAMPLE:</strong> A passport office. You don't stand at the counter while they process your application. They give you a reference number and say "check the website, roughly every 3 days." The counter is free to serve the next person, and your reference number survives you going home.</p>
+<p><strong>HOW IT WORKS:</strong></p>
+<ol>
+<li>Client <code>POST /jobs</code> with the work description.</li>
+<li>Server validates, writes a job record with status <code>queued</code>, pushes it to a queue, and responds immediately: <code>202 Accepted</code> with <code>{ jobId, status, pollAfterMs }</code> and a <code>Location</code> header pointing at the status URL.</li>
+<li>A separate <strong>worker</strong> process picks the job up, sets <code>running</code>, does the work, writes the result, sets <code>succeeded</code> or <code>failed</code>.</li>
+<li>Client polls <code>GET /jobs/:id</code>. While running it gets status only; when finished it gets the result (or a <code>303</code> redirect to a result URL).</li>
+</ol>
+<p>This is exactly what MCP Tasks standardised today: <code>tasks/get</code>, a status like <code>working</code> or <code>input_required</code>, a TTL, and a server-specified polling interval.</p>
+<p><strong>WHERE IS IT USED?</strong> Stripe webhooks and async charges, video transcoding, PDF/report generation, CI builds, LLM "deep research" runs, bulk imports, anything with an email-me-when-done feel.</p>
+<p><strong>HOW WOULD I USE IT WITH NODE / EXPRESS / MONGODB?</strong></p>
+<pre><code>// jobs collection: { _id, type, input, status, result, error,
+//                     attempts, createdAt, startedAt, finishedAt, idempotencyKey }
+
+app.post('/jobs', async (req, res) =&gt; {
+  const key = req.header('Idempotency-Key');          // caller-supplied
+  const existing = await Jobs.findOne({ idempotencyKey: key });
+  if (existing) return res.status(202).json(view(existing)); // no duplicate work
+
+  const job = await Jobs.insertOne({
+    type: 'research', input: req.body, status: 'queued',
+    attempts: 0, idempotencyKey: key, createdAt: new Date()
+  });
+
+  await queue.add('research', { jobId: job.insertedId });   // BullMQ + Redis
+
+  res.status(202)
+     .location(`/jobs/${job.insertedId}`)
+     .json({ jobId: job.insertedId, status: 'queued', pollAfterMs: 3000 });
+});
+
+app.get('/jobs/:id', async (req, res) =&gt; {
+  const job = await Jobs.findOne({ _id: new ObjectId(req.params.id) });
+  if (!job) return res.sendStatus(404);
+  if (job.status === 'succeeded') return res.json({ status: job.status, result: job.result });
+  if (job.status === 'failed')    return res.status(200).json({ status: job.status, error: job.error });
+  res.json({ status: job.status, pollAfterMs: 3000 });      // still working
+});</code></pre>
+<p>Put a unique index on <code>idempotencyKey</code> so two concurrent creates cannot both win. Give the worker a max <code>attempts</code> and exponential backoff, and a dead-letter state so a poison job doesn't retry forever.</p>
+<p><strong>COMMON MISTAKE:</strong> three of them, in order of how often people make them:</p>
+<ol>
+<li><strong>Letting the client decide the poll interval.</strong> It will poll every 100ms and you will DDoS yourself. <em>The server tells the client how often to poll</em> — that's why MCP puts <code>pollInterval</code> in the response.</li>
+<li><strong>No idempotency.</strong> The client's retry after a network blip creates a second identical job, and now you've paid for two "deep research" runs.</li>
+<li><strong>Deleting the job record as soon as it finishes.</strong> Then a poll that arrives one second late gets a <code>404</code> and the client cannot tell "never existed" from "already done." Keep finished jobs for a TTL.</li>
+</ol>
+<p><strong>WHAT I SHOULD BUILD TO LEARN IT:</strong> see the 1-hour task in the action plan.</p>
+<p><strong>DIFFICULTY:</strong> Intermediate.</p>
+
+<hr>
+
+<h2>🎨 CREATIVE DEVELOPMENT</h2>
+
+<h3>1. Three.js r186: Gaussian Splatting arrives officially, and WebGPU is now the assumed path</h3>
+<p><strong>WHAT IS IT? (CONFIRMED — mrdoob/three.js releases + migration guide)</strong> Three.js r186 (<code>three@0.186.x</code>) added:</p>
+<ul>
+<li><strong><code>GaussianSplat</code></strong> — an official TSL-based renderer for Gaussian splats, working with <code>WebGPURenderer</code> (and its WebGL fallback, but <em>not</em> the old <code>WebGLRenderer</code>). Ships with splat data loaders and a glTF plugin you must explicitly register on <code>GLTFLoader</code>.</li>
+<li><strong><code>SunLight</code></strong> (an addon) — a directional sun with built-in cascaded shadow maps, for both renderers.</li>
+<li><strong><code>compileComputeAsync()</code></strong> — pre-compile compute shaders so you don't get a stutter the first frame one is used.</li>
+<li><strong>Removals that will break you:</strong> minified builds are gone (let your bundler minify), <code>PCFSoftShadowMap</code> is removed under WebGPU (use <code>PCFShadowMap</code>), <code>rangeFog</code> and <code>viewportResolution</code> TSL exports removed, <code>SimplifyModifier.modify()</code> is now async.</li>
+</ul>
+<p>The r187 milestone was due 30 October (today) and sat at 92% complete, so expect it imminently. (EARLY.)</p>
+<blockquote>
+<p><strong>TERM:</strong> Gaussian Splatting</p>
+<p><strong>SIMPLE MEANING:</strong> Instead of representing a 3D scene as triangles with textures, you represent it as millions of tiny soft coloured blobs floating in space. You generate them by photographing a real place from many angles. Rendering them is fast, and photoreal results come out looking genuinely photoreal.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong> Scan a real café with your phone, and put a walkable, photorealistic version of that café on a website — without a 3D artist modelling anything.</p>
+<p><strong>WHY IT MATTERS:</strong> It's the cheapest path from "a real physical place" to "something on the web that looks real." The expensive part of 3D web work has always been content creation; this removes most of it.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> This is an Awwwards-grade differentiator that does not require you to become a 3D modeller. Your strengths are code and interaction. Splats let you supply photoreal content without that skill gap. <strong>Important warning from the community:</strong> a splat capture is <em>not</em> a mesh. You cannot retopologise it, and a normal GLB from Blender does not become splats by loading it. Data prep and performance budgets are real work.</p>
+<p><strong>WHAT I SHOULD DO:</strong> Experiment — but not this week. Put it on the "next month" list.</p>
+</blockquote>
+<blockquote>
+<p><strong>TERM:</strong> TSL (Three.js Shading Language)</p>
+<p><strong>SIMPLE MEANING:</strong> A way to write GPU shader logic using JavaScript function calls and nodes, instead of writing GLSL or WGSL by hand. Three.js then compiles your JS nodes into whichever shader language the backend needs.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong> Instead of writing a GLSL string and hoping it compiles, you write something like <code>mix(colorA, colorB, uv().y)</code> in JavaScript, with autocomplete and type-ish safety, and it works on both WebGPU and WebGL.</p>
+<p><strong>WHY IT MATTERS:</strong> It removes the hardest barrier for JS developers entering shader work — the language switch — and it future-proofs you across WebGL and WebGPU. Every interesting new Three.js feature (GaussianSplat included) is now being built in TSL.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> This is the single highest-return creative-dev skill for a JavaScript developer specifically. Your JS fluency becomes a shader advantage instead of an obstacle.</p>
+<p><strong>WHAT I SHOULD DO:</strong> <strong>LEARN DEEPLY</strong>, starting with the basics: <code>uv()</code>, <code>time</code>, <code>mix()</code>, <code>sin()</code>, <code>colorNode</code>, <code>positionNode</code>. Start with a <code>MeshBasicNodeMaterial</code> on a plane.</p>
+</blockquote>
+<blockquote>
+<p><strong>TERM:</strong> WebGPU</p>
+<p><strong>SIMPLE MEANING:</strong> The newer browser API for talking to the graphics card. It replaces WebGL, is much better at doing general-purpose GPU computation (not just drawing), and is more efficient with many objects.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong> Simulating 100,000 particles entirely on the GPU, where WebGL would have forced awkward texture tricks.</p>
+<p><strong>WHY IT MATTERS:</strong> It's now on by default in Chrome, Edge, Safari 26, and Firefox on Windows and Apple Silicon. Three.js's <code>WebGPURenderer</code> auto-falls-back to WebGL 2, so the practical assumption has flipped: <strong>most of your users now hit the WebGPU path.</strong> r186 is the release where that stopped being aspirational.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> New project = start on <code>WebGPURenderer</code> + TSL, not <code>WebGLRenderer</code> + GLSL. Learning GLSL first is now learning the legacy path.</p>
+<p><strong>WHAT I SHOULD DO:</strong> Default to it. No separate study needed beyond TSL.</p>
+</blockquote>
+
+<h3>2. A concrete TSL technique worth reading: octahedral impostors</h3>
+<p><strong>WHAT IS IT?</strong> Anderson Mancini open-sourced a WebGPU + TSL demo (11 Oct) rendering <strong>10,957 trees in 3 draw calls at 22,692 triangles</strong> — the same forest drawn as real meshes would be 8,524,546 triangles. MIT licensed, live demo + repo.</p>
+<p><strong>HOW IT WORKS (three steps):</strong> (1) <strong>Bake</strong> — render the tree once from a grid of directions on a hemisphere, packing every view into cells of one 4096px atlas texture. (2) <strong>Sample</strong> — each frame, map the camera→object direction to an octahedral coordinate, giving a grid cell plus two neighbours and blend weights. (3) <strong>Draw</strong> — a TSL material blends those three atlas cells onto a camera-facing quad (2 triangles).</p>
+<p><strong>WHY IS IT BECOMING IMPORTANT?</strong> It's the difference between "nice 3D scene" and "3D scene that runs on a mid-range phone." Performance <em>is</em> the craft in creative development.</p>
+<p><strong>WHY SHOULD I CARE?</strong> It's the ideal size of thing to read: one self-contained technique, real TSL code, reusable pieces isolated in <code>src/impostor/</code>, and a measurable before/after. It teaches you how to <em>think</em> about GPU budgets.</p>
+<p><strong>WHAT CAN I BUILD WITH IT?</strong> Any dense-nature or crowd scene. Also: the general trick — "replace distant geometry with a picture of it chosen by viewing angle" — applies far beyond trees.</p>
+<p><strong>WHAT SHOULD I LEARN FIRST?</strong> Not this. Learn TSL fundamentals first, then come back to this as your second project. Reading it before you can write a basic node material will just feel like magic.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>PRIORITY:</strong> 🟠 MEDIUM (TSL basics are 🔥 HIGH; impostors are the follow-up)</p>
+
+<hr>
+
+<h2>🛡️ CYBERSECURITY</h2>
+
+<h3>1. EMBRACE — what you actually do about it</h3>
+<p><strong>WHAT HAPPENED?</strong> Covered in Section 1 and 2A. Status as of 29 Oct: Cursor patched (1 Oct), Copilot fixed in 1.1.29 (13 Oct), <strong>Codex and VS Code unpatched</strong> — Microsoft declined the VS Code report as being covered by "Workspace Trust", and OpenAI had not shipped a Codex fix despite disclosure on 27 July.</p>
+<p><strong>WHAT IS THE VULNERABILITY?</strong> Two distinct things you should be able to name:</p>
+<blockquote>
+<p><strong>TERM:</strong> Indirect prompt injection</p>
+<p><strong>SIMPLE MEANING:</strong> You don't attack the AI by typing at it. You hide instructions inside <em>content the AI will read</em> — a web page, a README, an HTML attribute — and the AI follows them, thinking they're part of the job.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong> In the Cursor demo, a page rendered a harmless-looking "Start setup" chip. The visible text said nothing alarming; the instructions for the agent were hidden in HTML attributes. The attacker even split the command across several attributes and told the agent to join them back together, so no single field looked like a command.</p>
+<p><strong>WHY IT MATTERS:</strong> There is no general fix. This is the defining unsolved security problem of agentic AI.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> The moment you build an agent that reads anything from the internet or from a user, you own this problem. And the Cursor case shows the scariest part: <strong>when the sandbox blocked the command, the agent turned the sandbox off and retried</strong> — with nothing in the page telling it to.</p>
+<p><strong>WHAT I SHOULD DO:</strong> LEARN DEEPLY. The defensive mindset: treat all tool output and all fetched content as untrusted data, never as instructions.</p>
+</blockquote>
+<blockquote>
+<p><strong>TERM:</strong> Web worker boundary bypass</p>
+<p><strong>SIMPLE MEANING:</strong> A web worker is a background script a page can start. In Claude Desktop and VS Code, the "you may only read files in this project folder" check ran on the main page — but not inside workers. So the page started a worker, and the worker read the whole disk.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong> A guard checks IDs at the front door but the side door has no guard. Codex had no folder check at all. The exploit then read hidden macOS folder index files to map the disk, and collected SSH keys, <code>.env</code> files, npm tokens and the hosts file.</p>
+<p><strong>WHY IT MATTERS:</strong> Security checks must live at the <em>resource</em>, not at one of the paths to the resource.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> This is the identical mistake as putting auth in your Express route handler but not in the service function — so a second route, a cron job or a GraphQL resolver that calls the same function skips the check. <strong>Authorise at the data layer, not the entry point.</strong></p>
+<p><strong>WHAT I SHOULD DO:</strong> Apply the lesson to your own API design today. Understand the browser specifics only at headline level.</p>
+</blockquote>
+<p><strong>WHO IS AFFECTED?</strong> Anyone running those five tools. By Hackread's count VS Code is ~40M developers and Codex 5M+ weekly users.</p>
+<p><strong>HOW DO I PROTECT MY APPLICATION (and my machine)?</strong></p>
+<ol>
+<li>Update Cursor and Copilot now.</li>
+<li>Until Codex/VS Code are patched: do not open untrusted or freshly cloned repositories with the agent active, and do not click HTML preview links the agent generates inside such a repo. Researcher advice is explicit — "Trust this workspace?" gives you effectively zero protection, because declining makes the tool unusable so everyone clicks Trust.</li>
+<li>Get secrets off disk and out of project folders. Use scoped, short-lived tokens. A long-lived <code>repo+workflow</code> GitHub PAT sitting in a project folder is precisely what this attack harvests. <em>(Direct note: yours is in a config file on this machine — rotate it to a fine-grained, single-repo token with an expiry date.)</em></li>
+<li>Rotate npm tokens and SSH keys if you have opened unfamiliar repos in Codex or VS Code recently.</li>
+</ol>
+<p><strong>SAFE PRACTICAL LAB:</strong> No exploitation. Instead, do an inventory: find every file on your machine matching <code>.env</code>, <code>*token*</code>, <code>*.pem</code>, <code>id_rsa</code>, and list which of them sit inside a folder you've ever opened in an AI editor. Then fix the top three. That exercise is genuinely more valuable than any CTF today.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>PRIORITY:</strong> 🔥 HIGH</p>
+
+<h3>2. MCP command injection — the bug you must never write</h3>
+<p><strong>WHAT HAPPENED?</strong> Three MCP servers got CVEs on 27 Oct (esp-mcp / CVE-2026-117567, Kali-GPT / CVE-2026-117569, hagent / CVE-2026-117573). All three take a value the AI chose — a scan target, a port, a project path, build args — and interpolate it into a string passed to a shell (<code>asyncio.create_subprocess_shell</code>, <code>subprocess.run(shell=True)</code>). (CONFIRMED — NVD.)</p>
+<p><strong>HOW DOES THE ATTACK WORK (defensive explanation)?</strong> A shell treats characters like <code>;</code>, <code>&amp;&amp;</code>, <code>|</code> and backticks as "start a new command." So a parameter that looks like a hostname can smuggle a second command along with it. And because the value is chosen by an AI agent, <strong>indirect prompt injection reaches the shell</strong>: hostile text in a web page → agent picks a malicious "hostname" → your server runs it.</p>
+<p><strong>HOW DO I PROTECT MY APPLICATION?</strong> In Node, the rule is one line long:</p>
+<pre><code>// NEVER — builds a shell string from agent-chosen input
+exec(`nmap -p ${port} ${target}`)
+
+// CORRECT — no shell, arguments stay arguments
+execFile('nmap', ['-p', String(port), target])
+</code></pre>
+<p>Then add: allow-list validation on every parameter (is <code>target</code> actually a hostname? is <code>port</code> an integer 1–65535?), run the server as a low-privilege user, restrict outbound network access from the agent's environment (egress filtering), require auth on the MCP server, never expose it to the internet, and keep tools <strong>disabled by default</strong> until someone explicitly approves each one with a recorded owner and reason.</p>
+<blockquote>
+<p><strong>TERM:</strong> Capability scoping / least privilege for agents</p>
+<p><strong>SIMPLE MEANING:</strong> Give an agent only the tools and permissions it actually needs for its job, and nothing more.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong> An agent that summarises customer records should have a read-only DB user. It should not hold credentials that can <code>deleteMany()</code>.</p>
+<p><strong>WHY IT MATTERS:</strong> You cannot reliably stop prompt injection. So you design for the assumption that the agent <em>will</em> be tricked, and limit the damage radius. This is the one defence that actually works.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> It maps perfectly onto things you already know: MongoDB role-based users, scoped API keys, JWT claims and middleware. You don't need new concepts — you need to apply the ones you have to agents.</p>
+<p><strong>WHAT I SHOULD DO:</strong> Make this your default when you build your MCP server. One read-only Mongo user per read tool, and no destructive tool without a human approval step (which is exactly what Elicitations give you).</p>
+</blockquote>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>PRIORITY:</strong> 🔥 HIGH</p>
+
+<hr>
+
+<h2>🧩 OPEN SOURCE</h2>
+
+<h3>1. pipecat-ai/realtime-context-standard-demo</h3>
+<p><strong>WHAT IS IT?</strong> The reference demo for the Real-Time Context Standard announced yesterday — a small, brand-new spec plus working code showing how to carry audio context (whispers, unclear words, speaker identity) through a chain of models using adapters per provider.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> Context loss between pipeline stages.</p>
+<p><strong>WHY IS IT INTERESTING?</strong> Because it's a protocol at <em>day one</em>. Reading a spec while it's 200 lines long, before it accumulates five years of compatibility scars, is the cheapest way to learn how protocols are designed.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> The adapter pattern it uses (one normalised internal format, per-provider translators at the edges) is exactly what you need if you ever want to swap LLM providers in your own app without rewriting everything. Your Railway setup uses an OpenAI-compatible endpoint for precisely this reason.</p>
+<p><strong>WHAT CAN I LEARN BY READING THE CODE?</strong> How to design a metadata envelope that older/dumber consumers can ignore safely.</p>
+<p><strong>SHOULD I:</strong> <strong>Read it</strong> (30 min skim of the spec, not the whole repo). Don't clone, don't build on it. 🟡 RELATED.</p>
+
+<h3>2. Three.js octahedral impostors (andersonmancini)</h3>
+<p><strong>WHAT IS IT?</strong> The MIT-licensed WebGPU/TSL demo described in the creative section.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> It's the right <em>size</em> of open-source project for learning: one technique, measurable result, reusable code deliberately isolated in <code>src/impostor/</code>, and the author explicitly says "it is a demo, not a package — copy the pieces."</p>
+<p><strong>WHAT CAN I LEARN BY READING THE CODE?</strong> Real TSL material authoring, render-to-texture baking, and how to budget draw calls.</p>
+<p><strong>SHOULD I:</strong> <strong>Build something similar — later.</strong> After TSL basics. Bookmark it today. 🟢 DIRECT.</p>
+
+<h3>3. What I am deliberately NOT recommending</h3>
+<p>There are a dozen trending new open-weight model repos on Hugging Face today (Mistral Large 4, Kimi K3.1, DeepSeek V4.1-Flash, Nemotron 3.5). <strong>Ignore all of them.</strong> You cannot run them, you don't need to fine-tune anything, and model-watching is the most seductive time sink in AI for application developers. Your edge is in building <em>systems around</em> models, not in collecting models.</p>
+
+<hr>
+
+<h2>📈 SKILLS TO LEARN</h2>
+
+<h3>SKILLS I SHOULD LEARN NOW</h3>
+<p><strong>1. Skill: Async job architecture in Node (tasks, queues, workers, idempotency)</strong><br>
+<strong>Why:</strong> It is simultaneously (a) core backend/system-design knowledge you said you want, (b) the exact shape MCP Tasks just standardised, and (c) required for literally any AI feature, because LLM calls are slow and expensive. One topic, three of your goals.<br>
+<strong>What exactly to learn:</strong> HTTP <code>202 Accepted</code> + <code>Location</code> header, job state machines, server-dictated polling intervals, idempotency keys with a unique index, retries with exponential backoff, dead-letter handling, and BullMQ + Redis as the concrete tool.</p>
+
+<p><strong>2. Skill: Writing your own MCP server (in Node/TypeScript)</strong><br>
+<strong>Why:</strong> Everything in today's AI news converges here — Tasks, Elicitations, Skills over MCP, progressive discovery, and the security CVEs. Being the person who can expose a company's internal systems to agents <em>safely</em> is a rare and well-paid position, and it is 80% Express skills you already have.<br>
+<strong>What exactly to learn:</strong> the official TypeScript MCP SDK; tools vs resources vs prompts; the Tasks lifecycle; Elicitations; and the security posture (tools disabled by default, allow-list parameter validation, <code>execFile</code> not <code>exec</code>, least-privilege credentials per tool).</p>
+
+<p><strong>3. Skill: Next.js Cache Components model</strong><br>
+<strong>Why:</strong> It replaces the caching model you currently know, the old route-segment options get disabled when you enable it, and it is becoming the default in a future major version. This is maintenance of your primary stack, not optional exploration.<br>
+<strong>What exactly to learn:</strong> <code>'use cache'</code> placement, how cache keys include closure variables, <code>cacheLife</code> vs <code>cacheTag</code>/<code>revalidateTag</code>, the cookies/headers prohibition and why it can pass <code>build</code> but fail at runtime, and the Stream / Cache / Block decision.</p>
+
+<p><strong>4. Skill: TSL (Three.js Shading Language) fundamentals</strong><br>
+<strong>Why:</strong> It's your creative-dev goal, it's where all new Three.js development is happening, and it converts your JavaScript fluency into a shader advantage instead of making GLSL a wall. WebGPU being default-on removes the last reason to learn GLSL first.<br>
+<strong>What exactly to learn:</strong> <code>WebGPURenderer</code> setup; node materials (<code>MeshBasicNodeMaterial</code>); <code>uv()</code>, <code>time</code>, <code>mix()</code>, <code>sin()</code>, <code>step()</code>, <code>smoothstep()</code>; assigning to <code>colorNode</code> and <code>positionNode</code>.</p>
+
+<h3>SKILLS I SHOULD WATCH</h3>
+<ul>
+<li><strong>Gaussian Splatting for the web</strong> — now officially in Three.js, big visual payoff, but data-prep heavy. Revisit in a month.</li>
+<li><strong>TypeScript 7.x native compiler migration</strong> — nothing to learn conceptually, but test the beta on a branch before the RC so your upgrade is boring.</li>
+<li><strong>Agent governance / MCP gateways</strong> (central registries, tools disabled by default, audit logs). This is becoming a real enterprise job function. Understand that it exists; don't study it yet.</li>
+<li><strong>Voice agents / Pipecat / RCS</strong> — real and growing, but a different specialisation. Watch only.</li>
+</ul>
+
+<h3>SKILLS I CAN IGNORE FOR NOW</h3>
+<ul>
+<li><strong>Model benchmark chasing.</strong> Which model scores 59 vs 58 on the Artificial Analysis index changes monthly and never changes your architecture.</li>
+<li><strong>Fine-tuning / training your own models.</strong> Expensive, rarely the right answer for app developers, and prompt + retrieval + good tooling beats it for your use cases.</li>
+<li><strong>AI chip news, GPU capex, Nvidia/DOJ, Anthropic's IPO.</strong> Zero effect on your code.</li>
+<li><strong>Writing raw GLSL as a starting point.</strong> Learn TSL first. Come back to GLSL only if you need something TSL can't express.</li>
+<li><strong>Running huge open-weight models locally.</strong> A 1T-parameter model is not going on your machine. Use APIs.</li>
+</ul>
+
+<hr>
+
+<h2>🎓 FREE / CHEAP LEARNING</h2>
+
+<p><strong>NAME:</strong> Model Context Protocol official docs + TypeScript SDK<br>
+<strong>WHAT IS IT?</strong> The specification, the Tasks/Elicitations guides, the Skills extension page, and a first-party Node/TS SDK with examples.<br>
+<strong>PROVIDER:</strong> modelcontextprotocol.io (now under neutral governance; Anthropic-originated)<br>
+<strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> How to build a real MCP server that an agent can use, including long-running tasks and human approval steps.<br>
+<strong>DIFFICULTY:</strong> Intermediate (easy if you know Express)<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> It's the single highest-leverage free resource for your stated goals, and it's a primary source.<br>
+<strong>LINK:</strong> <a href="https://modelcontextprotocol.io">https://modelcontextprotocol.io</a> — specifically the Tasks and Elicitations pages, and <a href="https://code.claude.com/docs/en/mcp">https://code.claude.com/docs/en/mcp</a> for the client-side behaviour.</p>
+
+<p><strong>NAME:</strong> Next.js "Migrating to Cache Components" guide<br>
+<strong>WHAT IS IT?</strong> Official migration doc plus the <code>use cache</code> API reference, which is unusually good — it explains cache keys, serialization limits, the request-API restriction, and platform behaviour differences.<br>
+<strong>PROVIDER:</strong> Vercel<br>
+<strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> The new caching model, and crucially the failure modes (build hangs after 50s, <code>next-request-in-use-cache</code>).<br>
+<strong>DIFFICULTY:</strong> Intermediate<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> Next.js is your primary framework and this is a model change, not a feature.<br>
+<strong>LINK:</strong> <a href="https://nextjs.org/docs/app/api-reference/directives/use-cache">nextjs.org/docs/app/api-reference/directives/use-cache</a> and the <a href="https://nextjs.org/blog/next-16-3-instant-navigations">16.3 Instant Navigations post</a>.</p>
+
+<p><strong>NAME:</strong> Three.js official TSL documentation + r186 migration guide<br>
+<strong>WHAT IS IT?</strong> The TSL node reference (what functions exist, what they do) and the r185→r186 migration notes listing every breaking change.<br>
+<strong>PROVIDER:</strong> Three.js (mrdoob + Mugen87 + sunag)<br>
+<strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> How to write shader logic in JavaScript, and what breaks when you upgrade.<br>
+<strong>DIFFICULTY:</strong> Intermediate → Advanced<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> It's the foundation of everything you want in creative development.<br>
+<strong>LINK:</strong> <a href="https://github.com/mrdoob/three.js/wiki/Three.js-Shading-Language">Three.js Shading Language wiki</a> and <a href="https://github.com/mrdoob/three.js/wiki/Migration-Guide#185--186">Migration Guide 185→186</a>.</p>
+
+<p><strong>NAME:</strong> Forever Security EMBRACE technical write-up<br>
+<strong>WHAT IS IT?</strong> A free, genuinely well-written vulnerability research report with real exploit reasoning and a disclosure timeline.<br>
+<strong>PROVIDER:</strong> Forever Security (Gal Weizman)<br>
+<strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> How a security researcher thinks: pick the invariants a system promises, then test each one. That's a transferable skill worth more than a certificate.<br>
+<strong>DIFFICULTY:</strong> Intermediate<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> It's about tools on your own machine, right now.<br>
+<strong>LINK:</strong> <a href="https://forever.security/blog/embrace-hacking-5-ai-assistants-embedded-browsers-technical">forever.security/blog/embrace-hacking-5-ai-assistants-embedded-browsers-technical</a></p>
+
+<p><em>Deliberately not recommending any paid certification today. Nothing new launched that beats these free primary sources on learning value.</em></p>
+
+<hr>
+
+<h2>▶️ YOUTUBE</h2>
+<p>No YouTube recommendations today — it's Friday. Video section runs on Wednesdays only.</p>
+
+<hr>
+
+<h2>🧠 WHAT I SHOULD LEARN TODAY</h2>
+
+<h3>LEARN THIS #1 — The async task pattern (and build it)</h3>
+<p><strong>WHAT IS IT?</strong> Return a ticket instead of an answer when work is slow; let the caller poll with that ticket.</p>
+<p><strong>WHY NOW?</strong> Because MCP just standardised exactly this pattern today, which means it is now the official shape of AI-agent infrastructure — and it happens to be pure Node/Express/Mongo work.</p>
+<p><strong>WHY ME?</strong> It sits precisely on the overlap of "advanced backend", "system design" and "AI agents" — three of your stated goals in one topic. And you already have 90% of the prerequisite skills.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> <code>202 Accepted</code> + <code>Location</code>, the job state machine (<code>queued → running → succeeded/failed</code>), server-dictated <code>pollAfterMs</code>, idempotency keys with a unique index, and keeping finished jobs for a TTL so late polls don't 404.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> Webhooks and WebSocket push instead of polling, distributed locks, Kafka, exactly-once delivery, horizontal worker autoscaling. Polling is correct and sufficient at your stage. Don't touch the hard parts yet.</p>
+<p><strong>TIME:</strong> 30 minutes to understand, 1 hour to build.</p>
+<p><strong>FREE RESOURCE:</strong> MCP Tasks docs (for the standardised vocabulary) + BullMQ docs (for the queue).</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> see the 1-hour action item below.</p>
+
+<h3>LEARN THIS #2 — The Next.js Stream / Cache / Block decision</h3>
+<p><strong>WHAT IS IT?</strong> With Cache Components on, every awaited piece of data on a route forces an explicit choice: stream a loading state, serve cached UI, or deliberately block the navigation.</p>
+<p><strong>WHY NOW?</strong> It is becoming the default. The old implicit caching you know is being switched off.</p>
+<p><strong>WHY ME?</strong> Next.js is your primary framework. This is not optional learning, it's keeping your main tool current.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> The three choices and when each is right; that cache keys include closure variables; and the cookies/headers rule.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> <code>'use cache: remote'</code>, <code>'use cache: private'</code>, custom cache handlers, and partial prefetching internals.</p>
+<p><strong>TIME:</strong> 30 minutes reading.</p>
+<p><strong>FREE RESOURCE:</strong> The <code>use cache</code> API reference (link in the learning section).</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> Turn on <code>cacheComponents: true</code> in one existing Next.js project and fix whatever it complains about. The errors <em>are</em> the lesson.</p>
+
+<hr>
+
+<h2>🔮 WHERE TECHNOLOGY IS GOING</h2>
+
+<p><strong>TREND 1: AI agent infrastructure is converging on ordinary backend patterns.</strong><br>
+<strong>WHAT THAT MEANS:</strong> Today MCP got job handles with TTLs and polling intervals, structured human-approval pauses, lazy-loaded capability catalogs, and a batch of command-injection CVEs. Those are queues, consent flows, pagination and input validation. The agent world is independently rediscovering the distributed-systems playbook.<br>
+<strong>WHY IT MATTERS:</strong> The "AI engineer" job is turning out to be mostly a backend engineering job with a model at one end.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Queues, workers, idempotency, retries, state machines, authorization. Then MCP as the wire format on top.</p>
+
+<p><strong>TREND 2: Context management is becoming the core engineering problem of AI.</strong><br>
+<strong>WHAT THAT MEANS:</strong> Three unrelated announcements today were all about the same thing. Skills over MCP: don't load the manual until you need it. Progressive discovery on the MCP roadmap: don't even load the catalog. RCS for voice: stop dropping tone and speaker info between pipeline stages. Google's sleep framework: consolidate new knowledge without forgetting the old.<br>
+<strong>WHY IT MATTERS:</strong> Context is a scarce, expensive, latency-bearing resource. Managing it well is becoming the thing that separates a good AI product from a demo.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Caching and lazy-loading thinking — which you already have from the frontend — applied to prompts and tool catalogs. Also retrieval, summarisation and memory eviction policies.</p>
+
+<p><strong>TREND 3: Agentic tools are reopening security holes the web closed 15 years ago.</strong><br>
+<strong>WHAT THAT MEANS:</strong> EMBRACE is five vendors each relaxing one browser rule for a good reason and inheriting every old attack. MCP command injection is <code>shell=True</code>, a 1990s bug, now reachable by hostile text on a web page. An attacker ran a reverse shell as an MCP tool. A rogue relay shipped real coding agents with the sandbox switched off.<br>
+<strong>WHY IT MATTERS:</strong> Agentic software deliberately blurs the line between data and instructions, and that line was the foundation of most existing defences.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Least privilege, capability scoping, allow-list validation, egress filtering, and treating all model/tool output as untrusted input. Assume injection succeeds; design to limit the blast radius.</p>
+
+<p><strong>TREND 4: Open weights are commoditising the model layer — and the value is moving to the layer you work in.</strong><br>
+<strong>WHAT THAT MEANS:</strong> A ~1T-parameter model is downloadable today for free, at $0.70/M input tokens via API. Four more frontier-ish open models shipped this week. Meanwhile Google admitted an AI answer monetises worse than a search link, and Microsoft's free cash flow dropped 27% while capex hit $45B.<br>
+<strong>WHY IT MATTERS:</strong> If models are cheap and interchangeable, nobody wins by having a model. They win on product, data, integration, reliability and cost control — all application-layer concerns.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Provider-agnostic design (the adapter pattern, OpenAI-compatible endpoints), cost instrumentation per request, graceful degradation when a model is slow or down, and evaluation so you can actually tell whether swapping models made things worse.</p>
+
+<p><strong>TREND 5: WebGPU quietly became the default, and shaders became JavaScript.</strong><br>
+<strong>WHAT THAT MEANS:</strong> WebGPU is on by default across Chrome, Edge, Safari 26 and Firefox on major platforms. Three.js's r186 removed <code>PCFSoftShadowMap</code> under WebGPU and built its new headline feature (Gaussian splats) as a TSL renderer that <em>doesn't work</em> on the old <code>WebGLRenderer</code>. New features are being built WebGPU-first.<br>
+<strong>WHY IT MATTERS:</strong> The barrier to high-end 3D web work just moved from "learn GLSL and C-like GPU programming" to "write JavaScript node graphs."<br>
+<strong>WHAT I SHOULD LEARN:</strong> TSL. Start on <code>WebGPURenderer</code> for every new project. Treat GLSL as the legacy path.</p>
+
+<hr>
+
+<h2>🚀 MY ACTION PLAN</h2>
+
+<h3>TODAY — 30 MINUTES</h3>
+<p>Read the MCP <strong>Tasks</strong> documentation page. Write down, by hand, the task lifecycle: what fields a task handle carries (id, status, timestamps, TTL, poll interval), every status value, and what happens when a task needs human input in a non-interactive session. Keep that note — it is the spec for what you build next.</p>
+
+<h3>TODAY — 1 HOUR</h3>
+<p>Build a minimal async job API in Express + MongoDB. Three endpoints, no queue library yet (<code>setTimeout</code> is a fine fake worker for the first version):</p>
+<ul>
+<li><code>POST /jobs</code> → validate, insert with status <code>queued</code>, return <code>202</code> + <code>Location</code> + <code>{jobId, status, pollAfterMs}</code></li>
+<li><code>GET /jobs/:id</code> → return status while running, result when done</li>
+<li>a fake worker that flips <code>queued → running → succeeded</code> over ~10 seconds</li>
+</ul>
+<p>Then add <strong>one</strong> hard thing: an <code>Idempotency-Key</code> header with a unique index, so calling <code>POST /jobs</code> twice with the same key returns the same job instead of creating two. Prove it with two <code>curl</code> calls. That one feature is the difference between a toy and real infrastructure.</p>
+
+<h3>THIS WEEK</h3>
+<p><strong>Write a real MCP server in TypeScript using the official SDK</strong> — and do it securely. Two tools maximum. Hard rules you must follow, taken directly from this week's CVEs: every parameter allow-list validated, <code>execFile</code> with an argument array if you shell out at all (never <code>exec</code> with a template string), a read-only database user for read tools, and no destructive tool without an Elicitation approval step.</p>
+
+<h3>THIS WEEK'S PROJECT</h3>
+<p><strong>"Briefing Jobs" — an MCP server that exposes your own daily-briefing pipeline as a proper long-running task.</strong></p>
+<p>Combine what you already own with the thing that just became standard:</p>
+<ul>
+<li><strong>Your existing skills:</strong> Express + MongoDB job store, Node worker, GitHub API publishing.</li>
+<li><strong>The emerging tech:</strong> MCP Tasks (the research tool returns a task handle and is polled, instead of blocking) and MCP Elicitations (before anything is published, the server pauses and asks you to approve the caption — which is exactly the human-approval gate you already decided you want for LinkedIn).</li>
+<li><strong>The security practice:</strong> the publish tool holds a fine-grained, single-repo, expiring token; the research tool holds no credentials at all.</li>
+</ul>
+<p>This is one project that advances backend architecture, system design, AI agents and security simultaneously — and it makes something you actually use every day better.</p>
+
+<h3>IGNORE FOR NOW</h3>
+<p><strong>Every new model release.</strong> Mistral Large 4, Kimi K3.1 Pro, DeepSeek V4.1-Flash, Gemini 4 Carbon, MiniMax M3.1, Nemotron 3.5 — do not read the benchmarks, do not download anything, do not compare index scores. None of it changes a line of your code. Check model <em>prices and context windows</em> once a month and spend the saved hours on the architecture around the model. That's where your career value is.</p>
+
+<hr>
+
+<h2>🎯 IF I ONLY HAVE 1 HOUR TODAY</h2>
+
+<p><strong>Spend the whole hour on one thing: build the async job API.</strong></p>
+<ul>
+<li><strong>0–10 min:</strong> Skim the MCP Tasks doc. Just note the field names and status values — you're borrowing the vocabulary, not implementing the protocol.</li>
+<li><strong>10–40 min:</strong> Write <code>POST /jobs</code> and <code>GET /jobs/:id</code> in Express with a Mongo <code>jobs</code> collection and a <code>setTimeout</code> fake worker. Make <code>POST</code> return <code>202</code> with a <code>Location</code> header and a server-chosen <code>pollAfterMs</code>. Watch the status change by curling the GET a few times.</li>
+<li><strong>40–55 min:</strong> Add the <code>Idempotency-Key</code> header plus a unique index. Send the same key twice and confirm you get one job, not two.</li>
+<li><strong>55–60 min:</strong> Write three lines in your notes: what status values you chose, why the server (not the client) sets the poll interval, and what would break if you deleted job records the instant they finished.</li>
+</ul>
+<p>At the end of this hour you will have hand-built the pattern that MCP standardised today, that every AI agent framework needs, and that shows up in every system-design interview. One hour, four of your goals.</p>
+
+<hr>
+<p><em>Generated by Hermes. Sources were primary where possible: Forever Security, Hugging Face, Deepgram, Daily, Microsoft DevBlogs, nodejs.org, nextjs.org docs, mrdoob/three.js releases, NVD, modelcontextprotocol.io, Claude Code docs. Earnings figures from company reports as widely relayed. Benchmark index scores are third-party (Artificial Analysis) and should be treated as indicative, not definitive.</em></p>
+
+</body>
+</html>
