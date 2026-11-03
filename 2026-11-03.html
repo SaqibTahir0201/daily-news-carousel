@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Daily Tech Intelligence — 2026-11-03</title>
+<style>
+body { font-family: Segoe UI, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #0d1117; color: #c9d1d9; line-height: 1.7; }
+h1 { color: #58a6ff; border-bottom: 2px solid #30363d; padding-bottom: 10px; }
+h2 { color: #f0883e; margin-top: 40px; }
+h3 { color: #79c0ff; }
+strong { color: #ffa657; }
+code { background: #161b22; padding: 2px 6px; border-radius: 4px; }
+hr { border-color: #30363d; }
+a { color: #58a6ff; }
+</style>
+</head>
+<body>
+
+<h1>🌍 DAILY TECH INTELLIGENCE — 2026-11-03</h1>
+<p><strong>DATE:</strong> Tuesday, 3 November 2026 · Built for a MERN / full-stack JS developer moving into backend, system design, AI agents and creative development.</p>
+
+<hr>
+
+<h2>⚡ TODAY IN 60 SECONDS</h2>
+
+<h3>1. Next.js is shipping a security patch TODAY — plan an upgrade window</h3>
+<p><strong>WHAT HAPPENED:</strong> Vercel pre-announced (27 Oct) a scheduled Next.js security release for <strong>Tuesday 3 November 2026</strong> fixing <strong>seven medium-severity</strong> vulnerabilities. As of this briefing the advisories were not yet public on the Next.js blog, so version numbers are not known yet. <em>Status: ANNOUNCED (confirmed announcement, patch pending).</em></p>
+<p><strong>WHAT IS THIS?</strong> A "scheduled security release" means the framework team batches known security bugs and ships all the patches on one pre-agreed date, warning you in advance so you can book the maintenance time.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You deploy Next.js apps. Anything running below 16.4.1 or 15.5.28 is <em>already</em> exposed to two critical unauthenticated remote-code-execution bugs from 14 October. Today adds seven more.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Check <code>npm ls next react sharp</code> on every project today; get to 16.4.1+/15.5.28+ now, then upgrade again when today's advisories drop.</p>
+
+<h3>2. OpenAI rebuilt Git itself because its AI agents push too much code</h3>
+<p><strong>WHAT HAPPENED:</strong> OpenAI published "Scaling Git at OpenAI" (2 Nov) describing <strong>Pando</strong>, a new Git-compatible storage backend for their monorepo. It cut median push latency ~80% and now serves ~1 petabyte of Git data per day. Written in Rust, built in ~10 weeks. <em>Status: CONFIRMED (official OpenAI engineering post).</em></p>
+<p><strong>WHAT IS THIS?</strong> Normal Git servers handle one write to a repo at a time-ish. When hundreds of AI coding agents push branches simultaneously, that design collapses. Pando keeps the Git protocol identical (your <code>git push</code> doesn't change) but replaces the storage layer underneath with a horizontally scalable one.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> This is the clearest signal yet of a real pattern: <strong>AI agents break systems that were sized for humans.</strong> Your future backend work will be about making systems survive machine-speed traffic, not human-speed traffic.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp;·&nbsp; <strong>IMPORTANCE:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT I SHOULD DO:</strong> Read the post for the architecture lessons (write scaling, caching, causal consistency). Do not try to build a Git backend.</p>
+
+<h3>3. Anthropic made AI agents faster by not resending the whole conversation</h3>
+<p><strong>WHAT HAPPENED:</strong> Anthropic opened a <strong>public beta of "message threads"</strong> in the Claude Messages API. Instead of resending the entire chat history on every turn, you send the full conversation once and then only the new messages plus the previous response ID. Median time-to-first-token on 500k–1M token requests drops ~35%. <em>Status: CONFIRMED (official docs + announcement).</em></p>
+<p><strong>WHAT IS THIS?</strong> See the TERM box in the AI section below ("stateless vs stateful API").</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> If you build any AI agent in Node, this is a direct latency win and a textbook backend caching problem you can actually understand.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Understand the create/continue/replay lifecycle. It teaches you server-side session caching better than most tutorials.</p>
+
+<h3>4. Node.js 26 "Lithium" is now the Active LTS — and the release model changed forever</h3>
+<p><strong>WHAT HAPPENED:</strong> Node.js 26.13.0 became Active LTS on 28 October 2026, supported until April 2029. Node 24 is in maintenance. Node 27 (April 2027) begins a <strong>one-release-per-year model where every release is LTS</strong> — the odd/even version dance ends. <em>Status: CONFIRMED (nodejs.org release notes).</em></p>
+<p><strong>WHAT IS THIS?</strong> LTS = "Long Term Support": the version that gets security fixes for years, so it's the one you run in production.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> This is your runtime. Node 26 also makes <code>node app.ts</code> work with no flags (TypeScript type-stripping is stable) and ships Temporal (modern date API) by default.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Move your projects to Node 26 this week. Watch out for Undici 8's stricter <code>fetch</code> header validation and the removal of internal <code>_stream_*</code> modules (old dependencies break, not your code).</p>
+
+<h3>5. An npm worm quietly armed 42 real GitHub repositories — and it targets your AI coding tools</h3>
+<p><strong>WHAT HAPPENED:</strong> JFrog reported (late Oct) that the "testmetest" npm worm campaign, initially written off as a harmless test, had actually hijacked <strong>42 real repositories across 11 owners</strong> since July. The payload plants execution hooks for <strong>Claude, Gemini, Cursor and VS Code</strong> and steals credentials. <em>Status: CONFIRMED (JFrog + SafeDep research).</em></p>
+<p><strong>WHAT IS THIS?</strong> A supply-chain worm: malicious code hidden in an npm package that runs on <code>npm install</code>, steals your tokens, then republishes itself into other packages you can publish to.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You run <code>npm install</code> daily and you use AI coding agents. This attack family specifically targets both.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Turn on <code>ignore-scripts</code> in your npm config today. One line, huge protection. (Details in the Cybersecurity section.)</p>
+
+<hr>
+
+<h2>🔥 BIGGEST DEVELOPMENTS</h2>
+
+<h3>A. Next.js November security release (today)</h3>
+<p><strong>WHAT HAPPENED:</strong> Seven medium vulnerabilities being patched today. This follows a brutal autumn: September (7 issues), 14 October out-of-band (2 Critical RCE + 1 High DoS).</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p><strong>TERM:</strong> RCE (Remote Code Execution)<br>
+<strong>SIMPLE MEANING:</strong> An attacker sends a crafted HTTP request to your server and your server runs <em>their</em> code.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> The 14 Oct bug GHSA-673q-mjm6-r5xr: in a Next.js App Router app with Cache Components, a <code>use cache</code> function returning multiple typed arrays could be exploited for unauthenticated RCE. CVSS 9.5.<br>
+<strong>WHY IT MATTERS:</strong> RCE is the worst class of web bug. It's game over — database, secrets, everything.<br>
+<strong>WHY IT MATTERS TO ME:</strong> You use the App Router. Cache Components is now the <em>recommended default</em> in 16.4 and will be the default in Next.js 17.<br>
+<strong>WHAT I SHOULD DO:</strong> Patch, then learn how <code>use cache</code> actually serialises data.</p>
+<p><strong>WHY DOES IT MATTER (industry):</strong> Frameworks are now shipping on a security calendar like operating systems. That's a maturity signal — and a maintenance obligation you now own.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> How to read a GitHub Security Advisory (GHSA) and map "affected versions" to your lockfile. Also: Next.js 15 reached end-of-life on 21 October 2026 for the 15.x minor lines below 15.5 — 14.x is fully unsupported.</p>
+
+<h3>B. OpenAI Pando — Git rebuilt for agent-scale concurrency</h3>
+<p><strong>WHAT HAPPENED:</strong> OpenAI's monorepo reliability sometimes dropped below 90% because Codex agents multiplied branches and pushes. Pando fixes it with two ideas: causal consistency and packfile reuse.</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p><strong>TERM:</strong> Causal consistency<br>
+<strong>SIMPLE MEANING:</strong> A weaker promise than "everyone sees everything instantly". It only guarantees that if event B depended on event A, nobody can see B without also seeing A. Unrelated things may arrive in any order.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> If you push commit X and then push commit Y on top of it, no reader can ever see Y without X. But two unrelated branches pushed at the same moment might become visible in either order — and that's fine.<br>
+<strong>WHY IT MATTERS:</strong> Strong consistency ("everyone sees the exact same thing at the exact same instant") requires coordination, and coordination caps how many writes per second you can do. Dropping to causal consistency lets you scale writes horizontally.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is THE core trade-off of distributed systems and it comes up in every system design interview. Pando is a real, concrete example you can cite.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn the concept. Then look at how MongoDB's read/write concerns expose the same dial (<code>w:1</code> vs <code>w:majority</code>, <code>readConcern: "local"</code> vs <code>"majority"</code>).</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp;·&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM</p>
+
+<h3>C. Node.js 26 LTS + the end of odd/even releases</h3>
+<p><strong>WHAT HAPPENED:</strong> 26.13.0 'Lithium' is Active LTS (28 Oct 2026 → Apr 2029). Node 27 opens the annual-LTS era.</p>
+<p><strong>WHAT BREAKS:</strong> (1) Internal <code>_stream_readable</code> / <code>_stream_writable</code> etc. are gone — old transitive dependencies will throw <code>MODULE_NOT_FOUND</code>. (2) Undici 8 powers global <code>fetch</code> with stricter header validation — dynamically built headers that used to pass silently can now throw <code>TypeError</code>. (3) Several crypto APIs advanced in the deprecation cycle.</p>
+<p><strong>WHAT DOESN'T BREAK:</strong> <code>Date</code> still works (Temporal is additive). Running <code>node app.ts</code> directly is now stable — delete <code>--experimental-transform-types</code> from your scripts.</p>
+<p><strong>WHY DOES IT MATTER TO ME:</strong> Running TypeScript with zero build step changes how you prototype Express servers and scripts. No ts-node, no tsx, no build folder for simple services.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Node 26 native TypeScript type-stripping — specifically what it <em>can't</em> do (enums, namespaces, anything needing real type information at runtime).</p>
+
+<h3>D. npm supply-chain attacks are now a permanent condition, not an event</h3>
+<p><strong>WHAT HAPPENED:</strong> A continuous chain through autumn 2026: ChainDrop/Mini Shai-Hulud (400+ packages incl. <code>keyv</code>, <code>flat-cache</code>, <code>cache-manager</code>, 4 Aug), <code>@subql/common</code> 5.8.3 (5 Oct), <code>tensorlake</code> 0.5.144 (8 Oct), GhostAction workflow injection into 30,000+ repos (8–12 Oct), and now testmetest's 42 armed repos.</p>
+<p><strong>SEPARATELY — SlugFest:</strong> Bloom Security found a flaw in npm <strong>Trusted Publishing</strong> where npm recorded a repository's <em>name</em> ("owner/repo") instead of its permanent numeric ID. Rename or delete a repo, an attacker claims the freed name, and npm would hand them a publish token for your package. 1,500+ packages exposed, 10M+ downloads. GitHub shipped a fix on 2 October: unvalidated Trusted Publishing configs now expire after 48 hours.</p>
+<p><strong>WHY DOES IT MATTER TO ME:</strong> Bloom's own framing is the part you should remember: "An AI agent on a maintainer's device autonomously pulls [a compromised package]... with no human-in-the-loop." You are exactly the person running AI agents that install dependencies.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<h3>E. MCP moved to a fixed release calendar and finalised server discovery</h3>
+<p><strong>WHAT HAPPENED:</strong> No new MCP spec in October — the current spec is still <strong>2026-07-28</strong>. SEP-3398 (accepted 14 Oct) sets releases to every March and September, pushing the next spec to <strong>late March 2027</strong>. SEP-2127 "Server Cards" merged Final on 6 Oct. The official MCP repos published <strong>31 security advisories in 28 days</strong>, including two rated critical in MCP Inspector (update to 1.0.3+).</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You listed MCP as a learning goal. This is the best possible news for a learner: <strong>the spec is frozen until March 2027.</strong> Whatever you learn now stays valid for five months.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> The 2026-07-28 revision, and nothing older. Most MCP tutorials on the internet describe a protocol that no longer exists.</p>
+
+<h3>F. Interesting, but not important for you right now</h3>
+<ul>
+<li><strong>Anthropic's amended S-1:</strong> $17B quarterly revenue, $23.29B net loss, ~$895B in compute purchase commitments. Fascinating, zero effect on your code. ⚪ NOT IMPORTANT RIGHT NOW.</li>
+<li><strong>NYT and other publishers sue Brave</strong> over AI scraping and paywall bypass. Legal precedent for web indexing, but not a skill. ⚪ NOT IMPORTANT.</li>
+<li><strong>Marvell to buy Lumentum ($115B), Aramco buys 49% of Humain ($2.6B), OpenAI's Grid Protectors power program.</strong> Capital and electricity, not engineering. ⚪ NOT IMPORTANT.</li>
+<li><strong>OpenAI published Navier–Stokes proof material produced with ~10,000 concurrent agents.</strong> The mathematics is not your field and is not independently confirmed yet. But see the System Design section — the <em>architecture</em> of running 10,000 agents in parallel is the only transferable lesson, and I'm teaching it there instead of making you study fluid dynamics.</li>
+</ul>
+
+<hr>
+
+<h2>🤖 AI &amp; AI AGENTS</h2>
+
+<h3>1. Claude Messages API — Message Threads (public beta)</h3>
+<p><strong>WHAT IS IT?</strong> A way to stop resending your entire conversation to the AI on every single turn.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> The Claude API has always been <strong>stateless</strong>.</p>
+<p><strong>TERM:</strong> Stateless API<br>
+<strong>SIMPLE MEANING:</strong> The server remembers nothing between requests. Every request must carry everything the server needs.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> A JWT-authenticated Express route is stateless — the token carries the identity, the server stores no session. Compare with express-session, which is stateful: the server keeps a session object in Redis and you only send a cookie ID.<br>
+<strong>WHY IT MATTERS:</strong> Stateless servers scale trivially (any instance can handle any request, no sticky routing). But they pay a cost in bandwidth and latency when the "everything" gets huge.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This exact trade-off — statelessness vs. payload size — is now the main design tension in AI agent backends, and it's the same tension you already navigate with JWT vs. sessions.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn it properly. It will show up in interviews and in your own agent code.</p>
+<p><strong>HOW DOES IT WORK?</strong> Three steps:</p>
+<ul>
+<li><strong>Create:</strong> send the full conversation + <code>system</code> + <code>tools</code> + <code>"thread": {"type": "create"}</code>. The API stores it, keyed by the response <code>id</code>.</li>
+<li><strong>Continue:</strong> send only the new messages + <code>"thread": {"type": "continue", "previous_message_id": "&lt;last id&gt;"}</code>. Omit <code>system</code> and <code>tools</code> — the thread keeps them.</li>
+<li><strong>Replay:</strong> a thread is <em>best-effort</em>. It expires 5 minutes after its last request. If you get a 404, resend the full conversation as a new create request.</li>
+</ul>
+<p><strong>WHY ARE PEOPLE USING IT?</strong> ~35% drop in median time-to-first-token on 500k–1M token requests. It's on by default for most Claude Code users.</p>
+<p><strong>IMPORTANT NUANCE:</strong> Your <strong>token cost does not change.</strong> Claude still reads the whole conversation every turn. Only the upload is smaller. This is a <em>latency</em> optimisation, not a <em>cost</em> optimisation. Many blog posts will get this wrong.</p>
+<p><strong>HOW COULD I USE IT IN A REAL PROJECT?</strong> Any long-running agent in Node. But note the real engineering lesson: <strong>your application must stay the source of truth.</strong> The API never tells you whether a turn was stored successfully — you find out on the <em>next</em> request. So you must keep your own copy of every message and build the replay path from day one.</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Not just the parameter. Learn the pattern: <strong>a cache you cannot trust is a performance layer, never a storage layer.</strong> That principle applies identically to Redis in your Express apps.</p>
+<p><strong>DO I NEED TO LEARN THIS NOW?</strong> Yes if you are building agents. The pattern transfers even if you switch to OpenAI.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH &nbsp;·&nbsp; <strong>LEARN DEEPLY</strong></p>
+
+<h3>2. MCP 2026-07-28 — what actually changed (and why your tutorials are wrong)</h3>
+<p><strong>WHAT IS IT?</strong></p>
+<p><strong>TERM:</strong> MCP (Model Context Protocol)<br>
+<strong>SIMPLE MEANING:</strong> A standard JSON-RPC protocol that lets any AI application talk to any tool server, without writing a custom integration for each pair.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> You write one MCP server that exposes <code>search_orders</code> and <code>refund_order</code> against your MongoDB. Claude Desktop, Cursor and your own Node agent can all use it without you writing three different adapters.<br>
+<strong>WHY IT MATTERS:</strong> It is to AI tools what REST was to web APIs — a common shape so the ecosystem composes.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is the single most "backend developer" skill in the whole AI wave. An MCP server <em>is</em> a backend service with auth, rate limits and observability.<br>
+<strong>WHAT I SHOULD DO:</strong> Build one. This week.</p>
+<p><strong>WHAT PROBLEM DOES THE NEW REVISION SOLVE?</strong> Old MCP had an <code>initialize</code> handshake and an <code>Mcp-Session-Id</code> header. That meant autoscaling infrastructure had to preserve sessions, deployments had to drain them, and losing an instance broke clients. The 2026-07-28 revision <strong>removed sessions entirely.</strong></p>
+<p><strong>THE FIVE CHANGES THAT TOUCH YOUR CODE:</strong></p>
+<ul>
+<li><strong>Sessions are gone.</strong> No <code>Mcp-Session-Id</code>. If a server needs state across calls, it mints an explicit handle (e.g. a workflow ID) and receives it back as an ordinary tool argument.</li>
+<li><strong>The handshake is gone.</strong> No <code>initialize</code>. Every request carries its protocol version and client capabilities in <code>_meta</code>.</li>
+<li><strong><code>server/discover</code> is mandatory</strong> for servers to implement (optional for clients to call).</li>
+<li><strong>Server-initiated requests are gone.</strong> A server that needs input mid-call now returns <code>resultType: "input_required"</code> and the client <em>retries</em> the original request with <code>inputResponses</code>. Sampling, elicitation and roots/list callbacks are deprecated.</li>
+<li><strong>Two headers are mandatory on every POST:</strong> <code>Mcp-Method</code> and <code>Mcp-Name</code>, mirroring body fields so load balancers and WAFs can route without parsing the body. The body stays authoritative; a mismatch is an error.</li>
+</ul>
+<p><strong>WHY THIS IS A GIFT TO YOU:</strong> Cloudflare's post says it plainly — an MCP server can now run in a plain Worker with no stateful infrastructure. Stateless means <em>deployable anywhere</em>: Vercel functions, Cloudflare Workers, a bare Express app behind a load balancer.</p>
+<p><strong>AUTH (the part most people skip):</strong> Authorization servers MUST implement OAuth 2.1. MCP servers MUST implement OAuth 2.0 Protected Resource Metadata (RFC 9728). Servers MUST validate that a token was issued specifically for them as the audience (RFC 8707) and MUST NOT accept or forward tokens issued by anyone else. Dynamic Client Registration is deprecated.</p>
+<p><strong>HOW COULD I USE IT IN A REAL PROJECT?</strong> Take any Express API you already have. Wrap three endpoints as MCP tools. You now have an AI-callable version of your own backend.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH &nbsp;·&nbsp; <strong>LEARN DEEPLY</strong></p>
+
+<h3>3. "Skills over MCP" (SEP-2640) — now an official MCP extension</h3>
+<p><strong>WHAT IS IT?</strong> A convention for serving <strong>agent skills</strong> over an MCP server, alongside tools.</p>
+<p><strong>TERM:</strong> Agent Skill<br>
+<strong>SIMPLE MEANING:</strong> A packaged bundle of <em>instructions</em> for an agent — a markdown file plus supporting files — that tells the agent how to do a task well, loaded only when relevant.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> A tool gives an agent <code>create_invoice()</code>. A skill tells it "our invoices always need a PO number, tax goes on line 4, never invoice before delivery confirmation."<br>
+<strong>WHY IT MATTERS:</strong> The phrase from the working group is perfect: <em>"ship the manual with the product."</em> A tool description alone can't carry domain expertise.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is the difference between an agent that <em>can</em> call your API and an agent that calls it <em>correctly</em>. If you build agent backends professionally, this is your deliverable.<br>
+<strong>WHAT I SHOULD DO:</strong> Understand the basics now; build one after your first MCP server.</p>
+<p><strong>HOW IT WORKS:</strong> Skills are served as standard MCP resources under a <code>skill://</code> URI scheme, with two methods: <code>skills/list</code> (name, description, frontmatter, plus a manifest of files with sizes and SHA-256 digests) and <code>skills/get</code>. The host reads <code>SKILL.md</code> and supporting files with ordinary <code>resources/read</code> calls — <strong>only at the point they're needed.</strong></p>
+<p><strong>THE REAL CONCEPT HERE:</strong></p>
+<p><strong>TERM:</strong> Progressive discovery / progressive disclosure<br>
+<strong>SIMPLE MEANING:</strong> Don't load everything up front. Load the index, then fetch the detail only when something is actually selected.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Your MongoDB list endpoint returns 20 fields per product for a grid, not the full 200-field document. The detail page fetches the rest.<br>
+<strong>WHY IT MATTERS:</strong> An LLM has a limited context window. Loading a 500-tool catalogue up front wastes most of it before the agent does any work.<br>
+<strong>WHY IT MATTERS TO ME:</strong> It's the same instinct as API pagination and GraphQL field selection — you already have it. Now apply it to agent design. Progressive discovery is on the official MCP roadmap for the next 6–12 months.<br>
+<strong>WHAT I SHOULD DO:</strong> Understand the basics.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp;·&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM &nbsp;·&nbsp; <strong>UNDERSTAND THE BASICS</strong></p>
+
+<h3>4. AI news that is NOT worth your learning time today</h3>
+<ul>
+<li><strong>Meituan LongCat-2.5</strong> (1.6T parameters, 48B active, built for long-horizon agents): genuinely impressive, but you consume models through APIs. You don't need to track every frontier release. ⚪ WATCH ONLY.</li>
+<li><strong>Gemini 4 Carbon / Genie 4 world simulation / Xiaomi robotics VLA models:</strong> important for the field, irrelevant to your stack this quarter. ⚪ IGNORE FOR NOW.</li>
+<li><strong>"AI model gets a RISC-V CPU compiled into its weights and runs DOOM":</strong> delightful. Learn nothing. ⚪ IGNORE.</li>
+</ul>
+
+<hr>
+
+<h2>💻 MERN / JAVASCRIPT / WEB</h2>
+
+<h3>1. Next.js Cache Components — the thing you actually need to understand</h3>
+<p>Next.js 16.4 (6 Oct) made Cache Components the <strong>recommended default for every app</strong>; <code>create-next-app</code> enables it by default and it becomes the framework default in Next.js 17. You cannot avoid this.</p>
+<p><strong>WHAT IS CACHE COMPONENTS?</strong> An opt-in model (<code>cacheComponents</code> in <code>next.config</code>) where caching becomes <em>explicit</em>. You mark a function or component with the <code>"use cache"</code> directive and Next.js caches its output. Anything not marked is dynamic by default.</p>
+<p><strong>WHY WAS IT CREATED?</strong> Older Next.js caching was implicit and famously confusing — <code>fetch</code> was cached by default, route segments had <code>revalidate</code> settings, and developers routinely shipped stale pages without understanding why. The problem wasn't the caching, it was that nobody could tell which parts of a page were cached.</p>
+<p><strong>HOW DOES IT WORK (simply):</strong> A page becomes a mix of cached shells and dynamic holes. The cached shell is served instantly from the edge; the dynamic parts stream in. You opt into caching rather than opting out.</p>
+<p><strong>SIMPLE EXAMPLE:</strong> A product page. The layout, nav, product description and images — <code>"use cache"</code>, they're the same for everyone. The "3 left in stock" counter and the logged-in user's cart badge — dynamic, no cache. Previously you'd fight the framework to get this split. Now you declare it.</p>
+<p><strong>WHAT CONCEPT DOES IT REPLACE?</strong> Implicit fetch caching, scattered <code>revalidate</code> exports, and a lot of <code>unstable_cache</code> guesswork.</p>
+<p><strong>WHY SHOULD A NEXT.JS DEVELOPER CARE?</strong> Two reasons. One, it's becoming the default so you'll meet it regardless. Two — and this is the uncomfortable one — <strong>the 14 October critical RCE (CVSS 9.5) lived specifically in <code>use cache</code> functions returning multiple typed arrays.</strong> New caching machinery means new serialisation code means new attack surface. Understanding what <code>use cache</code> does under the hood is now a security skill, not just a performance one.</p>
+<p><strong>RELATED:</strong> <strong>Partial Prefetching</strong> — Next.js prefetches the static shell of a linked page on hover/viewport, so navigation feels instant even when the page has dynamic parts. Vercel documented using it to improve navigation in v0.</p>
+<p><strong>SHOULD I LEARN IT? HOW DEEPLY?</strong> Yes — <strong>LEARN DEEPLY.</strong> Learn: the <code>"use cache"</code> directive, cache keys and how arguments affect them, <code>cacheLife</code> / <code>cacheTag</code>, and what is <em>not</em> cacheable (anything touching <code>cookies()</code>, <code>headers()</code> or request-specific data).</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<h3>2. Node 26: native TypeScript, stable</h3>
+<p><strong>WHAT CHANGED?</strong> <code>node app.ts</code> runs with no flags. Type-stripping graduated from experimental; <code>--experimental-transform-types</code> was removed because the feature shipped.</p>
+<p><strong>WHAT IS IT?</strong> Node parses your <code>.ts</code> file, <em>erases</em> the type annotations, and runs the resulting JavaScript. It does not type-check. It does not compile.</p>
+<p><strong>THE LIMITATION NOBODY MENTIONS:</strong> Type-stripping only removes things. Anything in TypeScript that <em>generates runtime code</em> — <code>enum</code>, <code>namespace</code>, parameter properties (<code>constructor(private x: string)</code>), experimental decorators — doesn't work by erasure alone. Use <code>const</code> objects instead of enums and you're fine.</p>
+<p><strong>WHY DOES IT MATTER TO A MERN DEVELOPER?</strong> Your Express prototype no longer needs tsx, ts-node, nodemon config or a <code>dist/</code> folder. <code>node --watch server.ts</code> and go. Still run <code>tsc --noEmit</code> in CI — Node will happily run code with type errors.</p>
+<p><strong>SHOULD I LEARN IT?</strong> Yes — 15 minutes. <strong>EXPERIMENT.</strong></p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<h3>3. Ecosystem notes worth 60 seconds</h3>
+<ul>
+<li><strong>React 19.3.1</strong> is current, with Server Components transport-protocol hardening from the 14 Oct advisories. If you use RSC outside Next.js (React Router RSC mode, Waku, Vite RSC plugin, Parcel), upgrade React directly — the fixes were backported to 19.0.9, 19.1.10, 19.2.9 and 19.3.1.</li>
+<li><strong>TanStack DB 1.0 RC1</strong> (29 Oct): Query Collection handlers no longer auto-refetch after a mutation. That's a silent behaviour change — read the migration guide before upgrading. 🟡 RELATED.</li>
+<li><strong>TypeScript 7.1 beta</strong> is out. ⚪ WATCH ONLY until stable.</li>
+<li><strong>Vercel shipped a <code>next-bundle-optimizer</code> agent skill</strong> (28 Oct) — an AI agent that analyses and shrinks your bundle. Interesting as a sign of where tooling is going: agents as build-tool plugins. 🟡 RELATED, 🟠 MEDIUM.</li>
+</ul>
+
+<hr>
+
+<h2>🏗️ TODAY'S SYSTEM DESIGN CONCEPT</h2>
+
+<p><strong>CONCEPT:</strong> Fan-out / Fan-in with bounded concurrency</p>
+<p><strong>WHY TODAY:</strong> OpenAI reported producing Navier–Stokes proof material with <strong>~10,000 concurrent agents</strong>, and Pando exists because thousands of concurrent agent pushes broke a system designed for human pace. The mathematics is not your field and the result is not yet independently confirmed. <strong>The architecture is the only part that transfers — so that's what I'm teaching.</strong></p>
+
+<p><strong>IN ONE SENTENCE:</strong> Split one big job into many small jobs, run a <em>limited number</em> of them at the same time, then collect all the results back into one answer.</p>
+
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> Two problems at once. Doing 10,000 things one at a time is unbearably slow. Doing 10,000 things <em>all at once</em> melts your database connection pool, trips every third-party rate limit, and blows your API bill in ninety seconds. Bounded concurrency is the middle path.</p>
+
+<p><strong>SIMPLE REAL-WORLD EXAMPLE:</strong> You have 5,000 product descriptions in MongoDB and you want an AI to rewrite each one. Sequentially at 2 seconds each: ~2.8 hours. All 5,000 at once: instant 429 rate-limit errors, and your Node process holds 5,000 open sockets. With 20 workers running concurrently: ~8 minutes, no rate limits, predictable memory.</p>
+
+<p><strong>HOW IT WORKS:</strong></p>
+<ul>
+<li><strong>Fan-out:</strong> a coordinator splits the work into independent units and pushes each as a job onto a queue.</li>
+<li><strong>Bounded concurrency:</strong> N workers pull from the queue. N is your dial — it is set by your slowest dependency's limit, not by your CPU count.</li>
+<li><strong>Fan-in:</strong> each worker writes its result somewhere keyed by job ID. A collector detects "all N done" and assembles the final output.</li>
+</ul>
+
+<p><strong>TERM:</strong> Backpressure<br>
+<strong>SIMPLE MEANING:</strong> The system's way of saying "stop sending me work, I'm full." Without it, a fast producer silently buries a slow consumer until memory runs out.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Your fan-out loop pushes 5,000 jobs into an in-memory array in two seconds. Your workers drain it at 10/second. For the next eight minutes that array sits in RAM holding 5,000 payloads. With a real queue that has a bounded buffer, the producer blocks until there's room.<br>
+<strong>WHY IT MATTERS:</strong> It's the difference between a job runner that degrades gracefully and one that OOM-kills your container at 3am.<br>
+<strong>WHY IT MATTERS TO ME:</strong> Every AI batch job you will ever write has this failure mode.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn the concept now; you'll feel it the first time you run a real batch.</p>
+
+<p><strong>WHERE IS IT USED?</strong> MapReduce, CI test sharding, bulk email, image processing pipelines, search index rebuilds, and now every large-scale AI agent workload including OpenAI's 10,000-agent run.</p>
+
+<p><strong>HOW WOULD I USE IT WITH NODE / EXPRESS / MONGODB?</strong></p>
+<ul>
+<li><strong>Queue:</strong> BullMQ on Redis. Give the queue a concurrency setting (e.g. <code>new Worker(name, handler, { concurrency: 20 })</code>) — that single number is your bounded concurrency.</li>
+<li><strong>Fan-out:</strong> an Express route creates a <code>batch</code> document in MongoDB (<code>{ _id, total: 5000, completed: 0, status: 'running' }</code>) then adds 5,000 jobs each carrying <code>batchId</code> and <code>itemId</code>. Return <code>202 Accepted</code> with the batch ID immediately — never make the client wait.</li>
+<li><strong>Fan-in:</strong> each worker, on success, does <code>db.batches.updateOne({_id: batchId}, {$inc: {completed: 1}})</code>. When <code>completed === total</code>, mark the batch done. The client polls <code>GET /batches/:id</code>.</li>
+<li><strong>No Redis?</strong> For a smaller job, <code>p-limit</code> gives you bounded concurrency in-process in one line. Good for learning, not for anything that must survive a restart.</li>
+</ul>
+
+<p><strong>COMMON MISTAKE:</strong> Using <code>Promise.all()</code> over the whole array. <code>await Promise.all(items.map(processItem))</code> looks elegant and is a production incident — it launches <em>all</em> of them simultaneously with no limit. The second mistake: forgetting that workers retry. If your job isn't <strong>idempotent</strong> (safe to run twice with the same result), a retry after a timeout double-charges the customer or double-writes the record. Key your writes by <code>itemId</code> and use <code>upsert</code>, not <code>insert</code>.</p>
+
+<p><strong>WHAT I SHOULD BUILD TO LEARN IT:</strong> An Express endpoint that accepts an array of 200 text items, fans them out to a BullMQ queue with concurrency 5, has each worker call an AI API, tracks progress in a MongoDB batch document, and exposes a status endpoint. Then deliberately kill a worker mid-run and prove the job still completes.</p>
+
+<p><strong>DIFFICULTY:</strong> Intermediate</p>
+
+<hr>
+
+<h2>🎨 CREATIVE DEVELOPMENT</h2>
+
+<p><strong>HONEST NOTE FIRST:</strong> I found no major verified Three.js / WebGPU / GSAP release news dated today. I'm not going to invent one. Instead, here is the concept from your creative-dev list that is <em>most worth your time right now</em>, explained properly — and one genuine connection to today's news.</p>
+
+<h3>TSL — Three.js Shading Language</h3>
+<p><strong>WHAT IS IT?</strong> A system inside Three.js that lets you write GPU shader logic using JavaScript function calls instead of writing GLSL source code as a string. You compose small node objects (<code>positionLocal</code>, <code>uv()</code>, <code>mix()</code>, <code>sin()</code>) and Three.js compiles that graph down to the right shader language for the target backend.</p>
+<p><strong>WHY IS IT BECOMING IMPORTANT?</strong> Here's the real reason, and it's a backend-shaped reason you'll appreciate: the web is in the middle of a transition from <strong>WebGL</strong> to <strong>WebGPU</strong>.</p>
+<p><strong>TERM:</strong> WebGL vs WebGPU<br>
+<strong>SIMPLE MEANING:</strong> WebGL is the older browser API for talking to the graphics card; it uses a shader language called GLSL. WebGPU is the modern replacement; it uses a different shader language called WGSL, and it can also run general-purpose <em>compute</em> work on the GPU, not just drawing.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> With WebGL you can draw 10,000 particles. With WebGPU compute shaders you can also <em>simulate</em> those 10,000 particles' physics entirely on the GPU, never sending positions back to JavaScript.<br>
+<strong>WHY IT MATTERS:</strong> Shaders written in GLSL don't run on WGSL. A hand-written GLSL shader is now a portability liability.<br>
+<strong>WHY IT MATTERS TO ME:</strong> If you spend three months mastering raw GLSL strings, part of that investment targets the outgoing platform. TSL is the abstraction that survives the transition.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn TSL as your shader-authoring layer, but learn <em>shader fundamentals</em> (what a vertex shader does, what a fragment shader does, UVs, noise) first — TSL assumes you know them.</p>
+<p><strong>WHAT CAN IT DO?</strong> Everything a hand-written shader can — custom materials, vertex displacement, procedural colour, post-processing — plus GPU compute via node-based kernels, written in a language you already know.</p>
+<p><strong>WHY DOES IT MATTER FOR CREATIVE DEVELOPMENT?</strong> Shaders are the dividing line between "a nice website with 3D on it" and an Awwwards site. TSL lowers the cost of crossing that line for a JavaScript developer, because you get autocomplete, type hints, composable functions and normal debugging instead of a string literal that fails silently.</p>
+<p><strong>WHAT CAN I BUILD WITH IT?</strong> A displaced, noise-driven plane that reacts to scroll. That single effect is the backbone of a hundred award-winning hero sections.</p>
+<p><strong>WHAT SHOULD I LEARN FIRST?</strong> In order: (1) the fragment shader mental model — "this function runs once per pixel"; (2) UV coordinates; (3) noise functions; (4) TSL's node syntax; (5) only then WebGPU compute.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT (it's on your stated goal list) &nbsp;·&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM — high value for your ambitions, but it competes with MCP/backend for this quarter's attention. Pick one as primary.</p>
+
+<h3>The genuine connection to today's news</h3>
+<p>Notice that the fan-out/fan-in concept in the System Design section and GPU compute shaders are <strong>the same idea at different scales.</strong> A compute shader is fan-out to 10,000 GPU threads with a fixed workgroup size (bounded concurrency), then fan-in via a reduction pass. If you learn the backend version first, the GPU version will feel familiar rather than alien. That's an efficient way to study two of your goals at once.</p>
+
+<hr>
+
+<h2>🛡️ CYBERSECURITY</h2>
+
+<h3>1. The npm worm family — and the one config line that stops most of it</h3>
+<p><strong>WHAT HAPPENED?</strong> JFrog found that the testmetest campaign had armed 42 real GitHub repos from 11 owners since July, using polymorphic wrappers of 12.9–13.7 MB to stay under scanner limits. It plants execution hooks for Claude, Gemini, Cursor and VS Code. It shares code with June's Miasma worm and adds Mini Shai-Hulud's token-revocation wiper.</p>
+<p><strong>WHAT IS THE VULNERABILITY?</strong> Not a bug in a library — a design property of npm.</p>
+<p><strong>TERM:</strong> Lifecycle script (preinstall / postinstall)<br>
+<strong>SIMPLE MEANING:</strong> npm packages can declare shell commands that run automatically during <code>npm install</code>, before your code ever imports the package.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> The tensorlake 0.5.144 compromise: a <code>preinstall</code> hook downloaded the Bun runtime and ran an obfuscated loader. <strong>Nobody had to import the package.</strong> Installing it was enough. It was live for eleven minutes.<br>
+<strong>WHY IT MATTERS:</strong> Legitimate packages use this to compile native addons. Malware uses it to run before any scanner or test does.<br>
+<strong>WHY IT MATTERS TO ME:</strong> Your machine has GitHub tokens, a <code>.env</code>, AWS keys, SSH keys and AI tool configs — the exact list these worms harvest.<br>
+<strong>WHAT I SHOULD DO:</strong> Disable scripts by default. Today.</p>
+<p><strong>HOW DOES THE ATTACK WORK (defensive view):</strong> Compromise a maintainer → malicious version published through the normal release pipeline → <code>preinstall</code> hook runs on every installer's machine → harvest npm/GitHub/AWS/Kubernetes/Vault credentials, SSH keys, <code>.env</code> files and AI tool configs → use the stolen npm token to enumerate every package that identity can publish, inject itself, bump the patch version, republish. Several variants also install a monitor that runs destructive code if the victim revokes the stolen GitHub token — <strong>so remove the persistence mechanism before rotating credentials, not after.</strong></p>
+<p><strong>SEPARATE ISSUE — SlugFest:</strong> npm Trusted Publishing bound trust to a repository's <em>name</em> rather than its permanent numeric ID. Rename, transfer or delete a repo and an attacker could claim the freed name, mint an OIDC token carrying that slug, and receive a publish credential for a package they don't own. Over 1,500 packages exposed, 10M+ total downloads. Fixed 2 October: unvalidated configs expire after 48 hours. The lesson, in the researcher's words: <em>"the binding between a human-readable identifier and the thing it identifies is the most important invariant in any trust system."</em></p>
+<p><strong>WHO IS AFFECTED?</strong> Every JavaScript developer and every CI runner.</p>
+<p><strong>HOW DO I PROTECT MY APPLICATION:</strong></p>
+<ul>
+<li><code>npm config set ignore-scripts true</code> globally. When a package genuinely needs its build step, run <code>npm rebuild &lt;pkg&gt;</code> deliberately. <strong>This is the single highest-value thing in today's briefing.</strong></li>
+<li>Always <code>npm ci</code> in CI, never <code>npm install</code> — it installs exactly the lockfile.</li>
+<li>Never <code>npm install package@latest</code> on the day a release lands. The tensorlake window was eleven minutes; a 48-hour cooling-off period costs you nothing.</li>
+<li>Scope your CI secrets per job. The tensorlake malware succeeded partly because one build environment held Kubernetes, Vault and cloud credentials together.</li>
+<li>Review PRs for additions to <code>.github/workflows/</code>, <code>.claude/settings.json</code> and <code>.vscode/tasks.json</code>. These worms plant persistence there specifically because reviewers skim config files.</li>
+<li>Enable 2FA on npm and GitHub; use short-lived tokens.</li>
+</ul>
+<p><strong>WHAT SHOULD I LEARN?</strong> Dependency provenance: lockfile integrity hashes, npm provenance/Sigstore attestations, and <code>npm audit signatures</code>. Understand that the worm <em>generates valid Sigstore provenance</em> — provenance proves <em>where</em> a build ran, not that it's benign. Know what your tools actually prove.</p>
+<p><strong>SAFE PRACTICAL LAB:</strong> In a throwaway folder, create your own package with a <code>preinstall</code> script that just writes "I ran at $(date)" to a file. Install it locally. Observe the file. Now set <code>ignore-scripts true</code> and reinstall — observe nothing happens. Five minutes, and you will never forget how this attack class works.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<h3>2. Langflow critical flaws — and why MCP endpoints are a new attack surface</h3>
+<p><strong>WHAT HAPPENED?</strong> IBM disclosed four Langflow vulnerabilities including two critical ones allowing unauthenticated attackers to bypass authentication or execute arbitrary code. Every release from <strong>1.0.0 through 1.12.8</strong> is affected; fixed in <strong>1.13.0</strong>. The authentication bypass CVE-2026-93680 is rated <strong>9.8</strong> and already has a public Metasploit module that enumerates tools on unpatched MCP endpoints. Automatic login was on by default in 1.12.8 and is turned off in 1.13.0.</p>
+<p><strong>WHAT IS LANGFLOW?</strong> A popular open-source visual builder for LLM/agent workflows — drag-and-drop nodes instead of writing orchestration code.</p>
+<p><strong>WHY SHOULD A MERN DEVELOPER CARE?</strong> Three transferable lessons, all of which apply to code you will write:</p>
+<ul>
+<li><strong>"Secure by default" is not optional.</strong> Automatic login being on by default turned a convenience feature into a 9.8. Your Express app's defaults are a security decision.</li>
+<li><strong>An MCP server is an authenticated API endpoint, full stop.</strong> The Metasploit module <em>lists the tools</em> on exposed endpoints — meaning an unprotected MCP server advertises its own capabilities to attackers. If you build MCP servers, OAuth 2.1 and RFC 8707 audience validation are not optional extras.</li>
+<li><strong>Agent frameworks are young code handling dangerous capabilities.</strong> 31 security advisories in 28 days across the official MCP repos tells you the whole ecosystem is still hardening.</li>
+</ul>
+<p><strong>HOW DO I PROTECT MYSELF?</strong> If you run Langflow anywhere, upgrade to 1.13.0 now and make sure it was never exposed to the internet. Update MCP Inspector to 1.0.3+ (critical advisory GHSA-6x67-4w4w-9f3w: a remote MCP app could steal the proxy auth token and execute arbitrary local commands).</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> <strong>Capability scoping</strong> — give an agent only the tools and permissions it genuinely needs. An agent that reads customer records should hold no credential that can delete them. In Express terms: a separate, read-only MongoDB user for the agent's connection string.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;·&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<hr>
+
+<h2>🧩 OPEN SOURCE</h2>
+
+<h3>1. modelcontextprotocol/typescript-sdk (v2.4.0, 23 Oct)</h3>
+<p><strong>WHAT IS IT?</strong> The official TypeScript SDK for MCP. v2.4.0 added Skills over MCP (SEP-2640) support.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> Lets you build a spec-compliant MCP server in TypeScript without implementing JSON-RPC, discovery, or the transport layer yourself.</p>
+<p><strong>WHY IS IT INTERESTING?</strong> It is the reference implementation of a protocol that just went stateless. You can read a real, production-grade example of removing session state from a protocol.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> It's TypeScript, it's a server, and <code>createMcpHandler</code> graduated into it from Cloudflare's Agents SDK — meaning you can deploy an MCP server as a plain serverless function.</p>
+<p><strong>WHAT CAN I LEARN BY READING THE CODE?</strong> How to design a protocol layer where every request is self-describing, and how backward compatibility is maintained across a breaking spec change.</p>
+<p><strong>SHOULD I:</strong> <strong>Clone it and build with it.</strong> Not just read. This is your highest-leverage repo this week.</p>
+
+<h3>2. github.com/openai/git (OpenAI's Git fork)</h3>
+<p><strong>WHAT IS IT?</strong> OpenAI's public distribution of Git, with client-side improvements made for Pando (including fixes for cleaning up after an interrupted packfile download), which they are contributing upstream.</p>
+<p><strong>WHY IS IT INTERESTING?</strong> It's a rare, readable example of a company improving a 20-year-old tool rather than replacing it.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> Mostly as a case study in a valuable engineering instinct: <em>keep the interface, replace the implementation.</em> That's the same instinct behind keeping your Express route contracts stable while swapping MongoDB for something else underneath.</p>
+<p><strong>SHOULD I:</strong> <strong>Read the blog post, not the code.</strong> C and packfile internals are a deep detour from your goals. The architecture write-up has the value; the source does not, for you.</p>
+
+<h3>3. bullmq (queue library)</h3>
+<p><strong>WHAT IS IT?</strong> A Redis-backed job queue for Node, in TypeScript.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> It's the practical vehicle for today's system design concept, and the codebase is a genuinely good education in distributed locks, idempotency, retries with exponential backoff, and rate limiting — four things on your learning list, all implemented in JavaScript you can actually read.</p>
+<p><strong>WHAT CAN I LEARN BY READING THE CODE?</strong> How a distributed lock is implemented with Redis primitives, and why Lua scripts are used for atomicity.</p>
+<p><strong>SHOULD I:</strong> <strong>Build something with it first, then read the lock implementation.</strong> Reading it cold won't stick.</p>
+
+<hr>
+
+<h2>📈 SKILLS TO LEARN</h2>
+
+<h3>SKILLS I SHOULD LEARN NOW</h3>
+<p><strong>1. Skill:</strong> Building MCP servers against the 2026-07-28 spec<br>
+<strong>Why:</strong> It's the point where your existing backend skills and your AI ambitions become the same skill. The spec is frozen until late March 2027, so this knowledge has an unusually long shelf life. Agent frameworks churn; the protocol now won't.<br>
+<strong>What exactly to learn:</strong> The stateless request model; <code>_meta</code> and the mandatory <code>Mcp-Method</code>/<code>Mcp-Name</code> headers; <code>server/discover</code>; the <code>input_required</code> retry pattern; OAuth 2.1 with RFC 9728 resource metadata and RFC 8707 audience validation; explicit state handles instead of sessions.</p>
+
+<p><strong>2. Skill:</strong> Queues, workers and bounded concurrency in Node<br>
+<strong>Why:</strong> Every AI feature you build will eventually need to process many items without melting. This is also the most commonly tested area in backend system design interviews, and it directly underpins MCP servers that do long-running work.<br>
+<strong>What exactly to learn:</strong> BullMQ (queues, workers, concurrency, retries, backoff), idempotency keys, progress tracking in MongoDB, backpressure, and why <code>Promise.all</code> over a large array is a bug.</p>
+
+<p><strong>3. Skill:</strong> Dependency supply-chain hygiene<br>
+<strong>Why:</strong> Given autumn 2026, this stopped being a security specialism and became basic professional competence. And it takes one afternoon.<br>
+<strong>What exactly to learn:</strong> <code>ignore-scripts</code>, <code>npm ci</code>, lockfile discipline, reading GHSA advisories, npm provenance and its limits, token scoping and rotation order.</p>
+
+<p><strong>4. Skill:</strong> Next.js Cache Components / <code>use cache</code><br>
+<strong>Why:</strong> It becomes the default in Next.js 17. You don't get to opt out, and it has already produced a CVSS 9.5.<br>
+<strong>What exactly to learn:</strong> The directive, cache keys, <code>cacheLife</code>/<code>cacheTag</code>, what cannot be cached, and Partial Prefetching.</p>
+
+<h3>SKILLS I SHOULD WATCH</h3>
+<ul>
+<li><strong>TSL / WebGPU compute.</strong> Genuinely on your path, but don't start it the same month as MCP. Queue it for after.</li>
+<li><strong>TypeScript 7.1</strong> — beta, wait for stable.</li>
+<li><strong>Skills over MCP (SEP-2640)</strong> — understand the idea now, implement after your first MCP server works.</li>
+<li><strong>Stateless MCP on Cloudflare Workers</strong> — a natural second step once you've built a local server.</li>
+</ul>
+
+<h3>SKILLS I CAN IGNORE FOR NOW</h3>
+<ul>
+<li><strong>Frontier model internals</strong> (LongCat-2.5's 1.6T parameters, Genie 4, Gemini 4 Carbon). You consume models through APIs. Model architecture is not your lever.</li>
+<li><strong>Git internals / packfile formats.</strong> Read Pando's architecture, skip the C.</li>
+<li><strong>AI robotics / VLA models.</strong> Different career.</li>
+<li><strong>AI industry finance.</strong> Anthropic's S-1 is not a skill.</li>
+</ul>
+
+<hr>
+
+<h2>🎓 FREE / CHEAP LEARNING</h2>
+
+<h3>1. Model Context Protocol official specification &amp; docs</h3>
+<p><strong>WHAT IS IT?</strong> The primary source for MCP, including the full 2026-07-28 changelog and SEP documents.<br>
+<strong>PROVIDER:</strong> modelcontextprotocol.io (now under the Linux Foundation's Agentic AI Foundation)<br>
+<strong>COST:</strong> Free · <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> How a modern stateless RPC protocol is designed, and how to build a compliant server. The changelog page is the single most useful document in the spec right now.<br>
+<strong>DIFFICULTY:</strong> Intermediate<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> Primary source, frozen until March 2027, and every blog post older than August 2026 is wrong.<br>
+<strong>LINK:</strong> <a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog">modelcontextprotocol.io/specification/2026-07-28/changelog</a></p>
+
+<h3>2. Anthropic — Message Threads documentation</h3>
+<p><strong>WHAT IS IT?</strong> Official docs for the new threads beta, with cURL, Python and TypeScript examples.<br>
+<strong>PROVIDER:</strong> Anthropic · <strong>COST:</strong> Free (API usage billed separately) · <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> Server-side conversation caching, best-effort cache semantics, replay-on-404, and why the client must remain the source of truth. It is a surprisingly good caching tutorial disguised as API docs.<br>
+<strong>DIFFICULTY:</strong> Beginner–Intermediate<br>
+<strong>LINK:</strong> <a href="https://platform.claude.com/docs/en/build-with-claude/message-threads">platform.claude.com/docs/en/build-with-claude/message-threads</a></p>
+
+<h3>3. "Scaling Git at OpenAI" (engineering blog)</h3>
+<p><strong>WHAT IS IT?</strong> A detailed write-up of Pando: three-phase commit, causal consistency, packfile reuse, distributed Git service patterns.<br>
+<strong>PROVIDER:</strong> OpenAI · <strong>COST:</strong> Free · <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> How real engineers reason about write scalability and consistency trade-offs — with a worked example and real numbers.<br>
+<strong>DIFFICULTY:</strong> Advanced (but readable; skip the Git-specific sections)<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> Free, current, primary-source system design material beats any paid course's invented case study.<br>
+<strong>LINK:</strong> <a href="https://openai.com/index/scaling-git-at-openai">openai.com/index/scaling-git-at-openai</a></p>
+
+<h3>4. Node.js 26 release notes &amp; changelog</h3>
+<p><strong>WHAT IS IT?</strong> The official notable-changes list for 26.x.<br>
+<strong>PROVIDER:</strong> Node.js · <strong>COST:</strong> Free · <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> Exactly what breaks and what's new, from the source rather than from a listicle. Reading release notes directly is an underrated senior-developer habit.<br>
+<strong>DIFFICULTY:</strong> Beginner<br>
+<strong>LINK:</strong> <a href="https://nodejs.org/en/blog/release/v26.13.0">nodejs.org/en/blog/release/v26.13.0</a></p>
+
+<hr>
+
+<h2>▶️ YOUTUBE</h2>
+<p>No YouTube recommendations today — these are Wednesday-only. Come back tomorrow.</p>
+
+<hr>
+
+<h2>🧠 WHAT I SHOULD LEARN TODAY</h2>
+
+<h3>LEARN THIS #1 — npm lifecycle scripts and <code>ignore-scripts</code></h3>
+<p><strong>WHAT IS IT?</strong> Understanding that npm packages run shell commands on install, before your code touches them — and turning that off by default.</p>
+<p><strong>WHY NOW?</strong> Four separate active worm campaigns in three months, 42 newly confirmed hijacked repos, and the payloads specifically target the AI coding tools you use.</p>
+<p><strong>WHY ME?</strong> You install packages daily, you run AI agents that install packages autonomously, and your machine holds GitHub tokens and a LinkedIn API token.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> <code>preinstall</code>/<code>postinstall</code> hooks; <code>npm config set ignore-scripts true</code>; <code>npm rebuild</code> for the packages that genuinely need it; <code>npm ci</code> vs <code>npm install</code>; and the revocation-order trap (remove persistence before rotating tokens).</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> SBOM tooling, Sigstore internals, writing your own scanner. Not your job today.</p>
+<p><strong>TIME:</strong> 30 minutes</p>
+<p><strong>FREE RESOURCE:</strong> npm docs on scripts + the Microsoft Threat Intelligence ChainDrop write-up.</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> The <code>preinstall</code> lab in the Cybersecurity section above.</p>
+
+<h3>LEARN THIS #2 — Fan-out / fan-in with bounded concurrency in Node</h3>
+<p><strong>WHAT IS IT?</strong> Splitting a big job into many small ones, running a limited number at a time, and collecting the results.</p>
+<p><strong>WHY NOW?</strong> It is the architecture behind today's two biggest technical stories (OpenAI's 10,000 agents, Pando's concurrent pushes), and it's the bottleneck you will hit the first time you batch-process anything with an AI API.</p>
+<p><strong>WHY ME?</strong> It sits exactly at the intersection of your three goals: backend, system design, AI agents. One concept, three boxes ticked.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> BullMQ worker concurrency; idempotent job handlers; progress tracking with <code>$inc</code> in MongoDB; retries and exponential backoff; why <code>Promise.all</code> over a big array is wrong.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> Kafka, exactly-once semantics, distributed transactions, multi-region queues. Far too early.</p>
+<p><strong>TIME:</strong> 2 hours</p>
+<p><strong>FREE RESOURCE:</strong> BullMQ official docs (Queues → Workers → Concurrency → Retrying failing jobs).</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> The batch endpoint described in the System Design section.</p>
+
+<hr>
+
+<h2>🔮 WHERE TECHNOLOGY IS GOING</h2>
+
+<p><strong>TREND 1:</strong> Systems built for human pace are breaking under machine pace.<br>
+<strong>WHAT THAT MEANS:</strong> OpenAI didn't rebuild Git because Git was bad. They rebuilt it because Codex agents push code faster than any human team ever could, and the old backend's reliability fell below 90%. Expect the same pressure on CI systems, code review, issue trackers and deployment pipelines.<br>
+<strong>WHY IT MATTERS:</strong> "Scale" used to mean more users. It now also means more <em>agents</em> — which are far more concurrent and far less patient than users.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Write scalability, queues, idempotency, rate limiting, and consistency trade-offs.</p>
+
+<p><strong>TREND 2:</strong> Agent infrastructure is converging on boring, proven backend patterns.<br>
+<strong>WHAT THAT MEANS:</strong> MCP removed sessions to become statelessly deployable. Anthropic added a server-side conversation cache with best-effort semantics and client-side replay. Both of those are ordinary web-backend engineering decisions, not AI research.<br>
+<strong>WHY IT MATTERS:</strong> The exotic phase is ending. The skills that make someone good at AI infrastructure are increasingly the same skills that make someone good at backend infrastructure.<br>
+<strong>WHAT I SHOULD LEARN:</strong> This is unusually good news for you. Statelessness, caching semantics, OAuth, audience validation, queues — you can get there from where you already stand.</p>
+
+<p><strong>TREND 3:</strong> The supply chain is the attack surface, and AI agents widened it.<br>
+<strong>WHAT THAT MEANS:</strong> Attackers stopped attacking applications and started attacking the pipelines that build them. The new twist is that agents install dependencies autonomously, take the latest version, and rarely check provenance — removing the human who might have noticed.<br>
+<strong>WHY IT MATTERS:</strong> Your dependency tree is now part of your threat model, and so is your coding agent's autonomy level.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Lockfile discipline, lifecycle script control, token scoping, provenance and its limits.</p>
+
+<p><strong>TREND 4:</strong> Frameworks are adopting operating-system-style security calendars.<br>
+<strong>WHAT THAT MEANS:</strong> Next.js now pre-announces scheduled patch dates. MCP moved to fixed March/September spec releases. Node 27 moves to annual LTS-only releases.<br>
+<strong>WHY IT MATTERS:</strong> The ecosystem is becoming predictable — which is good — but it shifts the burden onto you to actually show up on patch day.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Build an upgrade habit. Subscribe to the Next.js blog and the Node.js security feed. Treat patch day as scheduled work, not an interruption.</p>
+
+<p><strong>TREND 5:</strong> Knowledge is becoming a deployable artifact, not just code.<br>
+<strong>WHAT THAT MEANS:</strong> Skills over MCP lets you serve <em>instructions</em> next to tools, versioned and discovered at runtime — "ship the manual with the product." Vercel shipped an agent skill for bundle optimisation.<br>
+<strong>WHY IT MATTERS:</strong> A future deliverable may be "an MCP server plus the skills that teach agents to use it correctly." That's a new kind of product, and it's one a backend developer is well placed to build.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Understand the idea now. Implement after your first MCP server works.</p>
+
+<hr>
+
+<h2>🚀 MY ACTION PLAN</h2>
+
+<h3>TODAY — 30 MINUTES</h3>
+<p>Run <code>npm config set ignore-scripts true</code>, then do the <code>preinstall</code> lab so you understand exactly what you just prevented. While you're there, run <code>npm ls next react sharp</code> across your projects and note anything below 16.4.1 / 15.5.28.</p>
+
+<h3>TODAY — 1 HOUR</h3>
+<p>Build a minimal MCP server in TypeScript using the official SDK (v2.4.0) with one tool that queries a local MongoDB collection. Target the 2026-07-28 spec — stateless, no session ID. Connect it to a client and call the tool.</p>
+
+<h3>THIS WEEK</h3>
+<p>Fan-out / fan-in with bounded concurrency. Go deep enough that you can explain backpressure and idempotency to someone else without notes.</p>
+
+<h3>THIS WEEK'S PROJECT</h3>
+<p><strong>"Bulk AI Enrichment Service."</strong> An Express + MongoDB + BullMQ service that accepts a batch of 200 items, fans them out to a queue with concurrency 5, calls an AI API per item, tracks progress in a batch document, exposes <code>GET /batches/:id</code>, and survives a worker being killed mid-run. Then expose the whole thing as a single MCP tool so an agent can trigger and poll it.</p>
+<p>This one project touches Express, MongoDB, queues, concurrency, idempotency, AI APIs and MCP — seven items on your list, one weekend, one portfolio piece. It is also a plausible real product.</p>
+
+<h3>IGNORE FOR NOW</h3>
+<p>Frontier model releases. LongCat-2.5, Gemini 4 Carbon, Genie 4 — do not spend learning time comparing model capabilities. You consume models through an API; the model changes under you anyway, and the API shape is what you actually need to know.</p>
+
+<hr>
+
+<h2>🎯 IF I ONLY HAVE 1 HOUR TODAY</h2>
+<p><strong>Minutes 0–10:</strong> Set <code>ignore-scripts true</code> globally and run the <code>preinstall</code> lab. Non-negotiable, and it's the highest value-per-minute item here.</p>
+<p><strong>Minutes 10–60:</strong> Build one MCP server. Use <code>@modelcontextprotocol/sdk</code> v2.4.0, define a single tool — <code>searchProducts(query)</code> against a MongoDB collection you already have — and call it successfully from a client.</p>
+<p>Not a tutorial you watch. A server you run. By the end of the hour you will have written an AI-callable backend endpoint, which is the exact skill at the centre of everything in today's briefing. Everything else on this page can wait until tomorrow.</p>
+
+<hr>
+<p><em>Sources: nextjs.org/blog · nodejs.org/en/blog · openai.com/index/scaling-git-at-openai · platform.claude.com docs · modelcontextprotocol.io · blog.cloudflare.com/mcp-v2 · research.jfrog.com · thehackernews.com · microsoft.com/security/blog · bloomberg.com (Skills over MCP) · eseospace.com State of MCP October 2026.<br>
+Status labels used: CONFIRMED = primary source published. ANNOUNCED = officially stated, not yet shipped at time of writing. Where I could not verify something today, I said so rather than filling the gap.</em></p>
+
+</body>
+</html>
