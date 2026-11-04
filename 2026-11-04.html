@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Daily Tech Intelligence — 2026-11-04</title>
+<style>
+body { font-family: Segoe UI, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #0d1117; color: #c9d1d9; line-height: 1.7; }
+h1 { color: #58a6ff; border-bottom: 2px solid #30363d; padding-bottom: 10px; }
+h2 { color: #f0883e; margin-top: 40px; }
+h3 { color: #79c0ff; }
+strong { color: #ffa657; }
+code { background: #161b22; padding: 2px 6px; border-radius: 4px; }
+hr { border-color: #30363d; }
+a { color: #58a6ff; }
+</style>
+</head>
+<body>
+
+<h1>🌍 DAILY TECH INTELLIGENCE — 2026-11-04</h1>
+<p><strong>DATE:</strong> Wednesday, 4 November 2026 &nbsp;|&nbsp; <strong>Written for:</strong> a MERN developer moving into backend, system design, AI agents and creative development.</p>
+
+<p>Good morning. Sit down, let me tell you what actually happened. Today is unusual: there are <strong>two things you must act on in your own projects before you learn anything new</strong>. I'll start with those.</p>
+
+<hr>
+
+<h2>⚡ TODAY IN 60 SECONDS</h2>
+
+<h3>1. Next.js shipped a security patch — your app probably needs it today</h3>
+<p><strong>WHAT HAPPENED:</strong><br>
+On 3 November 2026 the Next.js team released <code>16.4.5</code> and <code>15.5.29</code>, fixing six security problems. The worst one (High severity) can leak <em>one customer's cached data to another customer</em> in apps that mix <code>unstable_cache</code> with the newer <code>use cache</code>. This is confirmed on the official Next.js blog, with GitHub advisory IDs.</p>
+<p><strong>WHAT IS THIS?</strong><br>
+<strong>TERM: Cross-tenant cache disclosure.</strong><br>
+<em>Simple meaning:</em> "Tenant" = one customer/organisation inside your app. A cache stores a computed result so you don't recompute it. If the cache forgets <em>which tenant</em> the result belonged to, Tenant B can be handed Tenant A's data.<br>
+<em>Real-world example:</em> A SaaS dashboard. Company A opens its invoice page. Company B opens the same page one millisecond later. Because the cache filled "cold" at the same moment and didn't check the tenant ID, Company B sees Company A's invoices.<br>
+<em>Why it matters:</em> It is a data breach caused by a performance optimisation, not by a hacker breaking in.<br>
+<em>Why it matters to you:</em> You build Next.js apps. If any of them has users from different accounts and uses caching, this is literally your bug.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Run <code>npm ls next</code> in every Next.js project today. If below 16.4.5 (or 15.5.29 on the 15 line), upgrade and redeploy. This takes 10 minutes and is the highest-value thing you'll do today.</p>
+
+<h3>2. Two developer companies were broken into by AI agents in the same week</h3>
+<p><strong>WHAT HAPPENED:</strong><br>
+<strong>GitBook</strong> (documentation hosting) confirmed on its official status page that on 2 November an attacker "using AI agents" got into part of its infrastructure and may have accessed integration tokens, Git Sync secrets and API tokens. GitBook invalidated every customer API token and told users to rotate secrets and <em>re-authenticate the GitBook MCP server</em>.<br>
+Separately, <strong>WorkOS</strong> (the auth/SSO company many startups use) published a bulletin saying an internal sales tool was accessed on 30 October using "an AI-assisted offensive security framework". Its CEO named the tool as ARTEX. CRM data and Slack conversation excerpts were exposed; WorkOS says production auth services were not.</p>
+<p><strong>WHAT IS THIS?</strong><br>
+<strong>TERM: Agentic attack (AI-assisted offensive framework).</strong><br>
+<em>Simple meaning:</em> Instead of a human hacker manually trying things, an AI agent is given a goal ("get into this company") and a set of tools (port scanners, HTTP clients, credential testers). It reads each response and decides the next step by itself, thousands of times faster than a person.<br>
+<em>Real-world example:</em> The agent finds an exposed internal API, reads the error message, guesses the right parameter format, finds a token in a response, and immediately tries that token on five other connected services — all in minutes.<br>
+<em>Why it matters:</em> The window between "you have a small misconfiguration" and "you are breached" has collapsed from weeks to hours.<br>
+<em>Why it matters to you:</em> You are learning AI agents <em>and</em> web security. These are the same skill viewed from two sides. Also: you personally store API tokens in your projects.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> If you use GitBook anywhere, rotate those tokens now. Then spend 15 minutes auditing where your own projects keep secrets — any token hard-coded in a repo or committed <code>.env</code> is now a much bigger risk than it was a year ago.</p>
+
+<h3>3. GitHub now version-controls your AI agent's instructions, like npm packages</h3>
+<p><strong>WHAT HAPPENED:</strong><br>
+GitHub's changelog on 3 November: <strong>Dependabot now supports Agent Package Manager (APM)</strong>. It reads an <code>apm.yml</code> file, opens pull requests when a dependency updates, and regenerates <code>apm.lock.yaml</code>. Version updates only — not security updates yet.</p>
+<p><strong>WHAT IS THIS?</strong><br>
+<strong>TERM: APM (Agent Package Manager).</strong><br>
+<em>Simple meaning:</em> A package manager — like npm, but for the <em>text</em> you feed an AI agent: its skills, prompts, instructions, chat modes and MCP server configs. You declare them in a manifest, pin exact versions in a lockfile, and share them across repos.<br>
+<em>Real-world example:</em> Your company writes one "Node.js code review" instruction file. 40 repos depend on <code>company/code-review@1.2.0</code>. You improve it to 1.3.0; Dependabot opens 40 PRs.<br>
+<em>Why it matters:</em> It is the moment prompts stopped being copy-pasted text and became <strong>managed dependencies with a supply chain</strong>. And a supply chain is something that can be attacked.<br>
+<em>Why it matters to you:</em> You already understand <code>package.json</code> vs <code>package-lock.json</code>. This is the exact same mental model applied to AI. You get it for free.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp; <strong>IMPORTANCE:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT I SHOULD DO:</strong> Read the APM manifest format for 15 minutes. Understand the idea; don't adopt it yet.</p>
+
+<h3>4. Google open-sourced a safe way to run AI-generated 3D code in the browser</h3>
+<p><strong>WHAT HAPPENED:</strong><br>
+On 3 November Google's Open Source blog released <strong>Three-Live v1.0.0</strong> (Apache 2.0, Developer Preview — explicitly <em>not</em> an officially supported Google product). It takes procedural Three.js JavaScript written by an LLM, runs it inside a <strong>sandboxed compiler</strong>, and turns the resulting scene into standard <code>.glb</code> (glTF 2.0) and <code>.usdz</code> files in about 2–5 milliseconds — so web, Android and iOS can render it natively instead of inside a webview.</p>
+<p><strong>WHAT IS THIS?</strong><br>
+<strong>TERM: Sandboxed compiler for untrusted code.</strong><br>
+<em>Simple meaning:</em> You run code in a locked room where it can only do a few approved things. It cannot read your files, call the network or touch the rest of your page.<br>
+<em>Real-world example:</em> A user types "a glowing brass lantern". An LLM writes Three.js code. You must never <code>eval()</code> that code on your page — it could steal cookies. So you run it in a sandbox that only allows "create geometry / create material / add light" and throw away everything else.<br>
+<em>Why it matters:</em> "AI generates code that runs in my product" is now a standard feature request, and <code>eval()</code> is not an answer.<br>
+<em>Why it matters to you:</em> This sits exactly on the intersection of your three interests — <strong>Three.js + AI + security</strong>. This is a rare story that is relevant to you three different ways.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp; <strong>IMPORTANCE:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT I SHOULD DO:</strong> Clone it and read the sandbox layer, not the 3D layer. The 3D part you can already write; the sandbox is the part you can't.</p>
+
+<h3>5. Anthropic is working on cryptographic proof of "which model answered you"</h3>
+<p><strong>WHAT HAPPENED:</strong><br>
+Anthropic published research on <strong>FlashProve</strong>, a prototype that produces a mathematical proof that a given AI output really came from a specific model. Status: <strong>EARLY / RESEARCH PROTOTYPE.</strong> Reported limits: capped at 1,024-token conversations, and generating the proof costs roughly 72–95× the compute of a normal response. Anthropic has stated no plan to ship it in a product or API.</p>
+<p><strong>WHAT IS THIS?</strong><br>
+<strong>TERM: Zero-knowledge proof (zkSNARK).</strong><br>
+<em>Simple meaning:</em> A way to prove a statement is true without revealing the secret that makes it true.<br>
+<em>Real-world example:</em> Proving you know a password without typing the password. Here: proving "this answer came from model X" without publishing model X's weights (worth hundreds of millions).<br>
+<em>Why it matters:</em> There is a real industry suspicion that providers silently swap an expensive model for a cheap one to save money. Today you have no way to detect it.<br>
+<em>Why it matters to you:</em> Honestly? Mostly as background. The <em>transferable</em> lesson is the pattern: <strong>when you can't trust a service, you ask it for a verifiable receipt instead of trusting its word.</strong> That pattern you will use — in webhooks, payments and API integrations.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp; <strong>IMPORTANCE:</strong> ⚪ LOW</p>
+<p><strong>WHAT I SHOULD DO:</strong> Watch only. Do not study zkSNARKs. The 95× cost means this is years from your daily work.</p>
+
+<hr>
+
+<h2>🔥 BIGGEST DEVELOPMENTS</h2>
+
+<h3>A. OpenAI replaced Git's backend with its own system, built in 10 weeks</h3>
+<p><strong>WHAT HAPPENED:</strong> OpenAI published "Scaling Git at OpenAI" describing <strong>Pando</strong>, a new Git <em>backend</em> now serving its entire monorepo. Reported numbers: median push latency down ~5×, close to a petabyte of Git data served per day, one peak hour serving 57 TB of packs, over 99% served from local disk caches. It is protocol-compatible with normal Git, so engineers changed nothing. One engineer did the core design; Codex did much of the implementation. Formal correctness was checked with Lean and TLA+. <strong>Status: CONFIRMED (vendor engineering post — numbers are self-reported.)</strong></p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong><br>
+<strong>TERM: Monorepo.</strong> <em>Simple meaning:</em> One giant Git repository holding all of a company's code instead of hundreds of small ones.<br>
+<strong>TERM: Protocol-compatible backend swap.</strong> <em>Simple meaning:</em> You replace the server while keeping the exact same wire protocol, so every existing client keeps working with zero migration. <em>Example:</em> swapping MongoDB for a MongoDB-compatible database — your Mongoose code never changes.<br>
+<strong>TERM: Formal verification (Lean, TLA+).</strong> <em>Simple meaning:</em> Instead of writing tests that check a few cases, you write a mathematical model of your system and prove no bad state is reachable at all. <em>Why used:</em> For things like "never lose a commit", tests are not strong enough — you need proof.</p>
+<p><strong>WHY DOES IT MATTER?</strong> The real reason Pando exists is revealing: humans push code a few times an hour, but <strong>AI coding agents push and fetch at machine speed</strong>. Existing infrastructure was sized for human traffic. Agents broke it.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> This is the clearest signal of where backend jobs are going: <em>your API will soon be called mostly by agents, not by humans.</em> That changes everything about rate limiting, idempotency, caching and auth design. Also: "keep the protocol, replace the implementation" is a backend design superpower you should own.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Not Git internals. Learn <strong>designing APIs for machine-rate traffic</strong>: idempotency keys, per-client quotas, backpressure.</p>
+
+<h3>B. Node.js 26 "Lithium" is now the LTS you should be on</h3>
+<p><strong>WHAT HAPPENED:</strong> Node.js 26.13.0 shipped on 28 October 2026 and marks Node 26 entering <strong>Long Term Support</strong>, codename "Lithium", supported to end of April 2029. Node 27 entered Alpha on 29 October. Node 20 and 25 are already End Of Life. <strong>Status: CONFIRMED (nodejs.org).</strong></p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong><br>
+<strong>TERM: LTS (Long Term Support) vs Current vs EOL.</strong><br>
+<em>Simple meaning:</em> "Current" = newest, still changing, for experimenting. "Active LTS" = frozen feature set, bugs and security fixed for ~30 months, <strong>what production should run</strong>. "EOL" = no more security patches at all, ever.<br>
+<em>Example:</em> Running Node 20 today means any new Node security bug stays unpatched in your app forever.<br>
+<em>One gotcha from the release notes:</em> since Node 25, official Linux binaries link against <code>libatomic</code>, which some distros need installed separately — this can bite you in a slim Docker image.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> You deploy Node. Running EOL Node is the most boring, most common and most embarrassing production security hole.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH (it's a 20-minute task, not a study topic)</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Pin Node versions properly: <code>engines</code> in <code>package.json</code>, <code>.nvmrc</code>, and a pinned Docker base image tag — never <code>node:latest</code>.</p>
+
+<h3>C. The MCP ecosystem is having its security reckoning</h3>
+<p><strong>WHAT HAPPENED:</strong> Three threads converged. (1) The <strong>2026-07-28 MCP spec</strong> — the largest revision since launch — made MCP <em>stateless</em>: protocol-level sessions, the <code>Mcp-Session-Id</code> header and the <code>initialize</code> handshake are gone; OAuth 2.1 became first-class; Dynamic Client Registration is deprecated. (2) In late October, CVEs landed in the official MCP <strong>Python and TypeScript SDKs</strong> (e.g. CVE-2026-116684, CVE-2026-111771) for a missing <strong>token audience check</strong> — and critically, <em>the fix ships switched off by default</em>, so upgrading alone does not protect you. (3) GitBook told all customers to re-authenticate their MCP servers after its breach. <strong>Status: CONFIRMED (spec + GitHub Advisory Database + vendor notice).</strong></p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong><br>
+<strong>TERM: MCP (Model Context Protocol).</strong> <em>Simple meaning:</em> A standard way for an AI app to discover and call external tools — "USB-C for AI tools". You run an MCP server exposing tools; an AI client calls them.<br>
+<strong>TERM: Stateless protocol.</strong> <em>Simple meaning:</em> The server remembers nothing between requests. Every single request must carry everything needed to authenticate and identify itself. <em>Example:</em> a JWT sent on every call, versus a session cookie the server looks up.<br>
+<strong>TERM: Token audience binding (the <code>aud</code> claim).</strong><br>
+<em>Simple meaning:</em> A token should say "I am only valid for service X". Service Y must reject it even though the signature is perfectly valid.<br>
+<em>Real-world example:</em> A user has a valid token for your CRM API. Without an audience check, that same token also unlocks your MCP server. The CRM — or anyone who ever receives that token — can now call your tools.<br>
+<em>Why it matters:</em> Checking the signature and expiry is <strong>not enough</strong>. This is the single most commonly skipped JWT check in the industry.<br>
+<em>Why it matters to you:</em> You list Authentication and API security as learning goals. This is the highest-value, least-known auth check you can learn this month, and it applies to every JWT you've ever issued — not just MCP.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> JWT claim validation in depth: <code>iss</code>, <code>aud</code>, <code>exp</code>, <code>nbf</code>, and why "never pass a client's token through to a downstream API" is a hard rule.</p>
+
+<h3>D. A developer tool was accused of editing AI agent config files without consent</h3>
+<p><strong>WHAT HAPPENED:</strong> A heavily-upvoted GitHub issue alleges that Postman desktop 12.33.4 on macOS modified users' AI agent configuration files without asking — adding a marketplace entry to <code>~/.codex/config.toml</code>, enabling a plugin, installing a SessionStart hook, configuring a remote MCP server, and writing a <code>trusted_hash</code> to self-approve; plus enabling a Postman plugin in <code>~/.claude/settings.json</code>. <strong>Status: EARLY / UNCONFIRMED — this is a community report with no vendor response at time of writing. Treat the claim as unverified.</strong></p>
+<p><strong>WHY DOES IT MATTER?</strong> Regardless of how this specific case resolves, it names a brand-new attack surface clearly.<br>
+<strong>TERM: Agent config / hook injection.</strong><br>
+<em>Simple meaning:</em> Your AI coding agent reads a config file to decide which tools it may use and which commands run automatically. Whoever can write that file controls your agent.<br>
+<em>Real-world example:</em> A "SessionStart hook" is a command the agent runs every time it starts. If something silently adds one, it runs on your machine, with your permissions, every session.<br>
+<em>Why it matters to you:</em> You run AI coding agents. <code>~/.claude/</code> and similar files are now as security-sensitive as your SSH keys, and nothing is watching them.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Nothing theoretical. Just put your agent config files under Git so any change is visible in <code>git diff</code>. Five minutes, permanent benefit.</p>
+
+<h3>E. Interesting, but not important for you right now</h3>
+<p>These are real and widely covered, but they do not move your career this week — read the headline, skip the detail:</p>
+<ul>
+<li><strong>The open-weight model flood.</strong> Mistral Large 4, Kimi K3.1 Pro, DeepSeek V4.1 Flash all landed with new benchmark claims. Why ignore it: models change weekly, the <em>interface</em> (tool calling, structured output) barely changes. Learn the interface, not the leaderboard. ⚪ NOT IMPORTANT RIGHT NOW.</li>
+<li><strong>Anthropic's IPO filing language about recursive self-improvement.</strong> Industry drama, zero code impact. ⚪ NOT IMPORTANT.</li>
+<li><strong>CrowdStrike acquiring Fiddler AI and Dreadnode (~$495M).</strong> Signals that "AI observability" and "AI red-teaming" are now funded job categories — worth knowing as career context, nothing to learn. ⚪ NOT IMPORTANT.</li>
+<li><strong>AI designing CAD/PCB hardware, agents at the SETI telescope array, AI in drug discovery.</strong> Genuinely remarkable, completely irrelevant to a MERN developer. The <em>only</em> transferable lesson is in the System Design section below. ⚪ NOT IMPORTANT.</li>
+</ul>
+
+<hr>
+
+<h2>🤖 AI &amp; AI AGENTS</h2>
+
+<p>One theme dominated today, and it is the theme that matters most to a backend developer. Let me run it through the full filter.</p>
+
+<h3>THE AGENT SUPPLY CHAIN</h3>
+<p><strong>WHAT IS IT?</strong><br>
+Until recently, the text you gave an AI agent — its instructions, its skills, its list of allowed tools, its MCP server addresses — lived in a file on your laptop that you edited by hand. As of this week that text is becoming <strong>infrastructure</strong>: declared in a manifest (<code>apm.yml</code>), pinned in a lockfile (<code>apm.lock.yaml</code>), fetched from remote sources, and auto-updated by Dependabot.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong><br>
+Prompt sprawl. A 40-engineer team had 40 slightly different versions of the same instruction file, and no way to know which one an agent actually used when it did something wrong.</p>
+<p><strong>HOW DOES IT WORK? (simplified)</strong><br>
+Exactly like npm. A manifest lists what you depend on. A resolver fetches those Git dependencies. A lockfile records the exact resolved versions so every machine gets byte-identical agent context. Dependabot watches upstream and opens a PR when a version moves.</p>
+<p><strong>WHY ARE PEOPLE USING IT?</strong> Reproducibility and auditability. If an agent deletes a production table, you need to know precisely which instructions it was running.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong><br>
+Two reasons, and the second is the important one.<br>
+1. You already know this model cold. <code>package.json</code> → <code>apm.yml</code>. Nothing new to learn conceptually.<br>
+2. <strong>Every supply chain gets attacked.</strong> npm taught the industry about typosquatting, malicious postinstall scripts and dependency confusion. The agent supply chain is at the pre-attack stage right now — and this week already gave us the preview: the Postman config allegations, a malicious npm MCP package (<code>gadgethumans-mcp</code>) reported sending a wallet private key to a remote server on every tool call, and research showing two working malicious MCP servers passed five different security scanners cleanly.</p>
+<p><strong>HOW COULD I USE IT IN A REAL PROJECT?</strong><br>
+Concretely: in your Node/Express AI projects, stop putting prompts in string literals. Put them in versioned files, load them at boot, and log the version with every agent run. You get reproducibility now and APM compatibility later for free.</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> The failure modes, in this order: <strong>tool poisoning</strong> (a malicious tool <em>description</em> steering the model before any tool is even called — research measured a ~36.5% success rate across 20 model settings, with more capable models often <em>more</em> exposed), <strong>rug pulls</strong> (a tool that behaves well until it's trusted, then changes), and <strong>token passthrough</strong> (forwarding a user's token downstream — explicitly forbidden by the MCP spec).</p>
+<p><strong>DO I NEED TO LEARN THIS NOW?</strong> The <em>security concepts</em>: yes. The <em>APM tooling</em>: no, not yet — it's four days old.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<h3>A SECOND PATTERN WORTH NAMING: CAPABILITY SCOPING</h3>
+<p><strong>TERM: Capability scoping (least privilege for agents).</strong><br>
+<strong>SIMPLE MEANING:</strong> Give an agent only the tools and permissions it actually needs for its job — nothing more.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> An agent that summarises support tickets needs <code>readTicket</code>. It does not need <code>deleteTicket</code>, <code>refundCustomer</code> or shell access. If prompt injection convinces it to delete everything, there is simply no tool available to do so.<br>
+<strong>WHY IT MATTERS:</strong> You cannot reliably stop prompt injection with better prompts. Prompt injection is an architecture problem. The fix is removing the capability, not asking the model nicely.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is the bridge between your two learning tracks. "Which tools does this agent get, under whose identity, with which scopes?" is an <strong>Express middleware and authorization question</strong>, not an AI question. Your backend skills are the moat here.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn and apply. The industry guidance is a <em>progressive scope model</em>: start with minimal read-only scope, then escalate privilege only when a privileged tool is first called. Wildcard scopes like <code>*</code> or <code>full-access</code> are flagged as the classic mistake.</p>
+
+<hr>
+
+<h2>💻 MERN / JAVASCRIPT / WEB</h2>
+
+<h3>Next.js caching: what actually changed, and what you must understand</h3>
+<p><strong>WHAT CHANGED?</strong> Six advisories patched in 16.4.5 / 15.5.29. Beyond the high-severity tenant leak, the medium-severity ones are each a small, memorable lesson:</p>
+<ul>
+<li><strong>Shared shell cache poisoning</strong> (self-hosted <code>next start</code>, Cache Components on, Partial Prefetching off): a crafted URL can store request-specific values into a page shell reused by other URLs — causing wrong content or permanent 404s for other users.</li>
+<li><strong>Cookie exposure via <code>x-middleware-set-cookie</code></strong>: Edge Route Handlers / Edge API routes using <code>NextResponse.cookies.set()</code> can put the serialized cookie into an internal response header. Unlike <code>Set-Cookie</code>, that header <em>is</em> readable by same-origin JavaScript — so an <code>HttpOnly</code> cookie stops being HttpOnly. Node.js Route Handlers and <code>cookies().set()</code> were not affected in the reproduction.</li>
+<li><strong>SVG rejection bypass in Image Optimization</strong>: an image from an allowed source can be misclassified as AVIF and slip past <code>images.dangerouslyAllowSVG: false</code>, reaching the SVG parser you deliberately excluded.</li>
+<li><strong>Stale compressed response framing</strong>: returning an attacker-controlled <code>fetch</code> Response unchanged can send decompressed bytes with the <em>compressed</em> response's framing headers — behind an HTTP/1.1 reverse proxy that pipelines requests on a shared connection, responses can be delivered to the wrong client.</li>
+</ul>
+
+<p><strong>WHAT IS IT? — the concept you need</strong><br>
+<strong>TERM: Cache Components (and <code>use cache</code>).</strong><br>
+<em>Simple meaning:</em> Next.js's current caching model. Instead of a whole page being static or dynamic, you mark individual functions or components with <code>'use cache'</code> and Next.js caches each piece separately. Next.js 16.4 recommends it for every app, <code>create-next-app</code> enables it, and it is expected to become the default in Next.js 17.<br>
+<em>Why it was created:</em> The old model was all-or-nothing. A page with one personalised greeting had to be fully dynamic, throwing away caching for the 95% of the page that was identical for everyone.<br>
+<em>How it works (simplified):</em> Each cached unit gets a <strong>cache key</strong> computed from its inputs. Same key → reuse the stored result. Different key → recompute.<br>
+<em>Simple example:</em> A product page. <code>getProduct(id)</code> is cached per product ID and shared by everyone. <code>getCartCount(userId)</code> is never cached. One page, two caching policies.</p>
+
+<p><strong>WHAT EXISTING CONCEPT DOES IT REPLACE?</strong> It replaces page-level <code>revalidate</code> / <code>force-dynamic</code> thinking and the older <code>unstable_cache</code> API. <strong>And that transition is exactly where this week's High-severity bug lived</strong> — in the seam between the old API and the new one, when both are used together.</p>
+
+<p><strong>WHY SHOULD A NEXT.JS DEVELOPER CARE?</strong> Because the entire class of bug reduces to one question: <strong>"is everything that makes this result different also part of the cache key?"</strong> If the tenant ID, the user ID or the locale changes the output but is missing from the key, you will eventually serve one user's data to another. Framework bugs get patched. <em>Your</em> cache-key bugs do not.</p>
+
+<p><strong>SHOULD I LEARN IT? HOW DEEPLY?</strong> 🟢 DIRECT, 🔥 HIGH — <strong>LEARN DEEPLY.</strong> Cache Components is becoming the default; you cannot skip it.</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> <code>'use cache'</code>, cache keys, cache tags and targeted revalidation, what a "root parameter" is, and why mixing <code>unstable_cache</code> with <code>use cache</code> is now a code smell.</p>
+
+<h3>Node.js housekeeping</h3>
+<p>Node 26 "Lithium" is Active LTS until April 2029; Node 27 is in Alpha. From Node 27 onward the release cycle becomes annual. Practical action: get your projects onto 26 LTS, pin the version, and check <code>libatomic</code> if you build slim Linux containers.</p>
+
+<hr>
+
+<h2>🏗️ TODAY'S SYSTEM DESIGN CONCEPT</h2>
+
+<p><strong>CONCEPT:</strong><br>
+Cache Key Design &amp; Tenant Isolation</p>
+
+<p><strong>IN ONE SENTENCE:</strong><br>
+A cached result must be stored under a key that includes <em>every single input that could change the result</em> — especially who is asking.</p>
+
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong><br>
+It prevents the most dangerous bug caching can produce: serving the right answer to the wrong person. Note that it's not a performance problem — it's a correctness and privacy problem created <em>by</em> a performance optimisation.</p>
+
+<p><strong>SIMPLE REAL-WORLD EXAMPLE:</strong><br>
+A hospital reception desk keeps a tray of prepared files to be fast. A nurse asks for "the blood test results". The receptionist hands over the top file from the tray — it was prepared for a different patient. Fast, and catastrophic. The fix: label every file with the patient ID, and never hand one over without matching the label.</p>
+
+<p><strong>HOW IT WORKS:</strong><br>
+Three rules.<br>
+1. <strong>Key completeness.</strong> The key = a hash of every input that affects the output: resource ID + tenant ID + user ID (if the data is personal) + locale + API version + any feature flag that changes the shape.<br>
+2. <strong>Never cache across a trust boundary.</strong> If two callers must not see each other's data, their results must never share a key. The safest approach is prefixing: <code>tenant:{tenantId}:invoice:{id}</code>.<br>
+3. <strong>Watch the cold-fill race.</strong> The subtle failure is two requests arriving while the cache is empty. Request A starts computing; Request B finds an in-flight entry and waits on it; B receives A's result. That is <em>correct</em> behaviour — unless A and B are different tenants. This is precisely the shape of the Next.js High-severity bug. The fix: the in-flight entry must be keyed by the full key, not just the resource.</p>
+
+<p><strong>WHERE IS IT USED?</strong><br>
+Everywhere there is a cache: Redis, HTTP <code>Cache-Control</code> and <code>Vary</code> headers, CDN edge caches, framework data caches, React Query, and your own in-memory memoisation.</p>
+
+<p><strong>HOW WOULD I USE IT WITH NODE / EXPRESS / MONGODB?</strong></p>
+<pre><code>// ❌ DANGEROUS — key ignores who is asking
+const key = `invoices:${page}`;
+
+// ✅ SAFE — tenant is part of the identity of the data
+const key = `t:${req.auth.tenantId}:invoices:${page}:v2`;
+
+async function getCached(key, ttl, compute) {
+  const hit = await redis.get(key);
+  if (hit) return JSON.parse(hit);
+
+  // single-flight lock is ALSO keyed by the full key,
+  // so two tenants can never wait on each other's computation
+  const result = await singleFlight(key, compute);
+  await redis.set(key, JSON.stringify(result), 'EX', ttl);
+  return result;
+}
+</code></pre>
+<p>Two extra Express-specific notes. First, derive the tenant ID from the <strong>verified token</strong> in middleware (<code>req.auth.tenantId</code>) — never from a query parameter or header the client controls, or the client picks its own cache namespace. Second, if you cache HTTP responses, any request header that changes the body must be listed in <code>Vary</code>, and responses for logged-in users need <code>Cache-Control: private</code> so no shared proxy stores them.</p>
+
+<p><strong>COMMON MISTAKE:</strong><br>
+Building the cache key from the URL alone. The URL <code>/api/invoices?page=1</code> is identical for every tenant in the system. The thing that distinguishes them lives in the <code>Authorization</code> header, which is invisible to the key. This single mistake has caused more real data leaks than most exotic exploits.</p>
+
+<p><strong>WHAT I SHOULD BUILD TO LEARN IT:</strong><br>
+A tiny Express + Redis app with two fake tenants and one cached endpoint. Step 1: build it with the <em>wrong</em> key and fire concurrent requests from both tenants until you watch the data cross over. Step 2: fix the key and prove it never crosses again. Seeing the leak happen on your own machine is worth ten articles.</p>
+
+<p><strong>DIFFICULTY:</strong> Intermediate</p>
+
+<hr>
+
+<h2>🎨 CREATIVE DEVELOPMENT</h2>
+
+<h3>1. Three.js r187 — the WebGPU/TSL migration is no longer optional</h3>
+<p><strong>WHAT IS IT?</strong> Three.js r187 shipped 30 October 2026. An independent line-count analysis of the core found that <strong>79% of changed core lines (14,242 of 17,941) were on the new WebGPU renderer and TSL side</strong>, with the same pattern holding at 82% and 79% in the two previous releases. The <code>three/tsl</code> entry point's exported names grew from 638 → 682 → 819. Meanwhile the classic <code>three</code> entry point stayed flat at ~443 exports.</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong><br>
+<strong>TERM: WebGPU.</strong> <em>Simple meaning:</em> The modern browser graphics API replacing WebGL. It talks to the GPU more directly, is faster, and adds <strong>compute shaders</strong> — the ability to run general-purpose parallel maths on the GPU, not just drawing. <em>Example:</em> simulating a million particles entirely on the GPU, which WebGL cannot do well.<br>
+<strong>TERM: TSL (Three.js Shading Language).</strong> <em>Simple meaning:</em> You write shader logic as chained JavaScript function calls instead of as GLSL/WGSL strings in another language. Three.js then transpiles it to WGSL (for WebGPU) or GLSL (for WebGL2) depending on the active backend. One codebase, both worlds.<br>
+<em>Simple example:</em> Instead of a GLSL string, you write <code>positionLocal.y.mul(6).add(time.mul(2))</code> then <code>sin()</code> it, and assign that to a material's <code>positionNode</code>. <code>WebGPURenderer</code> uses WebGPU when available and falls back to a WebGL2 backend automatically — you write no detection code.</p>
+<p><strong>WHY IS IT BECOMING IMPORTANT?</strong> Because the numbers are unambiguous: four out of five lines of new Three.js work go to the new path. The old <code>WebGLRenderer</code> is maintained, not advanced. Features landing in r187 — <code>LightMapper</code> for baking indirect light, <code>VXGIIrradiance</code> for voxel global illumination, meshlet and visibility-buffer rendering pipelines, <code>NodeMaterialInstance</code> for materials sharing one shader — are <strong>WebGPU-only</strong>.</p>
+<p><strong>WHAT CAN IT DO?</strong> One measured result is striking: an independent 40-run benchmark on an RTX 5070 Ti found r187 cut WebGPU <code>compileAsync()</code> precompile time from a median 1,399.8 ms to 227.8 ms on a 48-tree scene — roughly 6× — because the scheduler now allows up to 16 shader pipelines compiling in flight instead of one. (Author's own caveat: a controlled desktop fixture, not a production-site result.)</p>
+<p><strong>WHY SHOULD I CARE?</strong> Shader compilation stalls are the #1 reason Awwwards-style 3D sites feel janky on first load. This attacks exactly that. And writing shaders in JavaScript removes the single biggest barrier between a MERN developer and real creative development — you no longer need GLSL to start.</p>
+<p><strong>WHAT CAN I BUILD WITH IT?</strong> Start embarrassingly small: a sphere whose vertices ripple and whose colour shifts over time, written entirely in TSL, no bundler — just an <code>index.html</code> with an import map and a <code>main.js</code>.</p>
+<p><strong>WHAT SHOULD I LEARN FIRST?</strong> Exactly five TSL nodes and nothing else: <code>positionLocal</code>, <code>normalLocal</code>, <code>time</code>, <code>mix()</code>, <code>uniform()</code>. Then <code>positionNode</code> and <code>colorNode</code> on <code>MeshStandardNodeMaterial</code>.</p>
+<p><strong>Upgrade gotchas if you have existing r186 code:</strong> PMREMs now use cube render targets and <code>CubeUVReflectionMapping</code> was removed, so <strong>materials will look slightly different</strong>; light registration changed from <code>renderer.library.addLight(...)</code> to <code>CustomLight.registerNode(...)</code>; <code>setViewport()</code>/<code>setScissor()</code> no longer scale by pixel ratio when a render target is bound; TSL math now implicitly coerces operands to broader types. Also: <code>Clock</code> is deprecated — use <code>Timer</code>. The official advice when updating old projects is to move in increments of 10 releases, since deprecation warnings only last 10 releases.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH &nbsp; <strong>DEPTH:</strong> EXPERIMENT now, LEARN DEEPLY over the next few months.</p>
+
+<h3>2. Three-Live — AI-authored 3D, safely</h3>
+<p>Covered in the 60-second section. The creative-dev angle: it compiles a procedural Three.js scene graph straight to <code>.glb</code> and <code>.usdz</code> byte buffers in memory in 2–5 ms, so the same AI-generated scene renders through WebGL2/WebXR on the web, Google Filament / Scene Viewer on Android, and RealityKit / Quick Look on iOS. <strong>What to do:</strong> read the sandbox, not the renderer. <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM.</p>
+
+<h3>3. Worth bookmarking: Octahedral Impostors</h3>
+<p>An open-source (MIT) WebGPU + TSL + React Three Fiber demo shown at Three.js Conference Paris.<br>
+<strong>TERM: Impostor rendering.</strong> <em>Simple meaning:</em> For objects far from the camera, stop drawing the real 3D mesh. Instead pre-render it from many angles into a texture atlas, then draw a single flat card that picks and blends the right pre-rendered view as the camera moves.<br>
+<em>Why it matters:</em> It is how you render a forest of 10,000 trees at 60fps. Essential technique for ambitious 3D sites. 🟢 DIRECT, 🟠 MEDIUM — <strong>read the code, don't build it yet.</strong></p>
+
+<hr>
+
+<h2>🛡️ CYBERSECURITY</h2>
+
+<p>Today's security story is one story told three times, so let me treat it as one.</p>
+
+<h3>WHAT HAPPENED?</h3>
+<p>Three developer-infrastructure companies disclosed intrusions within days, all involving AI agents doing the attacking: <strong>WorkOS</strong> (internal sales app, 30 Oct, ARTEX framework named by its CEO), <strong>GitBook</strong> (infrastructure credentials, 2 Nov, "sophisticated, highly targeted attack using AI agents"), and reporting of a third involving probing between cloud providers. All three are confirmed by the companies' own bulletins.</p>
+
+<h3>WHAT IS THE VULNERABILITY?</h3>
+<p>There isn't one new vulnerability. That's the point. These were ordinary weaknesses — an exposed internal application, obtainable credentials, tokens that worked across more services than they should have. What changed is the <strong>speed and breadth of exploitation</strong>.</p>
+<p><strong>TERM: Credential blast radius.</strong><br>
+<em>Simple meaning:</em> How much an attacker can reach using one stolen secret.<br>
+<em>Real-world example:</em> One leaked GitBook integration token also unlocks the Git repository it syncs with, which contains a <code>.env</code> with a database URL, which contains user emails. One secret, four systems.<br>
+<em>Why it matters:</em> Agents are exceptionally good at exactly this — taking one credential and systematically testing it everywhere it might work. A human does this in days; an agent does it in minutes.</p>
+
+<h3>HOW DOES THE ATTACK WORK? (defensive view only)</h3>
+<p>At a conceptual level: the agent is given a target and tools. It enumerates publicly reachable endpoints, reads error messages to infer the expected request shapes, identifies an internal application that is reachable from outside, extracts credentials or tokens, then immediately replays those credentials against every connected service it can discover. Each step is individually unsophisticated. The automation is what makes it dangerous. In the WorkOS case, investigators identified the attacker by distinctive user-agent strings (<code>artex-enrich/1.0</code>, <code>norma/0.4</code>) — a reminder that <strong>logging what you reject is as valuable as blocking it</strong>.</p>
+
+<h3>WHO IS AFFECTED?</h3>
+<p>Directly: GitBook and WorkOS customers. Broadly: anyone who stores secrets in a repo, reuses tokens across services, or has an internal admin tool reachable from the public internet.</p>
+
+<h3>WHY SHOULD A MERN DEVELOPER CARE?</h3>
+<p>Because your typical project shape is precisely the target profile: an Express API, a <code>.env</code> with a Mongo connection string and three third-party API keys, an admin route protected by a single check, and a deploy platform holding the whole lot. One year ago, a small misconfiguration here meant "someone might eventually find this". Today it means "an agent will find this on its next sweep".</p>
+
+<h3>HOW DO I PROTECT MY APPLICATION?</h3>
+<p>In order of value for effort:</p>
+<ol>
+<li><strong>Audit your secrets today.</strong> <code>git log --all -p | grep -i -E "api[_-]?key|secret|password|mongodb\+srv"</code> on your own repos. Anything found is compromised and must be rotated — rewriting history does not un-leak it.</li>
+<li><strong>Scope every token.</strong> One token per integration, minimum permissions, with an expiry. Never one "god token" that does everything.</li>
+<li><strong>Validate JWTs fully.</strong> Signature, <code>exp</code>, <code>iss</code> — and <strong><code>aud</code></strong>. Reject tokens issued for another service. This is the week's single clearest lesson, courtesy of the MCP SDK CVEs.</li>
+<li><strong>Never pass a user's token downstream.</strong> Exchange it for a new, narrower one, or use a vaulted service credential. Passthrough destroys your audit trail and turns your server into an exfiltration proxy for anyone holding that token.</li>
+<li><strong>Rate limit and log rejections.</strong> Agent reconnaissance looks like an abnormal burst of 401s and 404s from one source. You cannot notice a pattern you don't record.</li>
+<li><strong>No internal admin tool on the public internet without real auth.</strong> "Nobody knows the URL" is not access control.</li>
+<li><strong>Treat agent config files as secrets.</strong> Commit <code>~/.claude/settings.json</code>-style files to a private repo so unexpected changes show up in a diff.</li>
+</ol>
+
+<h3>WHAT SHOULD I LEARN?</h3>
+<p>JWT claim validation (deeply), OAuth 2.1 with PKCE and audience-bound tokens (what it is and why), and secret rotation as a routine habit rather than an emergency.</p>
+
+<h3>SAFE PRACTICAL LAB (fully local, nothing external)</h3>
+<p>Build two tiny Express servers on your own machine, <code>api-a</code> on port 3001 and <code>api-b</code> on port 3002, sharing one JWT signing secret.<br>
+Step 1: have both verify only the signature and expiry. Mint a token for <code>api-a</code>, then send it to <code>api-b</code> — watch it be accepted. That is the MCP SDK bug, reproduced in 20 lines.<br>
+Step 2: add <code>aud: 'api-a'</code> when signing, and in each server verify <code>{ audience: 'api-b' }</code> with <code>jsonwebtoken</code>. Send the same token again — watch it be rejected.<br>
+Step 3: add a middleware that logs every rejected request with its IP and path, then hammer it with 50 bad requests and look at what reconnaissance actually looks like in your logs.<br>
+You will understand token audience binding permanently after this, and it takes under an hour.</p>
+
+<hr>
+
+<h2>🧩 OPEN SOURCE</h2>
+
+<h3>1. google/three-live</h3>
+<p><strong>WHAT IS IT?</strong> Apache 2.0 library + on-device compiler turning LLM-generated procedural Three.js into GLB/USDZ for web, Android and iOS. v1.0.0 Developer Preview.<br>
+<strong>WHAT PROBLEM DOES IT SOLVE?</strong> Running untrusted AI-generated JavaScript without handing it your page, and avoiding slow mobile webviews for 3D.<br>
+<strong>WHY IS IT INTERESTING?</strong> It was written <em>entirely by Google Antigravity</em> (their agentic IDE) with one human product manager. It is both an artifact and a demonstration.<br>
+<strong>WHY DOES IT MATTER TO ME?</strong> It is the only project today sitting on all three of your interests at once: Three.js, AI, and security sandboxing.<br>
+<strong>WHAT CAN I LEARN BY READING THE CODE?</strong> How to define a restricted API surface and execute untrusted code against only that surface — a pattern you will reuse for any "run user code" feature. Also how to serialize a scene graph to binary glTF.<br>
+<strong>SHOULD I:</strong> <strong>CLONE AND READ</strong> the sandbox/compiler layer. Don't adopt it in production — it's a developer preview and explicitly not a supported Google product.</p>
+
+<h3>2. microsoft/apm (Agent Package Manager)</h3>
+<p><strong>WHAT IS IT?</strong> A Git-based package manager for AI agent context: instructions, skills, prompts, agents, hooks, plugins and MCP servers, declared in <code>apm.yml</code> and pinned in <code>apm.lock.yaml</code>. Now supported by Dependabot.<br>
+<strong>WHAT PROBLEM DOES IT SOLVE?</strong> Unversioned, unreproducible, copy-pasted agent configuration.<br>
+<strong>WHY DOES IT MATTER TO ME?</strong> It is the clearest existing map of "what are all the pieces that make up an agent's context?" Reading the manifest schema teaches you agent architecture faster than most tutorials, because it's a complete inventory.<br>
+<strong>WHAT CAN I LEARN BY READING IT?</strong> How a resolver and lockfile work — knowledge that transfers straight back to understanding npm properly.<br>
+<strong>SHOULD I:</strong> <strong>READ the manifest schema (15 min). Do not adopt yet.</strong> It's days old and the ecosystem will shift.</p>
+
+<h3>3. Anthropic FlashProve</h3>
+<p><strong>SHOULD I: IGNORE FOR NOW.</strong> Announced as open source and genuinely novel, but at 72–95× compute overhead and a 1,024-token cap, there is no project you could build with it this year. Revisit if the overhead drops by two orders of magnitude.</p>
+
+<hr>
+
+<h2>📈 SKILLS TO LEARN</h2>
+
+<h3>SKILLS I SHOULD LEARN NOW</h3>
+
+<p><strong>1. Skill:</strong> Cache correctness — cache key design, tenant isolation, invalidation<br>
+<strong>Why:</strong> Today's highest-severity bug in your own primary framework was a cache key bug. Caching is also the #1 interview topic where MERN developers reveal they've only used it, never designed it. And it is the gateway to the rest of system design.<br>
+<strong>What exactly to learn:</strong> Cache keys and what must go in them; cache tags and targeted revalidation; the cold-fill / thundering-herd race and single-flight locks; HTTP <code>Cache-Control</code> <code>private</code> vs <code>public</code> and the <code>Vary</code> header; Next.js <code>'use cache'</code> and root parameters; Redis TTL and eviction basics.</p>
+
+<p><strong>2. Skill:</strong> Token-based authorization done properly<br>
+<strong>Why:</strong> Three separate items today reduced to the same root cause — tokens that were valid but should not have been accepted. Missing audience checks in the official MCP SDKs, cookie exposure through an internal header in Next.js Edge routes, and credential replay across services in two real breaches. This skill protects your current work and is a prerequisite for building anything agentic.<br>
+<strong>What exactly to learn:</strong> Full JWT claim validation (<code>iss</code>, <code>aud</code>, <code>exp</code>, <code>nbf</code>); OAuth 2.1 authorization code flow with PKCE (conceptually — you don't need to implement it from scratch); audience-bound tokens and why token passthrough is forbidden; scope design and progressive/step-up privilege escalation; the practical difference between <code>HttpOnly</code>, <code>Secure</code> and <code>SameSite</code> on cookies.</p>
+
+<p><strong>3. Skill:</strong> Three.js WebGPU + TSL<br>
+<strong>Why:</strong> 79% of Three.js core development is going here, three releases running, and all new high-end features are WebGPU-only. The window where "I know Three.js WebGPU + TSL" is rare and valuable is open right now and will close. TSL also removes the GLSL barrier, which means your existing JavaScript fluency finally converts directly into shader ability.<br>
+<strong>What exactly to learn:</strong> <code>WebGPURenderer</code> with automatic WebGL2 fallback; the <code>three/webgpu</code> and <code>three/tsl</code> entry points; the core TSL nodes (<code>positionLocal</code>, <code>normalLocal</code>, <code>time</code>, <code>mix</code>, <code>uniform</code>); <code>positionNode</code> and <code>colorNode</code> on node materials; <code>compileAsync()</code> for precompilation; <code>Timer</code> instead of the deprecated <code>Clock</code>.</p>
+
+<h3>SKILLS I SHOULD WATCH</h3>
+<ul>
+<li><strong>MCP server development.</strong> You will build these. But the spec just went through its largest-ever revision and the SDKs are actively shipping CVEs. Learn the security <em>concepts</em> now; write your first production MCP server in a couple of months when the ground stops moving.</li>
+<li><strong>Agent context versioning (APM).</strong> Four days old. Understand the idea, watch the ecosystem.</li>
+<li><strong>Designing APIs for machine-rate traffic.</strong> The Pando story says this is coming. Not urgent, but when you next design an API, ask "what if the caller is an agent making 10,000 requests an hour?"</li>
+<li><strong>WebGPU compute shaders.</strong> The genuinely new capability WebGPU unlocks. Get comfortable with TSL rendering first.</li>
+</ul>
+
+<h3>SKILLS I CAN IGNORE FOR NOW</h3>
+<ul>
+<li><strong>Model benchmark tracking.</strong> Leaderboards changed four times this week. The API shape barely moved. Learn tool calling and structured output once; ignore the race entirely.</li>
+<li><strong>Zero-knowledge proofs / zkSNARKs.</strong> Fascinating, mathematically heavy, and nowhere near your work.</li>
+<li><strong>AI for CAD / PCB / chemistry / robotics.</strong> Genuinely impressive, zero career overlap.</li>
+<li><strong>Self-hosting open-weight LLMs on your own GPUs.</strong> Companies are doing this to cut costs. You don't have the hardware or the problem. Use APIs.</li>
+<li><strong>Git internals at the Pando level.</strong> Packfiles, Lean proofs, TLA+. Read the blog post as a story, learn nothing from it operationally.</li>
+</ul>
+
+<hr>
+
+<h2>🎓 FREE / CHEAP LEARNING</h2>
+
+<h3>1. Hugging Face AI Agents Course</h3>
+<p><strong>WHAT IS IT?</strong> A structured course from agent fundamentals to a final benchmark assignment, covering tool use, thoughts/actions/observations, then real frameworks (smolagents, LangGraph, LlamaIndex).<br>
+<strong>PROVIDER:</strong> Hugging Face &nbsp;|&nbsp; <strong>COST:</strong> Free, including the certification process &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> Yes (two tiers: fundamentals after Unit 1, completion after a use case + final challenge). No deadline.<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> The agent loop properly — why an agent is a loop over tool calls and observations, not a clever prompt. Unit 1 alone fixes most conceptual confusion about agents.<br>
+<strong>DIFFICULTY:</strong> Beginner → Intermediate. Needs Python basics (note: it's Python-based, not JS).<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> It's the most credible free agents course, and the concepts port directly to Node. Do Unit 1 even if you never finish the rest.<br>
+<strong>LINK:</strong> <a href="https://huggingface.co/learn/agents-course/en/unit0/introduction">huggingface.co/learn/agents-course</a></p>
+
+<h3>2. Agentic AI: Hands-on (NVIDIA × Nebius Academy)</h3>
+<p><strong>WHAT IS IT?</strong> A four-hour, self-paced course of short videos plus pre-built Jupyter notebooks, taught by engineers from NVIDIA, Nebius and Tavily. Curriculum covers choosing and testing a model, calling it from code, building and <em>evaluating</em> a simple tool loop, measuring performance and cost, agentic web search, deep research orchestration, persistent agents and serverless deployment.<br>
+<strong>PROVIDER:</strong> NVIDIA × Nebius &nbsp;|&nbsp; <strong>COST:</strong> Free, with free practice credits &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> Yes — a Credly digital badge.<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> The two things most agent tutorials skip: <strong>evaluation</strong> and <strong>cost measurement</strong>. Those are exactly what separates a demo from something you'd put in front of users.<br>
+<strong>DIFFICULTY:</strong> Intermediate, aimed at working software engineers.<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> Four hours is a realistic commitment, and "measure performance and cost" is the skill that will make you useful on an AI project rather than decorative.<br>
+<strong>LINK:</strong> <a href="https://nebius.com/academy/agentic-ai">nebius.com/academy/agentic-ai</a></p>
+
+<h3>3. Microsoft AI Agents for Beginners</h3>
+<p><strong>WHAT IS IT?</strong> 14 lessons on GitHub: framework selection, the Tool Use pattern, Agentic RAG, the Planning pattern, multi-agent orchestration, metacognition, context engineering and memory, deployment, and agentic protocols (MCP, A2A, NLWeb).<br>
+<strong>PROVIDER:</strong> Microsoft &nbsp;|&nbsp; <strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No.<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> Named design patterns. Having vocabulary for "this is the Planning pattern" changes how you read other people's agent code.<br>
+<strong>DIFFICULTY:</strong> Beginner → Intermediate.<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> No certificate, but the pattern catalogue is the best free one available, and the MCP lesson is directly relevant to today's news. Use it as a reference, not a linear course.<br>
+<strong>LINK:</strong> search GitHub for <code>microsoft/ai-agents-for-beginners</code></p>
+
+<h3>Official docs worth more than any course this week (free, obviously)</h3>
+<ul>
+<li><strong>Next.js November 2026 security release</strong> — read the advisory descriptions, not just the version numbers. Each one is a free lesson in how caching and headers leak data: <a href="https://nextjs.org/blog/november-2026-security-release">nextjs.org/blog/november-2026-security-release</a></li>
+<li><strong>Three.js Migration Guide (186 → 187)</strong> — the official list of what breaks: <a href="https://github.com/mrdoob/three.js/wiki/Migration-Guide/">three.js wiki Migration Guide</a></li>
+<li><strong>MCP specification security considerations</strong> — short, dense, and the authoritative source on audience binding and token passthrough: <a href="https://modelcontextprotocol.io/specification/draft">modelcontextprotocol.io/specification</a></li>
+</ul>
+
+<hr>
+
+<h2>▶️ YOUTUBE (Wednesday)</h2>
+<p><strong>No YouTube recommendation today. Nothing found that is worth your learning time.</strong></p>
+<p>To be straight with you: my video search backend failed this morning, so rather than guess at titles or recommend channels from memory and risk sending you to something stale or non-existent, I'm giving you nothing. A bad recommendation costs you an hour; no recommendation costs you nothing.</p>
+<p>Substitute, and honestly a better use of today: the <strong>Three.js r187 migration guide plus a TSL "first animated scene" walkthrough</strong> will teach you more in 45 minutes of hands-on time than any video would passively. Code beats watching for this particular topic.</p>
+
+<hr>
+
+<h2>🧠 WHAT I SHOULD LEARN TODAY</h2>
+
+<h3>LEARN THIS #1 — Token audience binding (the <code>aud</code> claim)</h3>
+<p><strong>WHAT IS IT?</strong> A token should declare which service it is for, and every service must reject tokens that name a different audience — even when the signature is perfectly valid.</p>
+<p><strong>WHY NOW?</strong> Because this exact omission just produced CVEs in the <em>official</em> MCP Python and TypeScript SDKs, and the patch ships with the check <strong>disabled by default</strong>. If the people who wrote the protocol missed it, you have missed it too.</p>
+<p><strong>WHY ME?</strong> You list Authentication and API security as goals, you issue JWTs in your own projects, and you intend to build agent backends where tokens will cross service boundaries constantly. This single check is the highest security-value-per-minute thing available to you.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> How to set <code>aud</code> when signing with <code>jsonwebtoken</code>; how to verify it with <code>{ audience: '...' }</code>; what <code>iss</code> is and why you validate it too; and the rule "never forward a client's token to a downstream API — exchange it or use a service credential."</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> The full OAuth 2.1 spec, PKCE implementation details, Client ID Metadata Documents, Enterprise-Managed Authorization. Those are for later. Today: one claim.</p>
+<p><strong>TIME:</strong> 1 hour</p>
+<p><strong>FREE RESOURCE:</strong> The MCP specification's authorization security considerations page, plus the <code>jsonwebtoken</code> npm README's <code>audience</code> option.</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> The two-Express-server lab in the Cybersecurity section above. Reproduce the vulnerability, then fix it. Watching the wrong token get accepted on your own machine is the part that makes it stick.</p>
+
+<h3>LEARN THIS #2 — Cache keys and tenant isolation</h3>
+<p><strong>WHAT IS IT?</strong> Making sure every input that changes a cached result is part of that result's cache key — above all, <em>who is asking</em>.</p>
+<p><strong>WHY NOW?</strong> The highest-severity Next.js bug patched yesterday was exactly this failure, in a framework you use daily. You're reading the post-mortem of a mistake you are currently capable of making.</p>
+<p><strong>WHY ME?</strong> You're moving into backend and system design. Caching is the entry point to that whole field, and cache-key design is the part that actually separates people who've used Redis from people who can design with it.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> What belongs in a key; namespace prefixing per tenant; the cold-fill race and single-flight locking; <code>Cache-Control: private</code> vs <code>public</code> and the <code>Vary</code> header; cache tags for targeted invalidation.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> Distributed cache coherence, Redis Cluster, CDN purge APIs, multi-region replication. Single Redis, single app, correct keys. That's today.</p>
+<p><strong>TIME:</strong> 1 hour to understand, 1 hour to build</p>
+<p><strong>FREE RESOURCE:</strong> The Next.js November 2026 security advisories (read them as case studies) plus the Next.js Cache Components docs.</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> Two-tenant Express + Redis app. Build it wrong, watch tenant data cross over under concurrent load, then fix the key and prove it can't.</p>
+
+<hr>
+
+<h2>🔮 WHERE TECHNOLOGY IS GOING</h2>
+
+<h3>TREND 1 — Prompts are becoming dependencies, and dependencies get attacked</h3>
+<p><strong>WHAT THAT MEANS:</strong> Agent instructions, skills and tool configs are moving from hand-edited local files into manifests, lockfiles and automated update pipelines. Dependabot supporting APM is the formal start of this.<br>
+<strong>WHY IT MATTERS:</strong> Everything npm went through — typosquatting, malicious install scripts, dependency confusion, compromised maintainer accounts — is now available against agent context. The early warnings are already here: a malicious npm MCP package exfiltrating a wallet private key on every tool call, research showing malicious MCP servers passing five scanners clean, and tool poisoning measured at ~36.5% success across 20 model settings.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Supply chain hygiene applied to AI: pin versions, review what you install, hash the <em>complete</em> tool definition (including input/output schemas and annotations, not just descriptions — a flipped <code>destructiveHint</code> changes approval behaviour with no visible text change), and never trust a tool description you didn't write.</p>
+
+<h3>TREND 2 — Your API's main caller is becoming a machine, not a human</h3>
+<p><strong>WHAT THAT MEANS:</strong> OpenAI rebuilt Git's backend because <em>agents</em> push and fetch at machine scale — human engineers were never the load problem. Nearly a petabyte of Git traffic a day.<br>
+<strong>WHY IT MATTERS:</strong> Every assumption baked into normal API design — "a user clicks a few times a minute", "retries are rare", "a page of 20 results is plenty" — breaks when the caller is a loop. Rate limiting, idempotency, pagination, cost controls and timeouts all need rethinking.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Idempotency keys, per-client quotas and token buckets, backpressure, cursor-based pagination, and designing responses that are cheap to consume in bulk.</p>
+
+<h3>TREND 3 — Attackers automated before defenders did</h3>
+<p><strong>WHAT THAT MEANS:</strong> Three developer-infrastructure breaches in one week, all AI-agent-driven, all exploiting ordinary weaknesses at extraordinary speed. Reporting from Wiz, Google and CrowdStrike documents the same pattern more broadly; CrowdStrike spent ~$495M acquiring AI observability and AI red-teaming companies and shipped an "AI Kill Switch" to terminate runaway agents.<br>
+<strong>WHY IT MATTERS:</strong> The grace period between "misconfigured" and "breached" is gone. Security work that was reasonable to defer is no longer reasonable to defer.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Least privilege by default, short-lived scoped credentials, routine secret rotation, and logging rejections so reconnaissance is visible.</p>
+
+<h3>TREND 4 — The browser GPU is becoming a real compute platform</h3>
+<p><strong>WHAT THAT MEANS:</strong> Three.js is spending ~80% of its core development on WebGPU and TSL. WebGPU has been available across major browsers for about a year. Shader authoring is moving into JavaScript.<br>
+<strong>WHY IT MATTERS:</strong> The barrier to creative development is collapsing. You no longer need GLSL to write shaders, and you can now run general-purpose parallel computation in a browser tab.<br>
+<strong>WHAT I SHOULD LEARN:</strong> TSL node basics now; WebGPU compute shaders later. Being early here is a genuine differentiator — most JS developers still think "shaders = GLSL = not for me".</p>
+
+<h3>TREND 5 — AI is moving into the tools people already use, not into new chat windows</h3>
+<p><strong>WHAT THAT MEANS:</strong> Agents are being embedded in existing professional software rather than shipped as separate apps: Google's cheminformatics Skills inside Antigravity, Codex used for CAD and PCB work, Kimi's agents editing Unity/Unreal/Blender projects directly, Siri gaining the ability to act inside third-party apps in iOS 27.3. Domain knowledge is layered on through Skills or configs rather than new tools.<br>
+<strong>WHY IT MATTERS:</strong> The integration surface — <em>how</em> an agent safely reaches into an existing app with the right identity and permissions — is becoming the real product. AWS publishing guidance on on-behalf-of token exchange so an agent calls an API <em>as the user</em> rather than as a service account is exactly this.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Tool/function calling, MCP, and on-behalf-of authorization. This is the backend layer underneath every one of those features — and it is where your existing skills are worth the most.</p>
+
+<hr>
+
+<h2>🚀 MY ACTION PLAN</h2>
+
+<h3>TODAY — 30 MINUTES</h3>
+<p>Not learning. <strong>Patching.</strong> Run <code>npm ls next</code> across your Next.js projects and upgrade anything below 16.4.5 / 15.5.29. Then <code>node -v</code> — if you're on Node 20 or 25, those are End Of Life and get no security fixes at all; move to Node 26 LTS. If you use GitBook anywhere, rotate those tokens.</p>
+
+<h3>TODAY — 1 HOUR</h3>
+<p>Build the <strong>token audience lab</strong>: two Express servers, one shared signing secret. Make the vulnerability happen, then fix it with <code>aud</code>. Small, concrete, and it permanently closes a gap you almost certainly have in current code.</p>
+
+<h3>THIS WEEK</h3>
+<p><strong>Caching, properly.</strong> Next.js Cache Components (<code>'use cache'</code>, cache tags, root parameters) on the frontend side, and cache key design with tenant isolation on the backend side. Treat yesterday's Next.js advisories as your case studies — real bugs teach far better than tutorials.</p>
+
+<h3>THIS WEEK'S PROJECT</h3>
+<p><strong>"Multi-Tenant Cached API + Token Audit" — your existing stack plus this week's lessons.</strong></p>
+<p>A small Express + MongoDB + Redis API serving two tenants:</p>
+<ul>
+<li>JWT auth with <strong>full</strong> claim validation — <code>iss</code>, <code>aud</code>, <code>exp</code> — and a middleware that derives <code>req.auth.tenantId</code> from the verified token only, never from client input.</li>
+<li>One cached endpoint using correct tenant-prefixed keys and a single-flight lock keyed by the full key.</li>
+<li>A deliberate <code>?broken=true</code> mode that uses the naive URL-only key, so you can demonstrate the leak on demand.</li>
+<li>A load script firing concurrent requests from both tenants, asserting zero cross-tenant responses in safe mode and showing the leak in broken mode.</li>
+<li>A logging middleware recording every rejected request with IP and path.</li>
+</ul>
+<p>Why this project: it is small enough to finish, uses only tools you already know, and it turns three abstract concepts — cache keys, audience binding, tenant isolation — into something you can demonstrate in an interview and point at in a repo. It also reproduces, at toy scale, both of today's most important real-world bugs.</p>
+<p><strong>Stretch goal (only if the above is done):</strong> add a TSL ripple sphere as the project's landing page. Fifteen lines of Three.js, and it forces you to actually touch WebGPU this week instead of just reading about it.</p>
+
+<h3>IGNORE FOR NOW</h3>
+<p><strong>The model leaderboard race.</strong> Mistral Large 4, Kimi K3.1 Pro, DeepSeek V4.1 Flash, Gemini 4 Carbon, GPT-6.2 rumours — four benchmark leadership changes in a week. Reading this costs hours and changes nothing you build. The API interface is stable; the rankings are noise. Also ignore zkSNARKs and all AI-for-science news. Learning time is the scarcest thing you have — spend it on the two bugs that are in your own code today.</p>
+
+<hr>
+
+<h2>🎯 IF I ONLY HAVE 1 HOUR TODAY</h2>
+
+<p>Spend it like this, in this order:</p>
+<p><strong>Minutes 0–10 — Patch.</strong> <code>npm ls next</code> in every Next.js project. Upgrade to 16.4.5 or 15.5.29. Commit the lockfile and redeploy. Check <code>node -v</code>. This is not learning, but it is the one thing today that protects real users, and it must come first.</p>
+<p><strong>Minutes 10–55 — Build the token audience lab.</strong> Two Express servers, port 3001 and 3002, one shared JWT secret. Sign a token for <code>api-a</code>. Send it to <code>api-b</code> with only signature-and-expiry verification — <em>watch it get accepted</em>. Sit with that for a second: this is the bug that shipped in the official MCP SDKs for both Python and TypeScript. Now add <code>aud: 'api-a'</code> at signing time and <code>{ audience: 'api-b' }</code> at verification time. Send it again. Watch the rejection.</p>
+<p><strong>Minutes 55–60 — Write it down.</strong> One paragraph in your notes: what the <code>aud</code> claim is, why signature-plus-expiry is not enough, and the rule "never forward a client's token downstream." Then go and add the <code>aud</code> check to whichever of your existing projects issues JWTs.</p>
+<p><strong>Why this hour and not another:</strong> Everything else today is reading. This is the one hour where you fix a real vulnerability class in your own code, learn the concept by reproducing it rather than reading about it, and walk away with a skill that applies to every API you will ever build. Caching can wait until tomorrow — the auth gap is in production right now.</p>
+
+<hr>
+<p><em>Sources prioritised today: official Next.js blog and GitHub advisories, nodejs.org release notes, GitHub changelog, Google Open Source blog, GitBook status page, WorkOS security bulletin, modelcontextprotocol.io specification, three.js GitHub releases and migration wiki. Claims are marked CONFIRMED (primary source), ANNOUNCED / EARLY (vendor research prototype or unresolved community report) or ANALYSIS (my interpretation) where it matters. The Postman config allegation is explicitly unverified. Benchmark and performance figures are self-reported by their publishers.</em></p>
+
+</body>
+</html>
