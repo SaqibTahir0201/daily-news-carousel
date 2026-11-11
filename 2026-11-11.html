@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Daily Tech Intelligence — 2026-11-11</title>
+<style>
+body { font-family: Segoe UI, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #0d1117; color: #c9d1d9; line-height: 1.7; }
+h1 { color: #58a6ff; border-bottom: 2px solid #30363d; padding-bottom: 10px; }
+h2 { color: #f0883e; margin-top: 40px; }
+h3 { color: #79c0ff; }
+strong { color: #ffa657; }
+code { background: #161b22; padding: 2px 6px; border-radius: 4px; }
+hr { border-color: #30363d; }
+a { color: #58a6ff; }
+</style>
+</head>
+<body>
+
+<h1>🌍 DAILY TECH INTELLIGENCE — 2026-11-11</h1>
+<p><strong>Wednesday, 11 November 2026.</strong> Good morning. Sit down, here is what actually happened in tech today and — more importantly — what of it is yours to care about.</p>
+
+<hr>
+
+<h2>⚡ TODAY IN 60 SECONDS</h2>
+
+<h3>1. Node.js is shipping high-severity security fixes today</h3>
+<p><strong>WHAT HAPPENED:</strong> The Node.js project pre-announced on 3 November that it would release security updates for the 22.x, 24.x and 26.x lines on or shortly after <strong>today, 11 November 2026</strong>. The worst issue in each line is rated HIGH. CVE numbers and details arrive with the release itself. (CONFIRMED — official nodejs.org advisory.)</p>
+<p><strong>WHAT IS THIS?</strong> A "security release" means the Node team found bugs that an attacker could abuse, fixed them privately, and is now publishing patched versions. A "pre-announcement" is a one-week warning so teams can book a maintenance window.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> Every Express API, every Next.js server you self-host, every Docker image you build runs on Node. This is literally the floor under your entire stack.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Tonight or tomorrow, check <code>node -v</code> everywhere you deploy, and upgrade once the patched versions are published. If anything of yours still runs Node 20 or 25 — those are end-of-life and will get <em>no</em> fix.</p>
+
+<h3>2. MCP just changed how AI agents log in to things</h3>
+<p><strong>WHAT HAPPENED:</strong> On 8–9 November the Model Context Protocol project reworked its authorization guide: <strong>Client ID Metadata Documents (CIMD)</strong> is now the primary way an MCP client registers with an OAuth server, and <strong>Dynamic Client Registration (DCR) is deprecated</strong>. (CONFIRMED — merged PRs #3518, #3521 in the modelcontextprotocol repo.)</p>
+<p><strong>WHAT IS THIS?</strong> MCP is the standard way an AI agent plugs into external tools. When the agent needs to use <em>your</em> API on a user's behalf, it has to identify itself to an OAuth server. The old way (DCR) was: the client calls a registration endpoint at runtime and the server mints it an ID and stores a row. The new way (CIMD) is: the client <em>is</em> a URL, and that URL serves a metadata document describing it; the server fetches and validates that document on demand and stores nothing.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You already know OAuth from building logins. This is OAuth for agents — exactly the intersection of your backend skills and your AI-agent learning goal. This is the most "your lane" story of the day.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Read the reworked MCP authorization guide today. 30 minutes.</p>
+
+<h3>3. Malicious npm packages are hiding their control server on the Ethereum blockchain</h3>
+<p><strong>WHAT HAPPENED:</strong> The <strong>PolinRider</strong> malware family returned in 12 malicious releases across 10 hijacked npm packages (found 4 November, tracked by Sonatype as sonatype-2026-010515). Separately, Ethersphere's <code>bee-js</code> 13.3.0 and Swarm Desktop 0.56.2 were published from a compromised CI/CD pipeline in early November. (CONFIRMED — Sonatype, OX Security, SlowMist.)</p>
+<p><strong>WHAT IS THIS?</strong> A <strong>supply-chain attack</strong>: instead of attacking your server, the attacker poisons a library you install. The clever/nasty part here — these packages do <em>not</em> use an <code>npm install</code> or <code>postinstall</code> script. The malicious code runs when your app simply <code>require()</code>s the module. So the common advice "run npm install with scripts disabled" does <strong>not</strong> save you.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You install npm packages every single day. One of the named packages is <code>server-hemera-mongo</code> — Mongo tooling, your stack's neighbourhood.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Run <code>npm audit</code> and <code>npm ls</code> on your active projects; commit your lockfiles; stop installing packages you found 5 minutes ago on a blog.</p>
+
+<h3>4. Next.js 16.4.6 quietly started gzipping your API routes</h3>
+<p><strong>WHAT HAPPENED:</strong> Next.js 16.4.6 (released 9 November) ships one line: "Automatically compress route handler responses if not already compressed." If you self-host with <code>next start</code>, your API routes were never gzipped before — now they are. (CONFIRMED — vercel/next.js release v16.4.6, PR #101220.)</p>
+<p><strong>WHAT IS THIS?</strong> Gzip squeezes a response before sending it over the network. A 5,591-byte JSON response measured at <strong>964 bytes on the wire</strong> after the change. Good — unless your handler already compressed the body itself, in which case it now gets gzipped twice and the client receives garbage.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You use Next.js API routes. This is a silent behaviour change in a patch version.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;&nbsp; <strong>IMPORTANCE:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT I SHOULD DO:</strong> Grep your route handlers for <code>content-encoding</code> and <code>gzipSync</code> before you upgrade. Five minutes.</p>
+
+<h3>5. Researchers backdoored an AI agent by editing seven neurons</h3>
+<p><strong>WHAT HAPPENED:</strong> Microsoft Research published work (10 November) showing that editing <strong>7 out of more than 12,000 neurons</strong> in an open-weight model (Nemotron-Terminal-8B) made it emit an attacker's payload on 98.8% of triggered tasks — with no detectable misbehaviour on normal tasks. No retraining run needed, only write access to the model checkpoint. (ANNOUNCED — Microsoft Research blog + paper.)</p>
+<p><strong>WHAT IS THIS?</strong> A <strong>sleeper backdoor</strong> in model weights. The trigger can be any ordinary string that reaches the model's context — <em>including the output of a tool the agent calls</em>. So a poisoned web page could wake it up.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You download open-weight models and run AI agents. This says: a model file is executable code, and you need to care where it came from.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp;&nbsp; <strong>IMPORTANCE:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT I SHOULD DO:</strong> Understand the idea, don't study the paper. Practical takeaway: pull model weights only from official sources, and sandbox what your agents can actually do.</p>
+
+<hr>
+
+<h2>🔥 BIGGEST DEVELOPMENTS</h2>
+
+<h3>A. Linux Foundation adopts Agent Name Service (ANS)</h3>
+<p><strong>WHAT HAPPENED:</strong> On 10 November at KubeCon NA, the Linux Foundation welcomed <strong>Agent Name Service</strong>, an open standard giving AI agents verifiable identity and discovery using DNS and the same certificates websites already use. Eleven organisations are involved, including Cloudflare, Cisco, GoDaddy, Salesforce and OWASP. (CONFIRMED — Linux Foundation press release.)</p>
+
+<p><strong>TERM:</strong> Agent Name Service (ANS)<br>
+<strong>SIMPLE MEANING:</strong> DNS for AI agents. Today, DNS tells your browser that <code>google.com</code> is a real address, and a TLS certificate proves the server is really Google. ANS does the same for agents: an agent gets a name anchored to a domain, and a certificate proves it is who it claims to be.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> An agent contacts your Express API saying "I am the procurement agent for acme.com." Today you have no way to check that. With ANS you look up its name, validate its certificate, and know.<br>
+<strong>WHY IT MATTERS:</strong> Without identity, "agent-to-agent" systems are just anonymous HTTP calls with a confident tone. Every access-control decision needs a verified caller.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is the authentication layer for agents — your two learning tracks (auth + AI agents) merging into one job description.<br>
+<strong>WHAT I SHOULD DO:</strong> WATCH ONLY for now. Read the summary, don't implement it. It's day-two-old.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp;&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM</p>
+
+<h3>B. Google Cloud publishes an "AI-native" Kubernetes stack for stateful agents</h3>
+<p><strong>WHAT HAPPENED:</strong> On 10 November, Google Cloud described a stack (llm-d 1.0, KubeRay, Agent Substrate and others) for running long-lived agents on Kubernetes, with prefix-cache-aware inference and sandboxed multi-turn agent execution. (ANNOUNCED — Google Cloud developer blog.)</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong> Two ideas worth stealing even if you never touch Kubernetes:<br>
+<strong>Stateful agent</strong> — an agent that remembers across many turns, so its memory has to live somewhere durable, not in a variable inside one process.<br>
+<strong>Prefix-cache-aware routing</strong> — LLM requests often share the same long opening (system prompt + history). If you route a request to the same server that already processed that prefix, the server reuses its cached computation and answers faster and cheaper. That is <em>sticky routing based on content</em> — a load-balancing idea you can apply in plain Node.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> You are not going to deploy this. But "route requests to where the cache already is" is a system-design pattern you can use in your own AI backend this month.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp;&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Cache-aware routing and sticky sessions. Skip the Kubernetes parts.</p>
+
+<h3>C. GitHub Actions will block <code>pull_request_target</code> by default from 2 December</h3>
+<p><strong>WHAT HAPPENED:</strong> GitHub announced that in public repositories, the <code>pull_request_target</code> workflow trigger will be blocked by default starting 2 December 2026. (ANNOUNCED — reported in This Week In React #304.)</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong> In GitHub Actions, <code>pull_request</code> runs a PR's workflow <em>without</em> your repository secrets — safe. <code>pull_request_target</code> runs it <em>with</em> secrets and write permissions, which is why maintainers used it for things like labelling PRs. The problem: if the workflow also checks out the attacker's PR code, a stranger's code now runs next to your secrets. This exact pattern caused the TanStack, PostHog and Nx compromises.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> You have public repos. If one of your workflows uses this trigger, it stops working on 2 December.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> The difference between <code>pull_request</code> and <code>pull_request_target</code>, and why CI secrets are the softest target in open source.</p>
+
+<h3>D. The JavaScript build tools all got dramatically faster</h3>
+<p><strong>WHAT HAPPENED:</strong> In one week: <strong>Parcel 3.0 alpha</strong> (full Rust rewrite, claimed up to 100× faster, standalone binary), <strong>Rspack 2.3</strong> (5–20% faster builds, up to 27% less memory), <strong>Vitest 5.1</strong>, <strong>jsdom 31</strong> with a new CSS engine, and <strong>Node.js 27.0 alpha</strong> — the first release under Node's new non-even/odd release model, with V8 15.6, npm 12.1, an <code>--allow-env</code> permission flag and native <code>fs.glob</code>. (CONFIRMED — This Week In React #304.)</p>
+<p><strong>WHY DOES IT MATTER?</strong> The pattern is unmistakable: JavaScript tooling keeps being rewritten in Rust. The JS <em>language</em> stays, the <em>tools around it</em> become native binaries.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> One concrete thing to notice: <code>--allow-env</code>. Node is slowly growing a permission system (like Deno), where you declare what a process may touch. For a MERN developer that eventually means your app can be told "you may read these env vars and nothing else."</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;&nbsp; <strong>LEARNING PRIORITY:</strong> ⚪ LOW (watch, don't chase)</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Node's permission model. Nothing else here needs your time.</p>
+
+<h3>E. Interesting, but not important for you right now</h3>
+<ul>
+<li><strong>Gemini 4 Carbon pricing / benchmark wins, Claude Fable &amp; Mythos 5.2, Meituan's open-weight 1.6T LongCat-2.5.</strong> Model leaderboards rotate monthly. Your code calls an API; swapping the model string is a 10-second change. Don't build a learning plan around a benchmark. ⚪ NOT IMPORTANT RIGHT NOW.</li>
+<li><strong>DeepMind's AlphaProof Code formally verifying Signal's libsignal with machine-checked Lean proofs.</strong> Genuinely impressive; formal verification is not your career path. The transferable lesson is in Section 5. ⚪ NOT IMPORTANT.</li>
+<li><strong>OpenAI's $11B round, Anthropic IPO chatter, lawsuits.</strong> Business news. Zero effect on what you build this week. ⚪ IGNORE.</li>
+</ul>
+
+<hr>
+
+<h2>🤖 AI &amp; AI AGENTS</h2>
+
+<h3>The one AI story you should actually study today: MCP's move from DCR to CIMD</h3>
+
+<p><strong>WHAT IS IT?</strong><br>
+MCP (Model Context Protocol) is the open standard for connecting an AI app to external tools and data. When an MCP client wants to use a protected API on a user's behalf, it speaks OAuth. The question this change answers is: <em>how does the OAuth server know which client is asking?</em></p>
+
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong><br>
+With Dynamic Client Registration, any client could hit a registration endpoint and get an ID. Result: an open registration endpoint sitting on the internet, and a database of thousands of clients nobody can audit. With Client ID Metadata Documents, the client's ID <em>is</em> a URL it controls; the server fetches that URL, validates the document, and keeps no registration row.</p>
+
+<p><strong>HOW DOES IT WORK (simplified)?</strong></p>
+<ol>
+<li>Client says: "my client_id is <code>https://myagent.example.com/client-metadata.json</code>."</li>
+<li>Authorization server fetches that URL and validates the metadata (redirect URIs, app type, etc).</li>
+<li>Normal OAuth flow continues. No stored registration.</li>
+</ol>
+<p>Three hardening changes ship alongside it, and all three are plain OAuth lessons worth knowing:</p>
+<ul>
+<li><strong>Issuer validation (RFC 9207):</strong> the authorization server returns an <code>iss</code> parameter, and the client must check it before exchanging the code. This closes the "authorization server mix-up" attack, where a malicious server tricks a client into redeeming a code at the wrong place.</li>
+<li><strong>Issuer-bound credentials:</strong> a token minted by server A cannot be replayed against server B.</li>
+<li><strong>application_type:</strong> clients declare whether they're a web app or a native/CLI tool, so servers stop rejecting legitimate <code>localhost</code> redirects.</li>
+</ul>
+
+<p><strong>THE NEW RISK (this is the part to internalise):</strong> CIMD makes the authorization server <em>fetch a URL the client supplied</em>. That is a server-side fetch of attacker-influencable input.</p>
+
+<p><strong>TERM:</strong> SSRF (Server-Side Request Forgery)<br>
+<strong>SIMPLE MEANING:</strong> You trick a server into making an HTTP request on your behalf, to somewhere you could not reach yourself.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Your Node API has a "fetch preview of this URL" feature. An attacker submits <code>http://169.254.169.254/latest/meta-data/</code> — the cloud metadata address. Your server, sitting inside the cloud network, happily fetches it and returns the machine's credentials to the attacker.<br>
+<strong>WHY IT MATTERS:</strong> Any feature where your backend fetches a user-supplied URL (webhooks, image proxies, link previews, OAuth metadata) is a potential SSRF.<br>
+<strong>WHY IT MATTERS TO ME:</strong> You build Express APIs and you are now moving into agent infrastructure, where "fetch what the client told me to fetch" is routine. This is <em>the</em> vulnerability class for agent backends.<br>
+<strong>WHAT I SHOULD DO:</strong> LEARN DEEPLY. Rule of thumb: allowlist hosts, resolve DNS yourself and reject private/link-local IP ranges, disable redirects, set a timeout and a response size cap.</p>
+
+<p><strong>WHY DOES IT MATTER TO ME?</strong> Deprecation is not removal — DCR stays functional until no earlier than July 2027. So you have time, but new integrations should be CIMD.</p>
+<p><strong>HOW COULD I USE IT IN A REAL PROJECT?</strong> If you build an MCP server that exposes your own API to agents, this is exactly the auth design you'll implement.</p>
+<p><strong>DO I NEED TO LEARN THIS NOW?</strong> Yes — the OAuth concepts, today. The MCP-specific wiring, when you actually build an MCP server.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH &nbsp;&nbsp; <strong>DEPTH:</strong> LEARN DEEPLY</p>
+
+<h3>Also worth 60 seconds: agent supervision is becoming a product category</h3>
+<p>DigitalOcean shipped an iPhone app (Cuttlefish) to watch live agent sessions and approve or deny individual tool calls. Microsoft extended Project Perception to "the agentic insider." CrowdStrike added detection and shutdown controls for enterprise agents.</p>
+<p><strong>The pattern:</strong> nobody trusts an agent with unsupervised write access any more. Every serious platform is converging on <em>approve-before-act</em>.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> When you build your own agent, build the approval gate in from day one: the agent proposes an action, a human (or a policy) approves, then it executes. That single design choice separates a toy from something someone will pay for.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM</p>
+
+<h3>AI research filter — DeepMind's AlphaProof Code</h3>
+<p><strong>WHY AM I TELLING YOU THIS?</strong> Not for the maths.</p>
+<p><strong>THE RESULT:</strong> A multi-LLM agentic system generated over six million lines of machine-checked proofs and formally verified security properties of Signal's libsignal in about four weeks.</p>
+<p><strong>THE TECHNOLOGY LESSON — and this is the only part you need:</strong> The system works because every output is <em>checked by a machine, not by a human and not by another LLM</em>. Lean either accepts the proof or rejects it. The LLM is allowed to be wrong because something deterministic catches it.</p>
+<p><strong>WHY YOU CARE:</strong> This is the single most transferable idea in AI engineering right now. An LLM in a loop with a verifier beats a smarter LLM alone. In <em>your</em> work the verifier is a test suite, a JSON schema, a TypeScript compiler, a database constraint. Generate → verify → retry on failure. If you build one agent pattern this year, build that one.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT (the architecture) / ⚪ NOT IMPORTANT (the proofs)</p>
+
+<hr>
+
+<h2>💻 MERN / JAVASCRIPT / WEB</h2>
+
+<h3>Next.js: the Cache Components security release is the real story</h3>
+<p><strong>WHAT CHANGED?</strong> The November Next.js security release (3 November, fixed in 16.4.5 and 15.5.29) lists seven advisories, most of them in <strong>Cache Components</strong>. The highest-severity one, rated HIGH, is a <em>cross-tenant cache disclosure</em>.</p>
+
+<p><strong>WHAT IS CACHE COMPONENTS?</strong><br>
+It's the Next.js model where you mark a function or component with <code>use cache</code> and Next stores its rendered output, keyed by its arguments. Next render with the same inputs → served from cache instead of recomputed.</p>
+
+<p><strong>WHY WAS IT CREATED?</strong> Rendering React on the server for every request is expensive. If the result is identical, compute it once.</p>
+
+<p><strong>HOW DID IT BREAK?</strong> The bug involves <strong>root parameters</strong> — values that sit at the top of your routing and separate whole worlds of data, like a tenant ID or a locale. When the same public <code>use cache</code> function was called both directly and from inside <code>unstable_cache</code>, a cold cache fill could hand one request <em>another request's result without checking root parameters</em>. That result then got stored and served to later callers. Where root parameters separate tenants, that means <strong>tenant A's data served to tenant B</strong>.</p>
+
+<p><strong>SIMPLE EXAMPLE:</strong> A SaaS dashboard at <code>acme.yourapp.com</code> and <code>globex.yourapp.com</code>. A cached <code>getDashboardStats()</code> is supposed to be keyed per tenant. Under the bug, Globex's numbers could be cached and then served to Acme.</p>
+
+<p><strong>WHAT CONCEPT DOES THIS TEACH?</strong> Cache key design. Nearly every serious caching bug in history is the same bug: <em>something that should have been part of the key wasn't.</em></p>
+
+<p><strong>WHY SHOULD A NEXT.JS DEVELOPER CARE?</strong> Because the fix is a version bump, and because the bug class lives in a feature many teams adopted recently. Also note the <strong>Data Cache is folding into Runtime Cache</strong>, with per-read and per-write pricing, and Hobby teams migrating on 29 November — if you have anything on Vercel Hobby, check what that does to your bill.</p>
+
+<p><strong>SHOULD I LEARN IT? HOW DEEPLY?</strong> LEARN DEEPLY — not the CVE, the principle: <em>every input that changes the output must be in the cache key.</em> This is also the #1 thing interviewers probe in system-design rounds about caching.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<h3>React: RCE in React Server Components payloads</h3>
+<p><strong>WHAT CHANGED?</strong> CVE-2026-126187 — crafted payloads targeting frameworks supporting React Server Components can lead to remote code execution, in the rare case where responses transport multiple typed arrays plus an attacker-controlled value. Affects 19.0.0–19.0.8, 19.1.0–19.1.9, 19.2.0–19.2.8 and 19.3.0; fixed in 19.0.9, 19.1.10, 19.2.9 and 19.3.1. (CONFIRMED — OSV.)</p>
+<p><strong>WHAT SHOULD I DO?</strong> Bump React alongside Next.js. One command, done.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM (the action is high, the learning is low)</p>
+
+<h3>Next.js experiments worth knowing about (but not using)</h3>
+<ul>
+<li><code>router.experimental_prepare()</code> — starts a navigation on <strong>pointerdown</strong> and commits it on <strong>click</strong>, stealing the ~80–150ms between pressing and releasing a link. A nice lesson in perceived performance: you don't always make things faster, sometimes you just start earlier.</li>
+<li><code>route.go</code> files — a route handler running as a <strong>Go worker</strong> next to your React app, for CPU-heavy server work. Early signal that framework teams are reaching for native languages where JS is slow.</li>
+</ul>
+<p>Both are experiments. <strong>WATCH ONLY.</strong> ⚪ LOW</p>
+
+<hr>
+
+<h2>🏗️ TODAY'S SYSTEM DESIGN CONCEPT</h2>
+
+<p><strong>CONCEPT:</strong> Cache Key Design &amp; Cache Poisoning</p>
+
+<p><strong>IN ONE SENTENCE:</strong> A cache is a map from a key to a saved answer — and if your key leaves out something that changed the answer, you will eventually serve the wrong person's data.</p>
+
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> Caching exists to avoid recomputing expensive things. Cache <em>key</em> design exists to make sure "the same thing" really is the same thing.</p>
+
+<p><strong>SIMPLE REAL-WORLD EXAMPLE:</strong> A hotel cloakroom. You hand over your coat and get ticket #42. If two guests can both get ticket #42, someone goes home in the wrong coat. The ticket is the cache key. Today's Next.js advisory is exactly this: the tenant ID was missing from the ticket.</p>
+
+<p><strong>HOW IT WORKS:</strong> Every input that can change the output belongs in the key. For an API response that typically means: route + query params + <strong>tenant/org ID</strong> + <strong>user ID (if the response is user-specific)</strong> + locale + API version + a schema version you bump when the response shape changes.</p>
+
+<p><strong>TERM:</strong> Cache poisoning<br>
+<strong>SIMPLE MEANING:</strong> An attacker gets a bad or private response stored under a key that other people will later request, so your cache serves their payload to everyone.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Today's Next.js advisory also covers self-hosted apps running <code>next start</code> with Cache Components and Partial Prefetching off, where a crafted URL could poison a shared page shell and cause wrong content or persistent 404s for other URLs.<br>
+<strong>WHY IT MATTERS:</strong> One bad write poisons thousands of reads. Cache bugs scale the way caches do.<br>
+<strong>WHAT I SHOULD DO:</strong> LEARN DEEPLY.</p>
+
+<p><strong>WHERE IS IT USED?</strong> CDNs, Redis, Next.js, HTTP <code>Vary</code> headers, GraphQL client caches, LLM prompt caches.</p>
+
+<p><strong>HOW WOULD I USE IT WITH NODE/EXPRESS/MONGODB?</strong></p>
+<ul>
+<li>Build keys from a single helper function, never by string-concatenating at each call site. One function = one place to get it right.</li>
+<li>Namespace by sensitivity: <code>pub:v1:...</code> for public, <code>usr:{userId}:v1:...</code> for per-user, <code>org:{orgId}:v1:...</code> for per-tenant.</li>
+<li><strong>Never cache a response in a public namespace if an auth check influenced it.</strong></li>
+<li>Include a schema version (<code>v1</code>) so a deploy that changes the response shape doesn't serve stale shapes — bumping the version invalidates everything instantly.</li>
+<li>Normalise before hashing: sort query params, lowercase, drop irrelevant ones — otherwise <code>?a=1&amp;b=2</code> and <code>?b=2&amp;a=1</code> become two entries for one answer.</li>
+<li>Protect the cold-fill path with a lock or single-flight, so 500 simultaneous misses don't all hit Mongo (that's a <strong>cache stampede</strong>).</li>
+</ul>
+
+<p><strong>COMMON MISTAKE:</strong> Caching a response that depends on the <code>Authorization</code> header without putting the user in the key. It works perfectly in development — where you are the only user — and leaks data on day one in production.</p>
+
+<p><strong>WHAT I SHOULD BUILD TO LEARN IT:</strong> A tiny Express + Redis middleware: <code>cache(ttl, keyFn)</code>, where <code>keyFn</code> receives the request and must return a key. Then deliberately write a buggy <code>keyFn</code> that omits the user ID, log in as two users, and watch your own app leak. Fix it. You will never forget it.</p>
+
+<p><strong>DIFFICULTY:</strong> Intermediate</p>
+
+<hr>
+
+<h2>🎨 CREATIVE DEVELOPMENT</h2>
+
+<h3>1. Chrome 157 ships HTML-in-Canvas — unflagged, stable</h3>
+<p><strong>WHAT IS IT?</strong> You can now place real, interactive DOM elements inside a canvas — 2D, WebGL <em>and</em> WebGPU. (CONFIRMED — Chrome 157 release.)</p>
+<p><strong>WHY IS IT BECOMING IMPORTANT?</strong> This has been the oldest wall in creative development. Canvas and WebGL draw pixels; they know nothing about text, accessibility, forms or selection. Historically you had two bad options: render text as a texture (sharp-looking, but dead to screen readers, unselectable, unsearchable), or overlay HTML on top of the canvas and manually sync its position to the 3D camera every frame — which breaks the moment anything rotates in Z.</p>
+<p><strong>WHAT CAN IT DO?</strong> Real DOM inside your rendered scene: live text that stays crisp at any zoom, actual <code>&lt;input&gt;</code> fields, accessible content — composited with your WebGL/WebGPU output.</p>
+<p><strong>WHY SHOULD I CARE?</strong> Because the single biggest practical objection to Awwwards-style 3D sites is "it's beautiful and it's an accessibility disaster." This chips directly at that. It is also the cleanest path to 3D UI that is actually usable — labels in a product configurator, a form floating inside a WebGL scene.</p>
+<p><strong>WHAT CAN I BUILD WITH IT?</strong> A 3D product page where the specs panel is genuine selectable HTML sitting inside the scene instead of a texture.</p>
+<p><strong>WHAT SHOULD I LEARN FIRST?</strong> Nothing heavy — read the Chrome 157 feature post and try one demo. Chrome-only for now, so treat it as progressive enhancement, not a foundation.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp;&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM — EXPERIMENT</p>
+
+<h3>2. Three.js r187 and the honest answer on WebGPU migration</h3>
+<p><strong>WHAT HAPPENED:</strong> Three.js r187 shipped 31 October — better WebGPU pipeline compilation, improved PMREM quality, TSL type promotion, clustered lighting, plus removal of deprecated APIs.</p>
+
+<p><strong>TERM:</strong> TSL (Three.js Shading Language)<br>
+<strong>SIMPLE MEANING:</strong> A way to write GPU shader logic in JavaScript instead of GLSL. You compose small node objects — <code>mix()</code>, <code>uv()</code>, <code>sin()</code>, <code>time</code>, <code>positionLocal</code> — and Three.js compiles them to GLSL for WebGL or WGSL for WebGPU.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> A vertical gradient on a mesh. Old way: a GLSL vertex shader and fragment shader as raw strings, uniforms wired by hand, no autocomplete, no type checking, errors only at GPU compile time. New way: <code>material.colorNode = mix(bottomColor, topColor, positionLocal.y)</code> — ordinary JavaScript with autocomplete and TypeScript types.<br>
+<strong>WHY IT MATTERS:</strong> Shaders were the hardest thing in creative development largely because the authoring experience was miserable. TSL makes shader logic composable and reusable, like functions — and one TSL code path covers both backends, since WebGPURenderer falls back to WebGL2 automatically.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is your stated goal — advanced creative development — and TSL lowers the entry cost dramatically. You already write JavaScript. You do not have to master GLSL syntax first.<br>
+<strong>WHAT I SHOULD DO:</strong> LEARN DEEPLY, starting with the basics this week.</p>
+
+<p><strong>THE HONEST MIGRATION ADVICE:</strong> A practitioner running WebGPU migration audits reports that roughly <strong>half of his audits end with "wait, don't migrate."</strong> What breaks most: hand-written GLSL shaders, post-processing chains (bloom, SSAO), and <code>onBeforeCompile</code> extensions — none of which run under WebGPU. <code>ShaderMaterial</code>, <code>RawShaderMaterial</code> and <code>onBeforeCompile</code> are WebGL-renderer-only.</p>
+<p><strong>The rule that falls out of this, and it's perfect for you:</strong> <em>don't migrate old projects — start new ones WebGPU-native.</em> You have no legacy Three.js code to protect. Begin on <code>WebGPURenderer</code> + TSL and you skip the migration everybody else is scheduling.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+<p><strong>GOTCHAS TO SAVE YOU AN HOUR:</strong> import from <code>three/webgpu</code>, not <code>three</code>, or you get "NodeMaterial is not a constructor". TSL names come from <code>three/tsl</code> — <code>three/nodes</code> does not exist. And <code>await renderer.init()</code> — WebGPU initialisation is async, so your setup function becomes async too.</p>
+
+<hr>
+
+<h2>🛡️ CYBERSECURITY</h2>
+
+<h3>PolinRider: npm malware that runs without an install script</h3>
+
+<p><strong>WHAT HAPPENED?</strong> Sonatype found 12 malicious releases across 10 hijacked npm packages on 4 November (tracked sonatype-2026-010515). Named packages include <code>@adminide-stack/client-redux</code>, <code>@adminide-stack/health-api-server</code>, <code>@adminide-stack/user-activity-browser</code>, <code>@adminide-stack/utils</code>, <code>server-hemera-mongo</code>, <code>cdeops</code>, <code>@adminide-stack/forms-core</code>, <code>@adminide-stack/yantra-help-browser</code>, <code>@cdmbase/wiki-browser</code> and <code>@pubngo-stack/help-browser</code>.</p>
+
+<p><strong>WHAT IS THE VULNERABILITY?</strong> It isn't a vulnerability in your code — it's a <strong>hijacked package</strong>. Someone took over a maintainer's publishing rights and pushed a poisoned version of a legitimate library.</p>
+
+<p><strong>HOW DOES THE ATTACK WORK (defensive view)?</strong> Three design choices make it notable:</p>
+<ol>
+<li><strong>No install hook.</strong> No <code>preinstall</code>/<code>postinstall</code> script. The loader sits at the module entry point and fires when your application imports it, or when the bundled service starts. So <code>npm install --ignore-scripts</code> does not protect you.</li>
+<li><strong>The command server address is stored on a blockchain.</strong> The loader reads a transaction from one hard-coded Ethereum wallet and interprets bytes of the destination address as an IP. <br><strong>TERM: Dead drop resolver.</strong> <strong>SIMPLE MEANING:</strong> Instead of hard-coding "call home to 1.2.3.4", malware reads its instructions from a public, un-takedownable place. <strong>WHY IT MATTERS:</strong> The attacker can redirect every infected machine by publishing one new transaction — without touching the npm package. You cannot block it by taking down a domain.</li>
+<li><strong>In-memory execution.</strong> Payload is XOR-encoded, decoded and executed via <code>eval</code> inside your app plus a detached <code>node -i</code> process fed through stdin. Nothing malicious is ever written to disk — <strong>fileless execution</strong>, which defeats scanners that look at files.</li>
+</ol>
+
+<p><strong>WHO IS AFFECTED?</strong> Anyone who installed those exact versions. Separately: anyone who installed <code>@ethersphere/bee-js</code> 13.3.0 (live ~75 minutes on npm) or Swarm Desktop 0.56.2 (~8.5 hours on GitHub) — SlowMist's guidance there is to treat the machine as compromised; updating does not remove the backdoor.</p>
+
+<p><strong>WHY SHOULD A MERN DEVELOPER CARE?</strong> Your <code>node_modules</code> is hundreds of packages written by strangers, and it executes with your full user permissions — your SSH keys, your <code>.env</code>, your cloud credentials. This is the most realistic way your laptop gets owned.</p>
+
+<p><strong>HOW DO I PROTECT MY APPLICATION?</strong></p>
+<ul>
+<li>Commit <code>package-lock.json</code> and use <code>npm ci</code>, never bare <code>npm install</code>, in CI.</li>
+<li>Prefer <code>npm install --save-exact</code> for anything sensitive; floating version ranges are how a poisoned patch release reaches you overnight.</li>
+<li>Add a cooldown: don't adopt a version published in the last 24–72 hours. Both campaigns here were caught in hours.</li>
+<li>Count your dependencies. Every one is someone who can run code on your machine.</li>
+<li>Never keep long-lived production secrets in a dev <code>.env</code>. Assume your dev machine is the weakest link, because it is.</li>
+<li>Enable 2FA on your own npm and GitHub accounts — the Ethersphere attack came through stolen CI automation credentials.</li>
+<li>Turn on Dependabot/<code>npm audit</code> in CI so a known-bad version fails the build instead of shipping.</li>
+</ul>
+
+<p><strong>WHAT SHOULD I LEARN?</strong> The term <strong>software supply chain</strong>, and the difference between <code>npm install</code> and <code>npm ci</code>. 20 minutes, permanent value.</p>
+
+<p><strong>SAFE PRACTICAL LAB:</strong> In a throwaway folder, run <code>npm ls --all > tree.txt</code> on your biggest project and count the lines. Most developers are shocked. Then <code>npm audit</code>, and for each flagged package ask: do I actually use this, or did it come along for the ride? Removing one unused dependency is a real security improvement — no attack simulation required.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<h3>Background worth knowing: the October Node.js batch</h3>
+<p>Before today's release, the 21 October batch (22.23.4, 24.22.1, 26.12.1) fixed ten issues, four HIGH. The important one: <strong>CVE-2026-111497</strong>, "Node2Shell" — an out-of-bounds write in Node's bundled Brotli decoder, potentially remote code execution. CISA added it to its Known Exploited Vulnerabilities catalog on 27 October.</p>
+<p><strong>Why this one is scarier than it sounds for you:</strong> Sysdig reports that Express 5 apps using <code>express.json()</code> decode Brotli request bodies <strong>by default</strong>, and server-side <code>fetch()</code> decodes Brotli responses from attacker-influenced URLs. Express 4 body parsing and bare Node HTTP servers don't. If you run Express 5 on an unpatched Node, that's your exposure. Gap between patch and public proof-of-concept: about one day.</p>
+<p><strong>ACTION:</strong> Be on 22.23.4 / 24.22.1 / 26.12.1 <em>at minimum</em> today, and move to today's new versions when they land.</p>
+
+<hr>
+
+<h2>🧩 OPEN SOURCE</h2>
+
+<h3>TresJS 5.10.0 — a case study in API design worth reading</h3>
+<p><strong>WHAT IS IT?</strong> TresJS is Three.js for Vue (the equivalent of React Three Fiber). Version 5.10.0 added a dedicated WebGPU entry point.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> Before: to use WebGPU you passed a renderer factory to the canvas component and called <code>extend()</code> on node classes yourself. After: you change one import — <code>from '@tresjs/core/webgpu'</code>.</p>
+<p><strong>WHY IS IT INTERESTING?</strong> Not the Vue part — the <strong>technique</strong>. They used a separate package entry point to give two different rendering backends two clean APIs, with a build check that fails if the root entry can even reach <code>three/webgpu</code>. That's how you ship a breaking architectural change without breaking anyone.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> You are an R3F person, not a Vue person — but the subpath-exports pattern (<code>package.json</code> <code>"exports"</code> with multiple entry points) is a library-authoring skill that applies to any npm package you ever publish. Also note the bug they fixed: patching a node prop like <code>colorNode</code> didn't recompile the material, so the renderer kept the old pipeline and nothing changed on screen. If you hit "my TSL change does nothing," that class of bug is why.</p>
+<p><strong>WHAT CAN I LEARN BY READING THE CODE?</strong> Subpath exports, how a wrapper library maps declarative components onto an imperative engine, and how to deprecate gracefully (they log exactly one warning naming the GLSL component you used on a WebGPU canvas).</p>
+<p><strong>SHOULD I:</strong> <strong>READ IT</strong> — specifically the <code>package.json</code> exports map and the WebGPU entry. 20 minutes. Don't clone, don't switch to Vue.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp;&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM</p>
+
+<h3>MCP Servers v2.3.0 — read the reference implementations</h3>
+<p>The official MCP servers repo published v2.3.0: <code>server-filesystem</code> 2.2.0, <code>server-memory</code> 2.1.0, <code>server-sequential-thinking</code> 2.1.1, <code>server-everything</code> 2.2.1.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> These are small, official, TypeScript, and they are the canonical answer to "what does a correct MCP server look like?" <code>server-memory</code> in particular is the reference for agent memory — a topic you listed as a goal.</p>
+<p><strong>SHOULD I:</strong> <strong>READ IT, then BUILD SOMETHING SIMILAR.</strong> Reading <code>server-memory</code> and then writing your own MCP server backed by MongoDB is one of the highest-value projects available to you right now — it uses the stack you already have and the skill you want.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<hr>
+
+<h2>📈 SKILLS TO LEARN</h2>
+
+<h3>SKILLS I SHOULD LEARN NOW</h3>
+
+<p><strong>1. Skill: Cache design (keys, invalidation, tenancy)</strong><br>
+<strong>Why:</strong> Today's highest-severity Next.js advisory is a cache key bug. Google's agent stack is built on cache-aware routing. Vercel is repricing caching. Caching is simultaneously the most common performance tool and the most common source of data leaks — and it is a guaranteed system-design interview topic.<br>
+<strong>What exactly to learn:</strong> Cache key composition, TTL vs explicit invalidation, per-user vs per-tenant vs public namespaces, cache stampede and single-flight, and the <code>Vary</code> header.</p>
+
+<p><strong>2. Skill: OAuth for machines and agents</strong><br>
+<strong>Why:</strong> MCP deprecated DCR for CIMD this week, and Agent Name Service launched at the Linux Foundation. Both answer "who is this non-human caller?" Agent auth is becoming a backend specialisation, and you already have the prerequisite (you know user auth).<br>
+<strong>What exactly to learn:</strong> The authorization code flow with PKCE, issuer validation (RFC 9207) and why the mix-up attack exists, audience/scope validation, and SSRF defence for any server-side fetch of client-supplied URLs.</p>
+
+<p><strong>3. Skill: TSL + WebGPU in Three.js, starting fresh</strong><br>
+<strong>Why:</strong> All new Three.js development is concentrated on the WebGPU path; compute shaders and new rendering features land there first or only. Auditors advise existing projects to wait but new projects to start WebGPU-native — and you have no legacy code to protect.<br>
+<strong>What exactly to learn:</strong> <code>WebGPURenderer</code> setup with <code>await renderer.init()</code>, node materials, <code>colorNode</code>, <code>positionLocal</code>, <code>uniform()</code>, <code>mix()</code>, <code>time</code>, and writing reusable logic as a TSL <code>Fn</code>.</p>
+
+<p><strong>4. Skill: Dependency hygiene</strong><br>
+<strong>Why:</strong> Two active npm supply-chain campaigns this week, one of which runs without install scripts. This is the cheapest security skill per hour you will ever learn.<br>
+<strong>What exactly to learn:</strong> <code>npm ci</code> vs <code>npm install</code>, lockfile discipline, exact versions, version cooldowns, and reading <code>npm ls --all</code>.</p>
+
+<h3>SKILLS I SHOULD WATCH</h3>
+<ul>
+<li><strong>Agent identity (ANS).</strong> Two days old. Read headlines, implement nothing.</li>
+<li><strong>HTML-in-Canvas.</strong> Chrome-only today. Experiment, don't depend on it.</li>
+<li><strong>Node's permission model (<code>--allow-env</code>).</strong> In alpha; will matter in a year.</li>
+<li><strong>Rust-based JS tooling (Parcel 3, Rspack 2.3).</strong> Use the output, don't study the internals.</li>
+<li><strong>MCP Apps (servers returning interactive UI).</strong> Genuinely interesting for a React developer later — a tool call that returns a rendered surface instead of text. Not yet.</li>
+</ul>
+
+<h3>SKILLS I CAN IGNORE FOR NOW</h3>
+<ul>
+<li><strong>Chasing model releases.</strong> Gemini 4 Carbon, Claude 5.2, LongCat-2.5 — swapping a model is a one-line change. Learn the <em>plumbing</em> around models, not the models.</li>
+<li><strong>Kubernetes / KubeRay / llm-d.</strong> You are not an infra engineer, and nothing you build this year needs a cluster. Steal the ideas, skip the YAML.</li>
+<li><strong>Formal verification / Lean.</strong> Fascinating, irrelevant to your path.</li>
+<li><strong>Neuron-level model backdoor research.</strong> Know it exists. That's the whole lesson.</li>
+<li><strong>AI industry finance.</strong> Entertainment, not education.</li>
+</ul>
+
+<hr>
+
+<h2>🎓 FREE / CHEAP LEARNING</h2>
+
+<p><strong>NAME:</strong> The MCP specification &amp; authorization guide<br>
+<strong>WHAT IS IT?</strong> The official protocol docs, reworked as of 8 November — the most current explanation of CIMD, issuer validation and issuer-bound credentials anywhere.<br>
+<strong>PROVIDER:</strong> Model Context Protocol (Linux Foundation / AAIF) &nbsp;|&nbsp; <strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> How agents authenticate to real APIs, with concrete validation rules for audience, issuer, scope and Origin.<br>
+<strong>DIFFICULTY:</strong> Intermediate &nbsp;|&nbsp; <strong>WHY RELEVANT:</strong> Directly bridges your backend/auth skills into AI agents.<br>
+<strong>LINK:</strong> <a href="https://modelcontextprotocol.io/specification/draft">modelcontextprotocol.io/specification</a></p>
+
+<p><strong>NAME:</strong> OWASP Top 10 &amp; API Security Top 10<br>
+<strong>WHAT IS IT?</strong> The industry-standard catalogue of web and API vulnerabilities, including SSRF — the exact risk CIMD introduces.<br>
+<strong>PROVIDER:</strong> OWASP (also an ANS contributor) &nbsp;|&nbsp; <strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> SSRF, broken access control, injection, and the API-specific list (BOLA/broken object-level authorization) that matters most for Express APIs.<br>
+<strong>DIFFICULTY:</strong> Beginner → Intermediate &nbsp;|&nbsp; <strong>WHY RELEVANT:</strong> You listed API security as a goal; this is the canonical free reference.<br>
+<strong>LINK:</strong> <a href="https://owasp.org/API-Security/">owasp.org/API-Security</a></p>
+
+<p><strong>NAME:</strong> Three.js official WebGPU/TSL examples<br>
+<strong>WHAT IS IT?</strong> Hundreds of runnable, source-visible examples; the WebGPU ones are the real documentation for TSL.<br>
+<strong>PROVIDER:</strong> Three.js &nbsp;|&nbsp; <strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> Node materials, TSL composition, compute shaders — by reading code that works.<br>
+<strong>DIFFICULTY:</strong> Intermediate &nbsp;|&nbsp; <strong>WHY RELEVANT:</strong> Fastest route into the exact skill you said you want.<br>
+<strong>LINK:</strong> <a href="https://threejs.org/examples/">threejs.org/examples</a></p>
+
+<p><strong>NAME:</strong> Node.js security releases blog<br>
+<strong>WHAT IS IT?</strong> The official advisory feed — today's release lands here with CVEs and patched versions.<br>
+<strong>PROVIDER:</strong> Node.js &nbsp;|&nbsp; <strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHY RELEVANT:</strong> Reading advisories is an underrated way to learn how real bugs happen — each one is a small, concrete case study.<br>
+<strong>LINK:</strong> <a href="https://nodejs.org/en/blog/vulnerability">nodejs.org/en/blog/vulnerability</a></p>
+
+<hr>
+
+<h2>▶️ YOUTUBE (Wednesday)</h2>
+
+<p><strong>VIDEO:</strong> Intro to Three.js Shading Language (TSL) — WebGPU shaders without GLSL<br>
+<strong>CREATOR:</strong> Alvaro Saburido (TresJS creator)<br>
+<strong>DATE:</strong> 2026<br>
+<strong>WHAT IT TEACHES:</strong> Why shaders were painful before TSL (string-based GLSL, no autocomplete, no type checking, errors only at GPU compile time), then builds a gradient material step by step: <code>MeshStandardNodeMaterial</code>, <code>uniform(new Color(...))</code>, <code>material.colorNode</code>, <code>mix()</code>, <code>positionLocal.y</code>. Also covers the two setup traps — switching <code>WebGLRenderer</code> → <code>WebGPURenderer</code> and making your setup async with <code>await renderer.init()</code>.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is the single best starting point for the HIGH-priority creative-dev skill in today's briefing. It explains the <em>why</em>, not just the syntax.<br>
+<strong>DIFFICULTY:</strong> Beginner → Intermediate (TSL-wise); assumes basic Three.js<br>
+<strong>WHAT I SHOULD BUILD AFTER WATCHING:</strong> The gradient material, then change the mix axis from Y to a radial distance from the centre and animate it with <code>time</code>. That one change proves you understood it rather than copied it.<br>
+<strong>LINK:</strong> <a href="https://www.youtube.com/watch?v=dlrVCxsq1tE">youtube.com/watch?v=dlrVCxsq1tE</a></p>
+
+<p><strong>VIDEO:</strong> Making 60,000 Particles Feel Alive (TSL + WebGPU)<br>
+<strong>CREATOR:</strong> Creative-dev breakdown channel<br>
+<strong>DATE:</strong> Recent (2026)<br>
+<strong>WHAT IT TEACHES:</strong> The full pipeline behind an Awwwards-grade particle effect: sampling a GLB's triangles proportionally to area to generate 60k points, storing surface normals to drive lighting and displacement direction, instanced sphere geometry instead of flat sprites, wrapped diffuse lighting, stacked fractal noise octaves for organic motion, spring-damper cursor interaction, a three-phase morph state machine between models, and a WebGPU-native bloom node for post-processing.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is concept-first, not copy-the-code — exactly how to learn creative development properly. It also shows <em>why</em> each decision was made (why spheres instead of points, why normals instead of world-space displacement), which is the part tutorials usually skip.<br>
+<strong>DIFFICULTY:</strong> Advanced — watch it now for the mental model, build it after the TSL intro.<br>
+<strong>WHAT I SHOULD BUILD AFTER WATCHING:</strong> Nothing yet. Watch, take notes on the pipeline, return to it in 2–3 weeks.<br>
+<strong>LINK:</strong> <a href="https://www.youtube.com/watch?v=iO-P2gEuOUc">youtube.com/watch?v=iO-P2gEuOUc</a></p>
+
+<p><em>Skipped deliberately:</em> every "Top 10 AI tools" video and all AI model-release reaction content. No learning value for you.</p>
+
+<hr>
+
+<h2>🧠 WHAT I SHOULD LEARN TODAY</h2>
+
+<h3>LEARN THIS #1 — Cache key design</h3>
+<p><strong>WHAT IS IT?</strong> Deciding exactly which inputs identify a cached answer, so you never serve one user's data to another.<br>
+<strong>WHY NOW?</strong> Today's HIGH-severity Next.js advisory is this exact mistake, made by a team far more experienced than most.<br>
+<strong>WHY ME?</strong> You use Next.js caching and you will add Redis to an Express API. It's also a top-3 system-design interview topic.<br>
+<strong>WHAT EXACTLY SHOULD I LEARN?</strong> Key composition, namespacing by sensitivity, schema versioning in the key, normalising inputs before hashing, and the cold-fill race (cache stampede).<br>
+<strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> Distributed cache invalidation across regions, CDN edge config, Vercel's new cache pricing.<br>
+<strong>TIME:</strong> 1 hour<br>
+<strong>FREE RESOURCE:</strong> The Next.js November 2026 security release post — read it as a case study, not a changelog.<br>
+<strong>PRACTICAL MINI PROJECT:</strong> The Express + Redis <code>cache(ttl, keyFn)</code> middleware from Section 5, including deliberately breaking it and watching the leak.</p>
+
+<h3>LEARN THIS #2 — TSL basics in Three.js</h3>
+<p><strong>WHAT IS IT?</strong> Writing GPU shader logic as composable JavaScript nodes instead of GLSL strings.<br>
+<strong>WHY NOW?</strong> r187 just strengthened the WebGPU/TSL path, and the consistent expert advice is: start new projects WebGPU-native.<br>
+<strong>WHY ME?</strong> Creative development is an explicit goal, and TSL removes the GLSL wall that stops most JavaScript developers.<br>
+<strong>WHAT EXACTLY SHOULD I LEARN?</strong> <code>WebGPURenderer</code> + <code>await renderer.init()</code>, <code>MeshStandardNodeMaterial</code>, <code>colorNode</code>, <code>uniform()</code>, <code>mix()</code>, <code>positionLocal</code>, <code>uv()</code>, <code>time</code>.<br>
+<strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> Compute shaders, post-processing chains, WGSL, migrating anything.<br>
+<strong>TIME:</strong> 1 hour to a working gradient; several days to be comfortable.<br>
+<strong>FREE RESOURCE:</strong> The TSL intro video above + threejs.org WebGPU examples.<br>
+<strong>PRACTICAL MINI PROJECT:</strong> One mesh, one TSL material, a radial gradient animated by <code>time</code>.</p>
+
+<h3>LEARN THIS #3 — <code>npm ci</code> and lockfile discipline</h3>
+<p><strong>WHAT IS IT?</strong> <code>npm install</code> may resolve new versions and rewrite your lockfile; <code>npm ci</code> installs exactly what the lockfile says, or fails.<br>
+<strong>WHY NOW?</strong> Two live supply-chain campaigns, one of which bypasses install-script protections entirely.<br>
+<strong>WHY ME?</strong> You install packages daily and your machine holds your tokens and credentials.<br>
+<strong>WHAT EXACTLY SHOULD I LEARN?</strong> <code>npm ci</code>, <code>--save-exact</code>, reading <code>npm ls --all</code>, enabling Dependabot.<br>
+<strong>TIME:</strong> 20 minutes<br>
+<strong>PRACTICAL MINI PROJECT:</strong> Switch one project's CI to <code>npm ci</code> and remove one dependency you don't actually use.</p>
+
+<hr>
+
+<h2>🔮 WHERE TECHNOLOGY IS GOING</h2>
+
+<p><strong>TREND 1: Agents are getting identity, permissions and supervisors — i.e. they are becoming backend systems.</strong><br>
+<strong>WHAT THAT MEANS:</strong> In one week: ANS (identity for agents), MCP's CIMD (verifiable client identity), Microsoft securing "the agentic insider," DigitalOcean shipping per-tool-call approval, CrowdStrike adding agent shutdown controls.<br>
+<strong>WHY IT MATTERS:</strong> The hard part of agents stopped being the model and became auth, permissions, audit and approval. That is ordinary backend engineering with a new caller.<br>
+<strong>WHAT I SHOULD LEARN:</strong> OAuth for machines, scoped permissions, approval gates, audit logging.</p>
+
+<p><strong>TREND 2: The verifier matters more than the model.</strong><br>
+<strong>WHAT THAT MEANS:</strong> AlphaProof Code produced six million lines of proofs that were <em>machine-checked</em>. The output is trustworthy because something deterministic validated it, not because the model was confident.<br>
+<strong>WHY IT MATTERS:</strong> The winning pattern is LLM + checker in a loop: generate, verify, retry.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Structured outputs with schema validation (Zod), retry-on-validation-failure loops, using your test suite as the verifier.</p>
+
+<p><strong>TREND 3: The web platform is absorbing what used to need plugins or hacks.</strong><br>
+<strong>WHAT THAT MEANS:</strong> WebGPU is becoming the default Three.js path; Chrome 157 shipped real interactive DOM inside canvas; Node is growing a permission system.<br>
+<strong>WHY IT MATTERS:</strong> Browser capability is where native apps used to be, and the gap between "website" and "application" keeps closing.<br>
+<strong>WHAT I SHOULD LEARN:</strong> WebGPU/TSL — the highest-leverage creative-dev skill for the next two years.</p>
+
+<p><strong>TREND 4: The supply chain is the attack surface.</strong><br>
+<strong>WHAT THAT MEANS:</strong> Blockchain dead-drops, fileless execution, no install scripts, stolen CI credentials, GitHub blocking <code>pull_request_target</code> by default. Nobody is attacking your login form; they're attacking your dependencies and your pipeline.<br>
+<strong>WHY IT MATTERS:</strong> Valid signatures and provenance records no longer guarantee safety when the publishing account itself is compromised.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Lockfiles, exact versions, version cooldowns, CI secret hygiene, 2FA everywhere.</p>
+
+<p><strong>TREND 5: JavaScript tooling is being rewritten in native code.</strong><br>
+<strong>WHAT THAT MEANS:</strong> Parcel 3 in Rust (up to 100× faster), Rspack 2.3, SWC parsers, and Next.js experimenting with Go route handlers.<br>
+<strong>WHY IT MATTERS:</strong> JavaScript remains the language you write; it is increasingly not the language your tools are written in. Long-term, knowing <em>why</em> JS is slow at certain tasks (single-threaded, GC pauses, parse cost) becomes more valuable than knowing another framework.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Nothing urgent. Just notice the direction.</p>
+
+<hr>
+
+<h2>🚀 MY ACTION PLAN</h2>
+
+<p><strong>TODAY — 30 MINUTES</strong><br>
+Patch day. Check <code>node -v</code> on every machine and deployment; update to today's Node release when it lands (minimum: 22.23.4 / 24.22.1 / 26.12.1). Bump Next.js to 16.4.5+ (or 15.5.29) and React to 19.x.y-patched. Then <code>npm audit</code> on your active projects and confirm none of the PolinRider package versions appear in your lockfiles.</p>
+
+<p><strong>TODAY — 1 HOUR</strong><br>
+Build the Express + Redis cache middleware: <code>cache(ttl, keyFn)</code>. Write it correctly, then deliberately break <code>keyFn</code> by omitting the user ID, log in as two users, and watch your app serve user A's data to user B. Fix it. That hour teaches you the same lesson today's HIGH-severity Next.js CVE taught Vercel.</p>
+
+<p><strong>THIS WEEK</strong><br>
+TSL + WebGPU fundamentals. Watch the TSL intro, build the gradient material, then push it: radial gradient, animated with <code>time</code>, driven by a <code>uniform()</code> you change from a UI control. Start WebGPU-native — you have no legacy to migrate.</p>
+
+<p><strong>THIS WEEK'S PROJECT</strong><br>
+<strong>An MCP server backed by MongoDB, with a scoped tool set.</strong> Read the official <code>server-memory</code> implementation, then write your own using the TypeScript SDK: Mongo for storage, three tools (<code>save_note</code>, <code>search_notes</code>, <code>delete_note</code>), and a hard rule that <code>delete_note</code> requires explicit confirmation. That one project touches Node, MongoDB, TypeScript, MCP, tool calling, and capability scoping — every emerging skill in today's briefing, on the stack you already know. It is also the single best portfolio piece you could build this month.</p>
+
+<p><strong>IGNORE FOR NOW</strong><br>
+Gemini 4 Carbon vs Claude 5.2 vs LongCat-2.5. Do not spend one minute comparing model benchmarks. Models rotate; the infrastructure skills around them compound.</p>
+
+<hr>
+
+<h3>🎯 IF I ONLY HAVE 1 HOUR TODAY</h3>
+
+<p>Spend it on the <strong>cache middleware</strong>.</p>
+
+<p>First 10 minutes: read the Next.js November 2026 security release post, specifically the cross-tenant cache disclosure. Understand that a world-class team shipped a cache that forgot the tenant ID.</p>
+
+<p>Next 40 minutes: write <code>cache(ttl, keyFn)</code> in Express with Redis. Cache one real endpoint. Then break the key on purpose and watch your own app leak data between two logged-in users.</p>
+
+<p>Last 10 minutes: fix it, and write down your personal rule in your notes — <em>"every input that changes the output goes in the key; anything auth-dependent gets a per-user namespace."</em></p>
+
+<p>You will leave with a reusable piece of code, a permanent mental model for caching, and a story you can tell in an interview. That beats reading about five AI models you will never deploy.</p>
+
+<hr>
+<p><em>Sources prioritised: nodejs.org security advisories, nextjs.org security release, vercel/next.js GitHub releases, modelcontextprotocol GitHub PRs #3518/#3521, Linux Foundation press release, Microsoft Research, Sonatype/OX Security/SlowMist advisories, OSV, threejs.org. Confidence labels used throughout: CONFIRMED (primary source), ANNOUNCED (vendor claim), ANALYSIS (my read).</em></p>
+
+</body>
+</html>
