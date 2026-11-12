@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Daily Tech Intelligence — 2026-11-12</title>
+<style>
+body { font-family: Segoe UI, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #0d1117; color: #c9d1d9; line-height: 1.7; }
+h1 { color: #58a6ff; border-bottom: 2px solid #30363d; padding-bottom: 10px; }
+h2 { color: #f0883e; margin-top: 40px; }
+h3 { color: #79c0ff; }
+strong { color: #ffa657; }
+code { background: #161b22; padding: 2px 6px; border-radius: 4px; }
+hr { border-color: #30363d; }
+</style>
+</head>
+<body>
+
+<h1>🌍 DAILY TECH INTELLIGENCE — 2026-11-12</h1>
+<p><strong>DATE:</strong> Thursday, 12 November 2026</p>
+<p>Good morning. Sit down, coffee in hand. Today was a <em>security-heavy</em> day with two things that touch your actual machine, plus one quiet change in the 3D-web world that is bigger than it looks. Let me walk you through it like a colleague, not a newspaper.</p>
+
+<hr>
+
+<h2>⚡ TODAY IN 60 SECONDS</h2>
+
+<h3>1. A critical bug in an AI GPU manager is being actively exploited — deadline is today</h3>
+<p><strong>WHAT HAPPENED:</strong> A tool called GPUStack had a flaw (CVE-2026-102895, severity 9.8/10) where any request that <em>looked like</em> it came from the same machine was automatically treated as the administrator. No password needed. CISA (the US government's cyber agency) confirmed real attacks and gave federal agencies until today, 12 November, to patch it. <strong>CONFIRMED</strong> (NVD, CISA KEV, Cloud Security Alliance).</p>
+<p><strong>WHAT IS THIS?</strong> GPUStack is open-source software that manages a cluster of GPU servers so you can run your own AI models on them. The bug is in how it decided "who are you?".</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You will almost certainly write code that reads an IP address to decide trust (allowlists, admin panels, rate limiting). This is a textbook case of why that is unsafe. The lesson transfers 1:1 to Express.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Read the Cybersecurity section below and audit any <code>req.ip</code> / <code>X-Forwarded-For</code> logic in your own Express apps today.</p>
+
+<h3>2. npm got hit again — malware that hides its server address inside the Ethereum blockchain</h3>
+<p><strong>WHAT HAPPENED:</strong> Attackers published poisoned versions of ~10 npm packages. The malicious code does not run at install time (so <code>--ignore-scripts</code> does not save you) — it runs when your app <code>require</code>s the package. Separately, <code>@ethersphere/bee-js</code> 13.3.0 shipped a wallet-stealing <code>postinstall</code> script <em>with a valid provenance badge</em>. <strong>CONFIRMED</strong> (OX Security, Sonatype, The Hacker News, StepSecurity/SafeDep).</p>
+<p><strong>WHAT IS THIS?</strong> A "supply-chain attack" — nobody hacked your app; they hacked something your app installs.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You install npm packages every day. This is the single most likely way a MERN developer actually gets compromised.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Add <code>ignore-scripts=true</code> to your <code>.npmrc</code> and commit your lockfile. Takes 2 minutes.</p>
+
+<h3>3. React Three Fiber v10 made WebGPU the default renderer</h3>
+<p><strong>WHAT HAPPENED:</strong> R3F (the React way of writing Three.js) released alpha 6. The default <code>&lt;Canvas&gt;</code> now uses <strong>WebGPURenderer</strong> instead of the old WebGL-only renderer. If you use custom GLSL shaders, you must change one import to <code>@react-three/fiber/legacy</code>. TSL hooks moved to a new <code>@react-three/tsl</code> package. <strong>ANNOUNCED / EARLY</strong> (it is an alpha, not stable).</p>
+<p><strong>WHAT IS THIS?</strong> WebGPU is the new browser API for talking to the graphics card — the successor to WebGL. TSL is a way of writing shader logic in JavaScript instead of GLSL.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> This is your creative-dev lane. The default just changed, which means tutorials from 2024–2025 will slowly stop matching reality.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🟠 MEDIUM (it is alpha — learn the direction, do not rewrite production code)</p>
+<p><strong>WHAT I SHOULD DO:</strong> Understand what TSL is. Don't migrate anything yet.</p>
+
+<h3>4. Next.js shipped a security release you may not have applied</h3>
+<p><strong>WHAT HAPPENED:</strong> On 3 November, Next.js patched seven medium-severity bugs in 16.4.5 and 15.5.29 — mostly cache leaks where one logged-in user's cached data could be served to another user, plus HttpOnly cookie exposure on Edge route handlers. Three weeks earlier (14 Oct) there were two <em>critical</em> remote-code-execution fixes. <strong>CONFIRMED</strong> (nextjs.org official blog).</p>
+<p><strong>WHAT IS THIS?</strong> "Cache poisoning" = the server stores a response and hands the same stored copy to the wrong person.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> You build Next.js apps with logins. This is exactly the bug class that leaks one user's dashboard to another.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Run <code>npm ls next</code> on every project. If below 16.4.5 / 15.5.29, upgrade today.</p>
+
+<h3>5. Cursor's OpenAI model access hits its proposed shutoff date — today</h3>
+<p><strong>WHAT HAPPENED:</strong> OpenAI announced in August it would stop supplying its models to the Cursor editor after Cursor's parent was acquired by SpaceX, proposing 12 November 2026 as the cutoff. As of today the official termination has not been publicly confirmed by both sides. <strong>ANNOUNCED — not yet confirmed as executed.</strong></p>
+<p><strong>WHAT IS THIS?</strong> A business/contract story, not a technology one.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong> Only as a lesson: never build your workflow on one vendor's model being available inside one tool. The real skill is <em>model portability</em>.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED &nbsp;|&nbsp; <strong>IMPORTANCE:</strong> ⚪ LOW</p>
+<p><strong>WHAT I SHOULD DO:</strong> Nothing. Just keep your AI code behind your own thin abstraction layer.</p>
+
+<hr>
+
+<h2>🔥 BIGGEST DEVELOPMENTS</h2>
+
+<h3>A. The frontier model race compressed into 48 hours</h3>
+<p><strong>WHAT HAPPENED:</strong> Anthropic released Claude Fable 5.2 and Mythos 5.2 on 9 Nov ($8 per million input tokens / $40 per million output, ~20% under OpenAI's GPT-6 Astra, and about 80% cheaper on cached input at $0.20 vs $1.00). Google made Gemini 4 Carbon generally available on 10 Nov at an introductory $2/$10 that rises to $4/$20 on 1 December. <strong>CONFIRMED</strong> (company blogs, Fortune, poyo.ai daily digest).</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p><strong>TERM:</strong> Token<br>
+<strong>SIMPLE MEANING:</strong> The unit AI models charge by. Roughly 1 token ≈ ¾ of an English word.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> A 1,000-word document is about 1,300 tokens. Sending it to Fable 5.2 costs about 1 cent.<br>
+<strong>WHY IT MATTERS:</strong> Your AI feature's cost is tokens × price. Nothing else.<br>
+<strong>WHY IT MATTERS TO ME:</strong> When you build an AI feature in Node, token math <em>is</em> your unit economics.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn it — 20 minutes.</p>
+<p><strong>TERM:</strong> Prompt caching (cached input tokens)<br>
+<strong>SIMPLE MEANING:</strong> If you send the same long chunk of text (a system prompt, a document, your codebase) over and over, the provider stores it and charges you far less for re-reading it.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Your agent has a 10,000-token system prompt. Without caching you pay full price every call. With caching the repeated part costs 1/40th.<br>
+<strong>WHY IT MATTERS:</strong> It is the single biggest cost lever in agent applications, and it is why Anthropic's 80%-cheaper cache price is the real headline, not the benchmark scores.<br>
+<strong>WHY IT MATTERS TO ME:</strong> Every AI agent you build in Node will have a big repeated system prompt. Learning to structure prompts so the stable part comes first (so it can be cached) will cut your bills dramatically.<br>
+<strong>WHAT I SHOULD DO:</strong> <strong>Learn deeply.</strong> This is a genuinely high-leverage, practical skill.</p>
+<p><strong>WHY DOES IT MATTER?</strong> The industry has stopped competing on "smartest model" and started competing on price-per-useful-task. That is what happens when a technology matures.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH (for caching and token economics) / ⚪ LOW (for which model "wins")</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Prompt caching and cache-aware prompt layout. Not benchmark tables.</p>
+
+<h3>B. Google Cloud launched "Agent Gateway" for cross-cloud AI agents</h3>
+<p><strong>WHAT HAPPENED:</strong> On 11 Nov Google Cloud put Agent Gateway into Limited Preview — it extends Google's Agent Platform governance to AI agents running on Kubernetes clusters <em>outside</em> Google Cloud. <strong>ANNOUNCED / EARLY.</strong></p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p><strong>TERM:</strong> Gateway (AI gateway / API gateway)<br>
+<strong>SIMPLE MEANING:</strong> One single door that all traffic must pass through, where you put your authentication, rate limits, logging and routing — instead of repeating that logic in every service.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Instead of 12 AI agents each holding their own OpenAI key, they all call <code>gateway.mycompany.com</code>, which holds one key, logs every call, caps spending and blocks dangerous tools.<br>
+<strong>WHY IT MATTERS:</strong> As soon as a company has more than two agents, ungoverned agents become a security and cost disaster. The gateway is the fix.<br>
+<strong>WHY IT MATTERS TO ME:</strong> This is <em>pure backend work</em>, and it is the most realistic way a Node/Express developer gets paid to work on AI. You already know middleware, auth and proxies — a gateway is those three things pointed at LLMs.<br>
+<strong>WHAT I SHOULD DO:</strong> <strong>Build one.</strong> See the project in the action plan.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> The gateway pattern: a single Express proxy in front of model APIs doing auth, logging, rate limiting and cost tracking.</p>
+
+<h3>C. Interesting, but not important for you right now</h3>
+<ul>
+<li><strong>Nvidia board reportedly moving to replace Jensen Huang.</strong> Huge business story, zero effect on your code. ⚪ NOT IMPORTANT RIGHT NOW. (Reported, not confirmed by Nvidia.)</li>
+<li><strong>Anthropic's IPO roadshow ($70–78/share, Nasdaq "ANT").</strong> Finance news. ⚪ NOT IMPORTANT.</li>
+<li><strong>Anthropic restricting Claude usage from mainland China (effective today).</strong> Policy, relevant only if you have China-based clients. ⚪ NOT IMPORTANT.</li>
+<li><strong>Nvidia GR00T 2 robotics model; NTT/Sompo "physical AI" for nursing care.</strong> Robotics is a different career. ⚪ NOT IMPORTANT.<br>
+<em>But here is the transferable lesson, since you asked me to always extract it:</em> these robotics systems are built as <strong>world models + action policies</strong> — a loop of "observe → predict what happens next → act → observe again". That exact loop is also the architecture of a software agent (observe tool output → plan → call tool → observe). If you understand the agent loop, you already understand the shape of the robotics stack. You do not need to study robotics.</li>
+<li><strong>Meta hired an AWS infrastructure executive.</strong> ⚪ NOT IMPORTANT.</li>
+</ul>
+
+<hr>
+
+<h2>🤖 AI &amp; AI AGENTS</h2>
+
+<h3>MCP in 2026: the part you actually need to know</h3>
+<p><strong>WHAT IS IT?</strong> MCP (Model Context Protocol) is a standard way for an AI model to discover and call your tools. Instead of writing custom glue for every AI client, you expose an MCP server and any MCP-aware AI can use it.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> Before MCP, connecting "AI ↔ my database/API" was bespoke work per AI product. MCP makes it one standard interface, like REST did for web services.</p>
+<p><strong>HOW DOES IT WORK (simplified)?</strong> Your MCP server advertises a list of tools (name, description, input schema). The AI client fetches that list, decides which tool to call, sends a <code>tools/call</code> request, your server executes it and returns a result.</p>
+<p><strong>WHAT CHANGED THIS YEAR — and this is the important bit:</strong> The <strong>2026-07-28 specification</strong> removed protocol-level sessions and the initialization handshake. MCP became <em>stateless</em>.</p>
+<p><strong>TERM:</strong> Stateless protocol<br>
+<strong>SIMPLE MEANING:</strong> Every request carries everything needed to handle it. The server remembers nothing between requests.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> A JWT-authenticated REST API is stateless — any server instance can handle any request. A websocket chat session is stateful — you must keep talking to the same instance.<br>
+<strong>WHY IT MATTERS:</strong> Stateless things scale horizontally for free. You can put 10 copies behind a load balancer and it just works.<br>
+<strong>WHY IT MATTERS TO ME:</strong> A remote MCP server is now "just another HTTP service". You can host one on Railway/Vercel/Render exactly like an Express API — which you already know how to do. <strong>Your existing backend skills are now directly MCP skills.</strong><br>
+<strong>WHAT I SHOULD DO:</strong> <strong>Learn deeply + build.</strong></p>
+<p><strong>THE TRAP (worth memorising):</strong> "Stateless" does not mean "no state" — it means state moved up the stack. If your tool needed to remember something across calls, it now needs an explicit handle and real storage (MongoDB, Redis), or it silently breaks when a retry lands on a different server instance.</p>
+<p><strong>HOW COULD I USE IT IN A REAL PROJECT?</strong> Wrap one of your existing Express REST APIs as an MCP server, so Claude or any agent can query your MongoDB data safely.</p>
+<p><strong>DO I NEED TO LEARN THIS NOW?</strong> Yes. Of everything in today's briefing, this is the highest return on your time.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH — <strong>LEARN DEEPLY</strong></p>
+
+<h3>Second AI item: capability scoping (and why MCP security is now a real topic)</h3>
+<p>Oracle's November Analytics update added <strong>per-tool permissions on its MCP server</strong> — different user roles get different subsets of tools. Small news, big signal.</p>
+<p><strong>TERM:</strong> Capability scoping (least privilege for agents)<br>
+<strong>SIMPLE MEANING:</strong> Give an AI agent only the tools and permissions it genuinely needs — nothing more.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> A "support summary" agent gets <code>readTickets</code>. It does <strong>not</strong> get <code>deleteCustomer</code>, even though that function exists in your codebase.<br>
+<strong>WHY IT MATTERS:</strong> An AI agent can be talked into things by text it reads (prompt injection). If it has no delete tool, no amount of persuasion deletes anything. You cannot fully secure the model's reasoning, so you secure the tool list instead.<br>
+<strong>WHY IT MATTERS TO ME:</strong> When you build an MCP server over your MongoDB, the single most important design decision is which tools you expose and what each one is allowed to touch. This is authorization work — something you already do with Express middleware.<br>
+<strong>WHAT I SHOULD DO:</strong> Apply it the first time you build an MCP server. Rule of thumb: start read-only, add write tools one at a time, scope every tool to the calling user's own data.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<hr>
+
+<h2>💻 MERN / JAVASCRIPT / WEB</h2>
+
+<h3>Next.js November security release — explained properly</h3>
+<p><strong>WHAT CHANGED?</strong> Seven medium-severity vulnerabilities patched in 16.4.5 and 15.5.29 on 3 November. The common theme: <strong>caching served the wrong data to the wrong user.</strong></p>
+<p>Specifically: cache leaks across root parameter values in nested <code>use cache</code> functions; information disclosure through <code>unstable_cache()</code>; cross-user cache disclosure and cache poisoning when cached functions receive binary arguments like <code>Blob</code>; cache poisoning of shared fallback shells (a valid page could start returning a cached 404); and exposure of HttpOnly cookies on Edge runtime route handlers and API routes.</p>
+<p><strong>WHAT IS IT? (the concepts behind the bugs)</strong></p>
+<p><strong>TERM:</strong> Cache key<br>
+<strong>SIMPLE MEANING:</strong> The label a cache uses to decide "is this the same request as before?". If two different requests accidentally produce the same label, the second person gets the first person's data.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> You cache <code>getDashboard()</code> but forget to include the user ID in the key. User A loads their dashboard. User B loads the page and sees A's data.<br>
+<strong>WHY IT MATTERS:</strong> Almost every real-world cache security bug is a cache-key bug. Including these Next.js ones.<br>
+<strong>WHY IT MATTERS TO ME:</strong> You will hand-roll caching in Express + Redis at some point. The discipline is: <em>every input that changes the output must be in the key — especially identity.</em><br>
+<strong>WHAT I SHOULD DO:</strong> Learn the rule. It takes 10 minutes and prevents a career-damaging bug.</p>
+<p><strong>TERM:</strong> HttpOnly cookie<br>
+<strong>SIMPLE MEANING:</strong> A cookie that JavaScript in the browser cannot read — only the server sees it.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Your session token. If an XSS attack injects JS into your page, it still cannot steal an HttpOnly cookie.<br>
+<strong>WHY IT MATTERS:</strong> It is the main defence that stops XSS from becoming full account takeover. A bug that exposes HttpOnly cookies removes that safety net.<br>
+<strong>WHY IT MATTERS TO ME:</strong> Store your auth tokens in HttpOnly cookies, not <code>localStorage</code>. If you currently use localStorage for JWTs, that is worth changing.<br>
+<strong>WHAT I SHOULD DO:</strong> Audit your own auth storage today.</p>
+<p><strong>WHAT EXISTING CONCEPT DOES IT IMPROVE?</strong> Nothing new — it hardens the existing <code>use cache</code> / Cache Components system.</p>
+<p><strong>SHOULD I LEARN IT? HOW DEEPLY?</strong> Learn the <em>cache-key concept</em> deeply. Learn the specific CVEs shallowly — just upgrade.</p>
+<p><strong>SIMPLE EXAMPLE of the right instinct:</strong></p>
+<p><code>// WRONG — one shared cache for everyone<br>
+cache.set('dashboard', data)</code></p>
+<p><code>// RIGHT — identity is part of the key<br>
+cache.set(`dashboard:${userId}`, data)</code></p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<hr>
+
+<h2>🏗️ TODAY'S SYSTEM DESIGN CONCEPT</h2>
+
+<p><strong>CONCEPT:</strong><br>
+Trust Boundary (and why network position is not identity)</p>
+
+<p><strong>IN ONE SENTENCE:</strong><br>
+A trust boundary is the imaginary line in your system where data stops being trustworthy, and every piece of information crossing it must be verified rather than believed.</p>
+
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong><br>
+Systems constantly make decisions based on information they did not create — an IP address, a header, a hostname, a "this came from inside the network" assumption. The trust boundary forces you to ask: <em>who actually controls this value?</em> If the answer is "the client", you cannot use it for security.</p>
+
+<p><strong>SIMPLE REAL-WORLD EXAMPLE:</strong><br>
+Today's GPUStack bug. It said: "this request came from 127.0.0.1, so it's local, so it's the admin." That was true when the server sat alone on a machine. The moment someone put Nginx on the same host, <em>every</em> request from the public internet arrived looking like 127.0.0.1 — because the proxy was the one making the connection. The whole internet became the administrator.</p>
+
+<p><strong>HOW IT WORKS:</strong><br>
+You draw the line explicitly. Outside the line = attacker-controlled. Inside = you control it. Then for each input crossing the line you choose one of three: <em>verify it</em> (signature, token), <em>strip it</em> (delete the header at the edge), or <em>ignore it</em> (never use it for authorization). The GPUStack fix did all three: it deleted the loopback-equals-admin branch, it only reads the forwarding header <em>after</em> the gateway authenticates with a token, and it makes real auth mandatory.</p>
+
+<p><strong>WHERE IS IT USED?</strong><br>
+Reverse proxies, load balancers, API gateways, CDNs, webhook receivers, multi-tenant SaaS, service meshes — anywhere a request passes through something before reaching you.</p>
+
+<p><strong>HOW WOULD I USE IT WITH NODE/EXPRESS/MONGODB?</strong></p>
+<p>Three concrete habits:</p>
+<ol>
+<li><strong>Never trust <code>X-Forwarded-For</code> blindly.</strong> In Express, <code>req.ip</code> reads that header only when you set <code>app.set('trust proxy', ...)</code>. Set it to the <em>specific</em> number of proxies or their IPs — never <code>true</code> in production, which makes any client able to spoof their IP and defeat your rate limiter.</li>
+<li><strong>Never authorize by IP.</strong> "Admin panel only from our office IP" is a convenience, not a control. Put real auth behind it too.</li>
+<li><strong>Verify webhooks by signature, not source.</strong> A Stripe webhook is trustworthy because of its HMAC signature, not because of where it came from.</li>
+</ol>
+
+<p><strong>COMMON MISTAKE:</strong><br>
+Setting <code>app.set('trust proxy', true)</code> because a tutorial said so. That tells Express to believe the <em>first</em> value in a client-supplied header. Your per-IP rate limiting is then trivially bypassed by sending a random fake IP on every request.</p>
+
+<p><strong>WHAT I SHOULD BUILD TO LEARN IT:</strong><br>
+A tiny Express app with <code>express-rate-limit</code> set to 5 requests/minute per IP. Hit it 10 times — you get blocked. Now set <code>app.set('trust proxy', true)</code>, and send requests with a random <code>X-Forwarded-For</code> each time. Watch the limit stop working. Then fix it properly. Fifteen minutes, and you will never forget it.</p>
+
+<p><strong>DIFFICULTY:</strong> Intermediate</p>
+
+<hr>
+
+<h2>🎨 CREATIVE DEVELOPMENT</h2>
+
+<h3>React Three Fiber v10 alpha 6: WebGPU by default, and TSL gets its own package</h3>
+
+<p><strong>WHAT IS IT?</strong> R3F lets you write Three.js scenes as React components. In alpha 6 the default <code>&lt;Canvas&gt;</code> now uses <code>WebGPURenderer</code> rather than the old WebGL-only renderer. Over 200 commits since alpha 5.</p>
+
+<p><strong>TERM:</strong> WebGPU<br>
+<strong>SIMPLE MEANING:</strong> The modern browser API for using the graphics card. It replaces WebGL, which was designed around a 2000s-era graphics model.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> A particle simulation with 1,000,000 particles. In WebGL you fight the API to fake it. In WebGPU you write a compute shader and the GPU just does it.<br>
+<strong>WHY IT MATTERS:</strong> It unlocks compute shaders (general-purpose GPU work, not just drawing) and is meaningfully faster for complex scenes.<br>
+<strong>WHY IT MATTERS TO ME:</strong> Awwwards-tier sites increasingly do things WebGL cannot do cheaply. This is the capability gap.<br>
+<strong>WHAT I SHOULD DO:</strong> Understand the basics now; build with it in a few months when v10 is stable.</p>
+
+<p><strong>TERM:</strong> TSL (Three.js Shading Language)<br>
+<strong>SIMPLE MEANING:</strong> A way to write shader logic in JavaScript, by composing small "nodes" (like <code>mix()</code>, <code>texture()</code>, <code>uv()</code>) into a graph — instead of writing GLSL in a template string.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> Instead of a GLSL string your bundler treats as text, you write <code>color.mul(noise(uv().mul(5)))</code> in JavaScript. You get autocomplete, type checking and reusable functions.<br>
+<strong>WHY IT MATTERS:</strong> TSL compiles to <em>either</em> WGSL (WebGPU) or GLSL (WebGL), so one shader runs on both. That is why Three.js is betting on it — it decouples your shader code from the graphics API underneath.<br>
+<strong>WHY IT MATTERS TO ME:</strong> You are a JavaScript/TypeScript developer. TSL is the first time shader work feels like JavaScript rather than a foreign language pasted into a string. It removes the biggest barrier between you and advanced creative dev.<br>
+<strong>WHAT I SHOULD DO:</strong> <strong>Experiment.</strong> This is your lowest-friction entry into shaders.</p>
+
+<p><strong>WHAT CHANGED PRACTICALLY (alpha 6):</strong></p>
+<ul>
+<li>Default import = WebGPU renderer. Custom GLSL? Switch to <code>import { Canvas } from '@react-three/fiber/legacy'</code>. That's the only change needed.</li>
+<li>TSL hooks (<code>useUniforms</code>, <code>useNodes</code>, <code>useGPUStorage</code>, <code>useRenderPipeline</code>…) moved from <code>@react-three/fiber/webgpu</code> to a new <code>@react-three/tsl</code> package.</li>
+<li>Renderers now load on demand — a legacy app bundles only WebGL, a default app bundles only WebGPU. Smaller bundles.</li>
+<li><code>@react-three/fiber/webgpu</code> is deprecated and will be removed in the first beta.</li>
+</ul>
+
+<p><strong>IMPORTANT NUANCE:</strong> WebGPURenderer is not "WebGPU or nothing" — it falls back to WebGL2. So this is the <em>old WebGL-only renderer</em> vs the <em>new renderer with modern features</em>, not a hard browser-support cliff.</p>
+
+<p><strong>WHAT CAN I BUILD WITH IT?</strong> A GPU particle field reacting to the mouse; a procedural animated gradient background; scroll-driven displacement on a mesh. All three are standard Awwwards-site ingredients.</p>
+
+<p><strong>WHAT SHOULD I LEARN FIRST?</strong> Not WebGPU internals. Learn <strong>TSL basics</strong>: <code>uv()</code>, <code>uniform()</code>, <code>time</code>, <code>mix()</code>, and <code>Fn()</code>. That's the vocabulary for 80% of shader effects.</p>
+
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM — <strong>EXPERIMENT</strong>, don't migrate production code to an alpha.</p>
+
+<hr>
+
+<h2>🛡️ CYBERSECURITY</h2>
+
+<h3>1. GPUStack CVE-2026-102895 — authentication by network position</h3>
+
+<p><strong>WHAT HAPPENED?</strong> CVSS 9.8. Added to CISA's Known Exploited Vulnerabilities catalog on 9 November with a federal fix deadline of today, 12 November, plus a forensic-triage requirement. Exploitation confirmed in the wild against a 2.1.1 deployment. Notably, the fix shipped in version 2.2.0 back on 18 June — the public advisory came 139 days later. <strong>CONFIRMED</strong> (NVD, CISA, CSA).</p>
+
+<p><strong>WHAT IS THE VULNERABILITY?</strong> An <strong>authentication bypass by spoofing</strong>. The function <code>get_current_user</code> in <code>gpustack/api/auth.py</code> returned the built-in administrator for any unauthenticated request whose apparent source was 127.0.0.1 — and the setting that disabled this, <code>force_auth_localhost</code>, was <code>false</code> by default.</p>
+
+<p><strong>HOW DOES THE ATTACK WORK (defensive explanation)?</strong> Two paths. (1) A reverse proxy on the same host forwards traffic via <code>proxy_pass http://127.0.0.1:port</code> — so the TCP peer GPUStack sees is always loopback, and every internet request arrives as admin, with no header and no credential needed. (2) The client simply sends <code>X-GPUStack-Real-IP: 127.0.0.1</code> and the server believes it. Once admin, an attacker could mint persistent API keys, read stored worker and cloud credentials, and register a malicious inference backend via <code>POST /v2/inference-backends/from-yaml</code> — which executes code on GPU worker hosts.</p>
+
+<p><strong>WHO IS AFFECTED?</strong> Anyone self-hosting GPUStack below 2.2.0. Upgrade to 2.2.2 (it also fixes CVE-2026-102894, a 9.1 SAML signature-verification bypass).</p>
+
+<p><strong>WHY SHOULD A MERN DEVELOPER CARE?</strong> You probably do not run GPUStack. But you <em>do</em> write <code>if (req.ip === '127.0.0.1')</code> or "allow this IP range" logic. This bug is the canonical demonstration of why that breaks the instant a proxy appears — and in 2026 there is always a proxy (Nginx, Cloudflare, a load balancer, Vercel's edge).</p>
+
+<p><strong>HOW DO I PROTECT MY APPLICATION?</strong></p>
+<ul>
+<li>Never derive identity from network source. Use tokens.</li>
+<li>Strip client-supplied IP headers at your edge proxy; only accept them from an authenticated gateway.</li>
+<li>Configure <code>trust proxy</code> in Express to an exact hop count or IP list, never <code>true</code>.</li>
+<li>Remember: patching does not evict an attacker. Upgrading GPUStack does not revoke keys the attacker created. Rotate credentials after any suspected compromise.</li>
+</ul>
+
+<p><strong>SAFE PRACTICAL LAB:</strong> Build a local Express app with a route that returns "admin panel" if <code>req.ip</code> is loopback. Put a tiny Node reverse proxy in front of it. Call the proxy from another terminal — you are now "admin". Delete the IP check, add a bearer token, try again. 20 minutes, and the lesson sticks permanently.</p>
+
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<h3>2. npm supply chain: the PolinRider campaign and the bee-js provenance lesson</h3>
+
+<p><strong>WHAT HAPPENED?</strong> Two distinct things, both this month, both confirmed.</p>
+<p><strong>(a) PolinRider / @adminide-stack.</strong> Twelve releases across ten npm packages got a hidden loader on 3–4 November. npm removed all twelve. The affected packages total ~1,400 weekly downloads, so the direct blast radius is small — but the <em>technique</em> is what matters.</p>
+<p><strong>(b) @ethersphere/bee-js 13.3.0.</strong> Published 9 November, latest on npm for about 75 minutes. It ran attacker code at install time, targeting Swarm wallet files and installing backdoors on Windows, macOS and Linux.</p>
+
+<p><strong>WHAT IS THE VULNERABILITY? Two new terms:</strong></p>
+
+<p><strong>TERM:</strong> Dead drop (blockchain C2)<br>
+<strong>SIMPLE MEANING:</strong> Instead of hard-coding the attacker's server address into the malware, the malware looks up a public, uncensorable location to find out where to phone home. Here, it read the latest transaction from a specific Ethereum wallet and converted the recipient address bytes into an IP address.<br>
+<strong>REAL-WORLD EXAMPLE:</strong> You block the attacker's server IP. They publish one new Ethereum transaction and every infected machine learns the new address. Your block did nothing.<br>
+<strong>WHY IT MATTERS:</strong> It makes takedowns nearly useless, because the lookup location is a public blockchain nobody can seize.<br>
+<strong>WHY IT MATTERS TO ME:</strong> It kills the assumption "I'll just block the bad domain." Defence has to happen at install and review time, not at the firewall.<br>
+<strong>WHAT I SHOULD DO:</strong> Understand the basics. Nothing to build.</p>
+
+<p><strong>TERM:</strong> Package provenance (SLSA)<br>
+<strong>SIMPLE MEANING:</strong> A cryptographic receipt proving "this npm package was built from this GitHub repo by this workflow."<br>
+<strong>REAL-WORLD EXAMPLE:</strong> bee-js 13.3.0 had <em>valid provenance</em>. The badge was honest — the malicious code was genuinely in the source the workflow built. The attacker used the project's own release bot to create a commit, tag and release, which triggered the normal publish pipeline. The repo's CI only ran tests for pushes to a branch, so it ran none for the release.<br>
+<strong>WHY IT MATTERS:</strong> Provenance answers "where was this built?", not "is this safe?". Treat it as a chain-of-custody record, not a safety certificate. Many developers assume the opposite.<br>
+<strong>WHY IT MATTERS TO ME:</strong> If you ever set up npm publishing from GitHub Actions, the lesson is direct: anyone who can create a release in your repo can publish code to npm with your provenance. Gate releases, and run tests on the release path.<br>
+<strong>WHAT I SHOULD DO:</strong> Learn the distinction. It is a 5-minute mental model that prevents a dangerous assumption.</p>
+
+<p><strong>THE CRITICAL DETAIL:</strong> PolinRider used <strong>no install script</strong>. The code ran when the package was <code>require</code>d. So <code>npm install --ignore-scripts</code> would <em>not</em> have stopped it. The same was true of the PhantomSub Baileys campaign in October, where the payload only armed itself after the WhatsApp bot opened a real session. Install-time sandboxing is necessary but not sufficient.</p>
+
+<p><strong>HOW DO I PROTECT MY APPLICATION?</strong></p>
+<ul>
+<li>Put <code>ignore-scripts=true</code> in <code>.npmrc</code> and keep a short allowlist of packages permitted to run scripts. Blocks category (b).</li>
+<li>Always commit <code>package-lock.json</code> and use <code>npm ci</code> in CI. Loose ranges like <code>^13.2.0</code> are exactly how bee-js 13.3.0 would have reached you.</li>
+<li>Be suspicious of brand-new versions. A 24–72 hour cooldown before upgrading catches most of these — bee-js was malicious for 75 minutes.</li>
+<li>Run <code>npm audit signatures</code> and enable Dependabot/Socket alerts.</li>
+<li>Treat your dev machine's npm cache and CI runners as assets worth protecting — the PolinRider stage 2 patched npm's own <code>lib/cli.js</code> and the startup files of VS Code, Cursor, Discord and GitHub Desktop for persistence.</li>
+</ul>
+
+<p><strong>SAFE PRACTICAL LAB:</strong> In a scratch folder, run <code>npm config set ignore-scripts true</code>, then install a package that needs a build step (e.g. <code>sharp</code>) and watch it fail. Now add it to an allowlist and install with scripts enabled just for it. You will learn exactly what friction this setting costs you — which is how you decide whether to keep it on.</p>
+
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT &nbsp;|&nbsp; <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+
+<hr>
+
+<h2>🧩 OPEN SOURCE</h2>
+
+<h3>three.js (mrdoob/three.js) — read it as a live engineering classroom</h3>
+<p><strong>WHAT IS IT?</strong> The dominant 3D library for the web.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> It wraps the brutally low-level WebGL/WebGPU APIs into something a JavaScript developer can actually use.</p>
+<p><strong>WHY IS IT INTERESTING RIGHT NOW?</strong> Because of <em>what</em> is being merged this week. Look at the open PR list: "TSL: Add texture inputs to <code>Fn()</code> layouts", "WebGPURenderer: Deprecate trackTimestamp in favor of GPUTimer", "TSL: Rename buffer node to uniformTypedArray", plus a reported issue that node builds are keyed on the full attachment state, so one material rebuilds once per render target. That last one is a <strong>caching bug in a 3D engine</strong> — the exact same class of problem as today's Next.js cache-key CVEs. Different domain, identical lesson.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> It is the reference implementation for everything in your creative-dev goal, and reading the TSL PRs is the fastest way to see where the API is actually landing — months before tutorials exist.</p>
+<p><strong>WHAT CAN I LEARN BY READING THE CODE?</strong> How a large TypeScript/JavaScript codebase handles a major API migration without breaking millions of users: deprecation paths, dual renderers, entry-point splitting.</p>
+<p><strong>SHOULD I:</strong> <strong>Read it — specifically the <code>examples/webgpu_tsl_*</code> files.</strong> Do not clone the whole engine to study. Pick two TSL examples, read them end to end, then rebuild one from scratch. Cloning without a goal teaches nothing.</p>
+
+<h3>GPUStack — read it as a security case study (30 minutes, not a project)</h3>
+<p><strong>WHAT IS IT?</strong> Open-source GPU cluster manager for serving AI models.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> The entire 9.8-severity bug lives in one function, <code>get_current_user</code> in <code>gpustack/api/auth.py</code>. You can read the vulnerable version and the 2.2.0 fix side by side and <em>see</em> a critical auth bug in about 40 lines.</p>
+<p><strong>WHAT CAN I LEARN?</strong> What a real authentication bypass looks like in production code — not in a tutorial. It is unglamorous: a convenience branch that was correct under one deployment assumption.</p>
+<p><strong>SHOULD I:</strong> <strong>Read that one file's diff.</strong> Then ignore the rest of the repo. Highest security-learning-per-minute available to you today.</p>
+
+<hr>
+
+<h2>📈 SKILLS TO LEARN</h2>
+
+<h3>SKILLS I SHOULD LEARN NOW</h3>
+
+<p><strong>1. Skill:</strong> Building an MCP server in TypeScript/Node<br>
+<strong>Why:</strong> MCP went stateless in the 2026-07-28 spec, which means a remote MCP server is now just an ordinary HTTP service. Your Express skills transfer directly, and MCP SDK downloads are reportedly near half a billion a month across Tier 1 SDKs — this is not a niche.<br>
+<strong>What exactly to learn:</strong> The TypeScript SDK; defining a tool with a name, description and input schema; the <code>tools/call</code> flow; why statelessness means your tool state must live in MongoDB or Redis with an explicit handle.</p>
+
+<p><strong>2. Skill:</strong> Trust boundaries and proxy-aware authentication in Express<br>
+<strong>Why:</strong> Today's 9.8 CVE is this exact mistake, and your own rate limiting is silently broken if you got <code>trust proxy</code> wrong.<br>
+<strong>What exactly to learn:</strong> How <code>X-Forwarded-For</code> actually works; correct <code>app.set('trust proxy', n)</code> configuration; why to strip client IP headers at the edge; signature-based webhook verification.</p>
+
+<p><strong>3. Skill:</strong> Cache-key correctness<br>
+<strong>Why:</strong> Next.js just patched seven bugs of this class, and three.js has an open issue of the same class. It is the most common serious bug in systems that use caching, which is every system you will ever build at scale.<br>
+<strong>What exactly to learn:</strong> The rule that every input affecting output — above all user identity — must appear in the key; cache scopes (public vs per-user vs per-tenant); the MCP spec's <code>cacheScope</code> hint as a real-world example of getting this wrong being dangerous.</p>
+
+<h3>SKILLS I SHOULD WATCH</h3>
+<ul>
+<li><strong>TSL / WebGPU in Three.js.</strong> Clearly the future direction — R3F just made it the default. But v10 is alpha and the API is still renaming things weekly. Watch and experiment; don't commit production work.</li>
+<li><strong>AI gateways.</strong> Google's Agent Gateway is Limited Preview. The <em>pattern</em> is worth knowing now; the specific products are not worth studying yet.</li>
+<li><strong>Prompt caching economics.</strong> Worth understanding today, worth optimising hard only when you have an agent in production.</li>
+</ul>
+
+<h3>SKILLS I CAN IGNORE FOR NOW</h3>
+<ul>
+<li><strong>Robotics / world-action models (GR00T 2, physical AI).</strong> Fascinating, completely different career track.</li>
+<li><strong>Model benchmark chasing.</strong> Fable 5.2 vs Gemini 4 Carbon vs GPT-6 Astra will reshuffle within weeks. Learn the API patterns, not the leaderboard.</li>
+<li><strong>AI industry business news</strong> (IPOs, executive hires, board drama). Zero effect on your skills.</li>
+<li><strong>Self-hosting GPU clusters.</strong> Unless you are running your own inference fleet, you do not need GPUStack or Kubernetes GPU scheduling.</li>
+</ul>
+
+<hr>
+
+<h2>🎓 FREE / CHEAP LEARNING</h2>
+
+<p><strong>NAME:</strong> Official MCP Documentation &amp; TypeScript SDK<br>
+<strong>WHAT IS IT?</strong> The specification site plus the first-party TS SDK with working server examples.<br>
+<strong>PROVIDER:</strong> Model Context Protocol project (Linux Foundation)<br>
+<strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> How to define tools, handle <code>tools/call</code>, and deploy a stateless MCP server as a normal HTTP service.<br>
+<strong>DIFFICULTY:</strong> Intermediate (easy if you know Express)<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> It is the single highest-leverage thing on your learning list, and it is a primary source rather than someone's blog interpretation.<br>
+<strong>LINK:</strong> https://modelcontextprotocol.io &nbsp;·&nbsp; https://blog.modelcontextprotocol.io/posts/2026-07-28/</p>
+
+<p><strong>NAME:</strong> Three.js official WebGPU/TSL examples<br>
+<strong>WHAT IS IT?</strong> Hundreds of runnable, source-visible demos, actively updated (several merged this week).<br>
+<strong>PROVIDER:</strong> three.js<br>
+<strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> TSL node syntax by reading short, self-contained files — far more current than any course.<br>
+<strong>DIFFICULTY:</strong> Intermediate → Advanced<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> Courses on TSL barely exist yet because the API is young. The examples <em>are</em> the curriculum.<br>
+<strong>LINK:</strong> https://threejs.org/examples/ (filter for <code>webgpu_tsl</code>)</p>
+
+<p><strong>NAME:</strong> OWASP Cheat Sheet Series — Authentication &amp; Authorization<br>
+<strong>WHAT IS IT?</strong> Short, dense, practical defensive guides written by security practitioners.<br>
+<strong>PROVIDER:</strong> OWASP<br>
+<strong>COST:</strong> Free &nbsp;|&nbsp; <strong>CERTIFICATE:</strong> No<br>
+<strong>WHAT WILL I ACTUALLY LEARN?</strong> Exactly the trust-boundary discipline that today's GPUStack CVE violated.<br>
+<strong>DIFFICULTY:</strong> Beginner → Intermediate<br>
+<strong>WHY IS IT RELEVANT TO ME?</strong> Directly applicable to every Express API you write, and it is reference material you will reuse for years.<br>
+<strong>LINK:</strong> https://cheatsheetseries.owasp.org/</p>
+
+<p><em>Note: I am deliberately not listing certificate-farming courses today. Nothing new and genuinely valuable launched, and padding this section would waste your time.</em></p>
+
+<hr>
+
+<h2>▶️ YOUTUBE</h2>
+<p>Not Wednesday. No YouTube section today — next one is Wednesday, 18 November.</p>
+
+<hr>
+
+<h2>🧠 WHAT I SHOULD LEARN TODAY</h2>
+
+<h3>LEARN THIS #1 — Trust boundaries in Express (proxy-aware auth)</h3>
+<p><strong>WHAT IS IT?</strong> Understanding which parts of an incoming HTTP request are controlled by the attacker, and never using those parts for security decisions.</p>
+<p><strong>WHY NOW?</strong> A 9.8-severity, actively-exploited CVE with a federal deadline of today is precisely this mistake. Real incidents are the best teachers.</p>
+<p><strong>WHY ME?</strong> You write Express APIs behind proxies (Vercel, Railway, Nginx, Cloudflare). You are already in the situation where this bug class appears.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> How <code>X-Forwarded-For</code> is constructed; what <code>app.set('trust proxy', ...)</code> actually does with each value; why <code>true</code> is dangerous in production; how to strip client IP headers at the edge; signature-verified webhooks.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> mTLS, service meshes, zero-trust network architecture. Overkill for where you are.</p>
+<p><strong>TIME:</strong> 45 minutes</p>
+<p><strong>FREE RESOURCE:</strong> Express docs "Behind proxies" page + OWASP Authentication Cheat Sheet</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> The rate-limiter bypass lab in the System Design section above.</p>
+
+<h3>LEARN THIS #2 — Wrap one of your existing APIs as an MCP server</h3>
+<p><strong>WHAT IS IT?</strong> Exposing functions you already have (say, "list my blog posts" from MongoDB) through the Model Context Protocol so any AI agent can call them.</p>
+<p><strong>WHY NOW?</strong> Because the stateless 2026-07-28 spec collapsed the gap between "MCP server" and "Express app". The thing you already know how to do <em>is</em> the thing.</p>
+<p><strong>WHY ME?</strong> This is the clearest bridge between your current MERN skillset and the agentic-AI direction you want to move into. It is also genuinely portfolio-worthy right now.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong> The TS SDK; tool definition with Zod schemas; capability scoping (start read-only); where to keep state now that the protocol holds none.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong> MCP Apps (server-rendered UI), Tasks extension, enterprise OAuth/DCR flows, gateways. All real, none needed for your first server.</p>
+<p><strong>TIME:</strong> 2 hours for a working read-only server</p>
+<p><strong>FREE RESOURCE:</strong> https://modelcontextprotocol.io + the official TypeScript SDK repo</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> See "This Week's Project" below.</p>
+
+<hr>
+
+<h2>🔮 WHERE TECHNOLOGY IS GOING</h2>
+
+<p><strong>TREND 1: Frontier AI is competing on price, not intelligence.</strong><br>
+<strong>WHAT THAT MEANS:</strong> Fable 5.2 priced 20% under GPT-6 Astra and 80% under on cached input. Gemini 4 Carbon launched at $2/$10 with a published date for doubling to $4/$20. Pricing pages now read like a commodity market.<br>
+<strong>WHY IT MATTERS:</strong> When capability becomes comparable and cheap, the value moves to whoever builds the best <em>system around</em> the model — the retrieval, the tools, the auth, the caching, the error handling. That is backend engineering.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Token economics, prompt caching, model-agnostic abstractions so you can switch providers in one config change.</p>
+
+<p><strong>TREND 2: MCP is becoming the HTTP of AI tooling — and it just got boring, which is the point.</strong><br>
+<strong>WHAT THAT MEANS:</strong> Removing sessions and the handshake turned MCP servers into ordinary stateless HTTP workloads that any existing infrastructure can host. AWS, Google Cloud and Anthropic all publicly backed the stateless core.<br>
+<strong>WHY IT MATTERS:</strong> "Boring and standard" is when a protocol wins. Fancy protocols with custom transports stay niche.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Build an MCP server. The infrastructure knowledge you already have is now the relevant knowledge.</p>
+
+<p><strong>TREND 3: Agent governance is becoming a product category.</strong><br>
+<strong>WHAT THAT MEANS:</strong> Google Agent Gateway, Oracle's per-tool MCP permissions, MCP's authorization hardening — all in the last two weeks. Companies have discovered that an agent with unlimited tool access is an unlimited liability.<br>
+<strong>WHY IT MATTERS:</strong> The job "make AI agents safe to run in a company" is being created right now, and it is mostly backend work: gateways, auth, rate limits, audit logs, permission models.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Capability scoping, the gateway pattern, per-tool authorization, cost tracking and audit logging.</p>
+
+<p><strong>TREND 4: Supply-chain attacks have moved past install scripts.</strong><br>
+<strong>WHAT THAT MEANS:</strong> PolinRider runs at <code>require</code> time. PhantomSub arms itself only after a real session opens. bee-js shipped with valid provenance. Each of these defeats a defence the industry recommended last year.<br>
+<strong>WHY IT MATTERS:</strong> Single-control security is over. You need layers: lockfiles, ignore-scripts, upgrade delays, signature audits, and treating CI runners as compromisable.<br>
+<strong>WHAT I SHOULD LEARN:</strong> Dependency hygiene as a routine, not a reaction.</p>
+
+<p><strong>TREND 5: The web's graphics layer is shifting from WebGL to WebGPU, and shaders are becoming JavaScript.</strong><br>
+<strong>WHAT THAT MEANS:</strong> R3F v10 made WebGPU the default; Three.js development is overwhelmingly WebGPU/TSL-focused; TSL compiles to both WGSL and GLSL so your shader code outlives the API underneath.<br>
+<strong>WHY IT MATTERS:</strong> Shader programming is the main skill gate between "good frontend dev" and "creative developer". TSL lowers that gate for JavaScript developers specifically.<br>
+<strong>WHAT I SHOULD LEARN:</strong> TSL fundamentals. This is your opening.</p>
+
+<hr>
+
+<h2>🚀 MY ACTION PLAN</h2>
+
+<h3>TODAY — 30 MINUTES</h3>
+<p>Learn how <code>app.set('trust proxy', ...)</code> works in Express, and check what every one of your deployed projects currently sets. Fix any that use <code>true</code>.</p>
+
+<h3>TODAY — 1 HOUR</h3>
+<p>Build the rate-limiter bypass lab: Express + <code>express-rate-limit</code>, prove you can bypass it with a spoofed <code>X-Forwarded-For</code> when <code>trust proxy</code> is misconfigured, then fix it. Also add <code>ignore-scripts=true</code> to your global <code>.npmrc</code> and run <code>npm ls next</code> across your projects.</p>
+
+<h3>THIS WEEK</h3>
+<p>MCP, properly. Read the 2026-07-28 spec post, understand why stateless changes the architecture, and go through the TypeScript SDK.</p>
+
+<h3>THIS WEEK'S PROJECT</h3>
+<p><strong>"Ask My Database" — an MCP server over your existing MongoDB.</strong></p>
+<ul>
+<li>Take an existing Express + MongoDB project of yours.</li>
+<li>Expose 3 read-only MCP tools: <code>searchItems(query)</code>, <code>getItem(id)</code>, <code>getStats()</code>.</li>
+<li>Apply capability scoping deliberately: no write tools in v1. Write down <em>why</em> for each tool you chose not to expose.</li>
+<li>Add a per-tool rate limit and an audit log of every call (tool name, args, caller, duration).</li>
+<li>Deploy it to Railway as a plain HTTP service — proving to yourself that a stateless MCP server really is just an Express app.</li>
+<li>Connect it to Claude and ask your database questions in English.</li>
+</ul>
+<p>This single project touches MERN, backend architecture, AI agents, MCP, authorization and deployment simultaneously. That is the best ratio available to you right now, and it is something you can show people.</p>
+
+<h3>IGNORE FOR NOW</h3>
+<p>The model leaderboard. Do not spend a minute comparing Claude Fable 5.2 against Gemini 4 Carbon against GPT-6 Astra. The ranking will change before you finish reading about it, and none of it makes you a better engineer. Learn the API patterns — they outlive every model.</p>
+
+<hr>
+
+<h2>🎯 IF I ONLY HAVE 1 HOUR TODAY</h2>
+
+<p>Spend it entirely on the <strong>trust boundary lab</strong>.</p>
+<ol>
+<li><strong>0–10 min:</strong> Read Express's "Behind proxies" documentation page.</li>
+<li><strong>10–35 min:</strong> Build the lab. Express app, <code>express-rate-limit</code> at 5 req/min per IP. Confirm you get blocked. Set <code>app.set('trust proxy', true)</code>. Send requests with a random <code>X-Forwarded-For</code> each time. Watch the rate limiter become completely useless.</li>
+<li><strong>35–50 min:</strong> Fix it — set <code>trust proxy</code> to the exact hop count for your deployment, re-test, confirm the bypass is dead.</li>
+<li><strong>50–60 min:</strong> Open every deployed project you own and check this one setting. Add <code>ignore-scripts=true</code> to your <code>.npmrc</code>.</li>
+</ol>
+<p><strong>Why this and not MCP?</strong> Because MCP needs two uninterrupted hours to be worth starting, and this hour makes your <em>existing</em> production code measurably safer today — using the same bug that is on a federal emergency deadline this morning. Save MCP for a proper session.</p>
+
+<hr>
+<p><em>Sources: NVD, CISA KEV, Cloud Security Alliance, nextjs.org official blog, Netlify changelog, blog.modelcontextprotocol.io, GitHub (mrdoob/three.js, pmndrs/react-three-fiber), OX Security, Sonatype, The Hacker News, StepSecurity/SafeDep, openai.com, Fortune, CNBC, InfoWorld. Claims marked CONFIRMED come from primary or multiple reputable sources; ANNOUNCED/EARLY items are unreleased, alpha, or limited-preview.</em></p>
+
+</body>
+</html>
