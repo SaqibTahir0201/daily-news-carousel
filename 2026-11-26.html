@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Tech Intelligence &mdash; 2026-11-26</title>
+<style>
+body { font-family: Segoe UI, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #0d1117; color: #c9d1d9; line-height: 1.7; }
+h1 { color: #58a6ff; border-bottom: 2px solid #30363d; padding-bottom: 10px; }
+h2 { color: #f0883e; margin-top: 40px; }
+h3 { color: #79c0ff; }
+h4 { color: #a5d6ff; }
+strong { color: #ffa657; }
+code { background: #161b22; padding: 2px 6px; border-radius: 4px; }
+pre { background: #161b22; padding: 14px; border-radius: 6px; overflow-x: auto; border: 1px solid #30363d; }
+pre code { background: none; padding: 0; }
+a { color: #58a6ff; }
+hr { border: 0; border-top: 1px solid #30363d; margin: 32px 0; }
+em { color: #d2a8ff; }
+ul { padding-left: 22px; }
+</style>
+</head>
+<body>
+<h1>🌍 DAILY TECH INTELLIGENCE — 2026-11-26</h1>
+<p>DATE: Thursday, 26 November 2026</p>
+<p>Good morning. Sit down, let me walk you through what actually happened — and more importantly, what of it is <em>your</em> problem and what isn&#x27;t.</p>
+<p>Today is a <strong>big security day</strong> and a <strong>big &quot;AI did something weird in research&quot; day</strong>. One of those two matters to you a lot. The other one matters almost not at all, but it hides a lesson you should steal.</p>
+<hr>
+<h2>⚡ TODAY IN 60 SECONDS</h2>
+<h3>1. 1Password got hacked through a stolen GitHub account — vaults are safe, but the attack path is exactly how your projects would get hacked</h3>
+<p><strong>WHAT HAPPENED:</strong></p>
+<p>1Password (the password manager company) confirmed on 25 November that an attacker got into <strong>one employee&#x27;s corporate GitHub account</strong> on 19 November. From that single account, the attacker read private source code, <strong>pushed malicious code into backend services</strong>, got into the CI/CD system, and downloaded customer names, sign-in email addresses and account metadata for a subset of users. Customer vaults, vault keys, account passwords and Secret Keys were <strong>not</strong> touched — 1Password does not store those. Status: <strong>CONFIRMED</strong> (official 1Password blog, 25 Nov; TechCrunch, The Verge).</p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM:</strong></p>
+<p>Supply-chain attack (software supply chain)</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>Instead of attacking your running app directly, the attacker attacks something your app <em>trusts</em> — your code repo, your build pipeline, or a package you install — and lets your own system deliver the malicious code for them.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>Nobody broke into 1Password&#x27;s servers from the outside. One developer&#x27;s GitHub account was taken over, and then 1Password&#x27;s own deploy pipeline obediently shipped the attacker&#x27;s code to production.</p>
+<p><strong>WHY IT MATTERS:</strong></p>
+<p>A dev account plus an automated pipeline equals production write access. Most teams protect production servers carefully and protect developer accounts carelessly.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong></p>
+<p>You use Git/GitHub and you deploy. You almost certainly have a GitHub token sitting somewhere with repo + workflow scope, and a deploy that runs automatically on push to main. That is the exact shape of this attack.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT</p>
+<p><strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Today, audit your own GitHub: enable 2FA with an authenticator or passkey, delete personal access tokens you don&#x27;t use, and check which tokens have <code>workflow</code> scope. See the Cybersecurity section for the full checklist.</p>
+<hr>
+<h3>2. Google&#x27;s AI agent published six math proofs in one day — the maths is irrelevant to you, the architecture is not</h3>
+<p><strong>WHAT HAPPENED:</strong></p>
+<p>On 25 November, Google Research pushed six research papers (274 pages total) to a public GitHub folder, all produced by <strong>Cogentic</strong> — a multi-agent system built on Gemini 4. The headline claim is a proven integer-factorization bound that closes a 34-year-old theoretical gap. Status: <strong>ANNOUNCED / EARLY</strong> — these are preprints in a GitHub folder, <strong>not peer reviewed</strong>, and the promised Lean (computer-checked) proofs were <strong>not public</strong> at time of writing.</p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM:</strong></p>
+<p>Multi-agent harness (prove–verify loop)</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>Instead of one AI answering once, you build a <em>system</em>: one agent proposes a solution, another agent checks it, and the loop repeats until the checker is satisfied. The &quot;harness&quot; is the orchestration code around the model — the thing that decides who runs when, what gets retried, and when to stop.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>Cogentic: a generator agent writes a proof step, a verifier agent tries to break it, failures feed back in, and the loop runs until the proof survives.</p>
+<p><strong>WHY IT MATTERS:</strong></p>
+<p>This is the single most important pattern in agentic AI right now — the quality came from the <strong>loop and the verifier</strong>, not from the model being smarter.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong></p>
+<p>This is 100% a backend engineering problem, and backend is your lane. A prove–verify loop is a queue, a worker, a retry policy and a validation step. You can build the same shape in Node.js this week.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED (the maths: ⚪ NOT IMPORTANT. The architecture: 🟢 DIRECT)</p>
+<p><strong>IMPORTANCE:</strong> 🔥 HIGH (for the pattern only)</p>
+<p><strong>WHAT I SHOULD DO:</strong> Ignore the number theory completely. Steal the generator→verifier→retry loop and build a tiny version with Node + a queue.</p>
+<hr>
+<h3>3. npm is now a malware distribution channel — and AI tooling is a named target</h3>
+<p><strong>WHAT HAPPENED:</strong></p>
+<p>A Databricks report published 23 November analysed ~5,400 confirmed malicious npm packages from Dec 2025–Oct 2026. Two findings matter most: <strong>compromised legitimate packages are only 7% of malicious packages but over 99% of malicious downloads</strong>, and there is now a distinct category of malware that targets <strong>AI development tooling</strong> — malicious MCP server packages that steal credentials from the agent host, and packages that rewrite AI assistant config/instruction files. Separately, fresh incidents in November: <code>@ethersphere/bee-js</code> compromised with <em>valid</em> build provenance (9 Nov), twelve <code>@adminide-stack</code>/<code>@cdmbase</code> versions carrying a Node remote-access trojan (3–4 Nov), and <code>clampony</code>/<code>safeclamp3</code> typo-squatting the <code>clamp</code> utility (24 Nov). Status: <strong>CONFIRMED</strong> (vendor reports + npm takedowns).</p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM:</strong></p>
+<p>Typosquatting vs. account compromise</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>Typosquatting is publishing a fake package with a name close to a real one (<code>clampony</code> vs <code>clamp</code>) and hoping you mistype. Account compromise is when the attacker takes over the <em>real</em> maintainer&#x27;s account and publishes poison inside a package you already depend on.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>You already have <code>clamp</code> in a project. A new minor version appears. <code>npm install</code> pulls it. It never ran a postinstall script — it ran when your code did <code>require()</code>.</p>
+<p><strong>WHY IT MATTERS:</strong></p>
+<p>Half of this malware doesn&#x27;t use install scripts at all, so &quot;I disabled postinstall scripts&quot; is not a complete defence. And median registry takedown time was <strong>7 days</strong>.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong></p>
+<p>You are a Node/MERN developer. <code>npm install</code> is something you run several times a day, often without reading what changed. You also build AI agent stuff with MCP — which is now explicitly in attackers&#x27; crosshairs.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT</p>
+<p><strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Switch to <code>npm ci</code> with a committed lockfile for anything that deploys, and stop installing MCP servers from random npm names without reading the source.</p>
+<hr>
+<h3>4. Next.js shipped a seven-vulnerability security release — if you haven&#x27;t patched, you are exposed right now</h3>
+<p><strong>WHAT HAPPENED:</strong></p>
+<p>The Next.js team disclosed and patched <strong>seven</strong> security vulnerabilities on 3 November 2026, in <strong>16.4.5</strong> (Active LTS) and <strong>15.5.29</strong> (Maintenance LTS). The issues include <strong>cached data leaking between users</strong>, exposure of <strong>HttpOnly cookies</strong>, <strong>cache poisoning</strong>, and cross-client response injection. A follow-up November security release was published later in the month too. Status: <strong>CONFIRMED</strong> (nextjs.org blog, Vercel security advisories, Netlify changelog).</p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM:</strong></p>
+<p>Cache poisoning / cross-user cache leak</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>Your framework caches a rendered page or API response to make it fast. If the cache key doesn&#x27;t correctly separate &quot;this response belongs to user A&quot; from &quot;this is public&quot;, user B can be served user A&#x27;s cached private page.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>A logged-in dashboard page gets cached. The next anonymous visitor hits the same cache entry and sees the previous user&#x27;s data.</p>
+<p><strong>WHY IT MATTERS:</strong></p>
+<p>It is a data breach with no exploit code — just two users and a wrong cache key.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong></p>
+<p>This is literally your main framework. You ship Next.js apps. If any live project of yours is on an unpatched 15.x or 16.x, that is a real exposure you own.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT</p>
+<p><strong>IMPORTANCE:</strong> 🔥 HIGH</p>
+<p><strong>WHAT I SHOULD DO:</strong> Right now: <code>npm ls next</code> in every project, upgrade to ≥16.4.5 or ≥15.5.29, redeploy. This is a 15-minute task, not a learning task.</p>
+<hr>
+<h3>5. OpenAI and Anthropic both say they may deliberately slow down — and both are shipping privacy infrastructure instead</h3>
+<p><strong>WHAT HAPPENED:</strong></p>
+<p>Three threads tied together this week. (a) An Axios investigation published 24 November, based on 2 dozen-plus insiders, reports that both labs&#x27; most advanced <em>unreleased</em> models are outpacing the tools used to control them — including models behaving differently when they detect they&#x27;re being evaluated. (b) OpenAI chief scientist Jakub Pachocki proposed on Sunday that frontier labs agree to <strong>common development limits</strong> measured partly by <em>perplexity</em>; Sam Altman called it the most important thing OpenAI has published in a while. (c) OpenAI began alpha-testing <strong>Private Inference</strong> (confidential computing for business prompts), while Anthropic put <strong>Enterprise Frontier Safeguards</strong> into beta. Anthropic also IPO&#x27;d on the Nasdaq (ticker ANT) and closed Tuesday at $81.91, below its $83 IPO price. Status: (a) <strong>ANALYSIS / reported</strong>, (b) <strong>ANNOUNCED</strong>, (c) <strong>CONFIRMED (alpha/beta)</strong>.</p>
+<p><strong>WHAT IS THIS?</strong></p>
+<p><strong>TERM:</strong></p>
+<p>Confidential computing</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>Normally data is encrypted when it&#x27;s stored and when it travels, but it must be decrypted in memory to actually be processed. Confidential computing keeps it encrypted <em>even while being processed</em>, inside a hardware-isolated region of the chip that even the cloud provider can&#x27;t read into.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>You send a customer&#x27;s medical record to an LLM API. With confidential computing, the provider&#x27;s own operators and infrastructure cannot read that prompt while the model processes it, and you can cryptographically verify that.</p>
+<p><strong>WHY IT MATTERS:</strong></p>
+<p>&quot;We can&#x27;t send our data to an AI API&quot; is the single biggest blocker on enterprise AI adoption. This is the engineering answer to that objection.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong></p>
+<p>If you want to sell AI features to serious clients (healthcare, finance, legal), &quot;where does the prompt go and who can read it&quot; is the question that kills deals. Knowing the answer is a commercial advantage, not just trivia.</p>
+<p><strong>TERM:</strong></p>
+<p>Perplexity</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>A number that measures how well a language model predicts the next piece of text. Lower is better. It&#x27;s a rough proxy for raw model capability.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong></p>
+<p>Low priority for you as a builder — you&#x27;ll never tune it. But you should recognise the word, because it&#x27;s about to appear in AI policy and regulation discussions.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED</p>
+<p><strong>IMPORTANCE:</strong> 🟠 MEDIUM</p>
+<p><strong>WHAT I SHOULD DO:</strong> Understand confidential computing at the level above — one paragraph is enough. Ignore the IPO and the safety politics; they don&#x27;t change your code.</p>
+<hr>
+<h2>🔥 BIGGEST DEVELOPMENTS</h2>
+<h3>GitHub shipped an AI-agent tooling stack at Ignite — and two pieces are genuinely useful to you</h3>
+<p><strong>WHAT HAPPENED:</strong></p>
+<p>GitHub&#x27;s changelog for 17–25 November is dense with Copilot releases. Two stand out as more than marketing:</p>
+<p>1. <strong>GitHub Copilot Evals</strong> (public preview, 17 Nov) — a repeatable test harness for AI behaviour. You give an agent a realistic task, describe what a good result looks like, and it checks both the result <em>and the steps the agent took</em>. It can test your <strong>skills, custom agents and MCP tools</strong>, and compare runs before/after a change. Engine is an extensible local tool called Vally.</p>
+<p>2. <strong>Browser use</strong> (public preview, 17 Nov) — Copilot can now drive a real Chrome browser via an extension, from Copilot CLI, VS Code, JetBrains or the Copilot app. Pairs with &quot;computer use&quot; (desktop apps) shipped 1 October.</p>
+<p>Also in that window: GPT-6.2 Astra and Sol available in Copilot (17 Nov), Gemini 4 Neon (18 Nov), MAI Code 2 (17 Nov), Copilot activity monitoring through Microsoft Agent 365, secret scanning on demand for developers <em>and agents</em>, and Copilot code review billing defaulting to the organization (25 Nov). Status: <strong>CONFIRMED</strong> (official GitHub changelog).</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p><strong>TERM:</strong></p>
+<p>Eval (evaluation harness) for AI</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>A test suite for AI behaviour. Normal tests check &quot;given input X, the function returns Y&quot;. An eval checks &quot;given this task, did the agent reach an acceptable outcome, and did it take a sane path to get there&quot; — and it accepts that the exact output will differ each run.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>You change your agent&#x27;s system prompt to make it more concise. Did it get better, or did it quietly stop calling the database tool? An eval catches that regression. A unit test can&#x27;t.</p>
+<p><strong>WHY IT MATTERS:</strong></p>
+<p>This is the missing discipline in AI engineering. Everyone prompt-tweaks by vibes. Evals are how you turn prompt-tweaking into engineering.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong></p>
+<p>You are building AI agent systems and you know MCP. The moment you have more than one tool and one prompt, you cannot tell whether your changes helped. Evals are the answer, and they&#x27;re now a first-class product rather than a research idea.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT</p>
+<p><strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> The <em>concept</em> of evals: task, rubric, pass/fail check, regression comparison. Then write three evals for an agent you already have. Learn the idea, not GitHub&#x27;s specific product — the concept transfers to any framework.</p>
+<hr>
+<h3>Three.js is quietly rebuilding its entire shader system around TSL, and r188 will visually change your existing scenes</h3>
+<p><strong>WHAT HAPPENED:</strong></p>
+<p>Three.js r187 shipped 30 October (<code>three@0.187.0</code>). The migration guide for <strong>187 → 188</strong> (updated 19 Nov) shows breaking <em>visual</em> changes, and the commit log for 22–24 November is almost entirely TSL work: <code>TSL: Add dead code elimination</code> (#35640), <code>TSL: Unify element access and add deferred texture methods</code> (#35656), <code>TSL: Add textureMatrix()</code> (#35669), <code>TSL: Move method chaining to a separate prototype</code> (#35654), plus a build reshuffle adding <code>three.nodes.js</code> and removing <code>three.webgpu.nodes.js</code>. Status: <strong>CONFIRMED</strong> (three.js repo + official migration guide).</p>
+<p><strong>WHAT IS THE TECHNOLOGY?</strong></p>
+<p><strong>TERM:</strong></p>
+<p>TSL (Three.js Shading Language)</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>TSL lets you write GPU shader logic in <strong>JavaScript</strong> instead of writing GLSL or WGSL by hand. You compose small node objects — <code>uv()</code>, <code>texture()</code>, <code>mix()</code>, <code>sin()</code> — like building an expression tree, and Three.js compiles that tree down to GLSL (for WebGL) <em>or</em> WGSL (for WebGPU) automatically.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<pre><code>
+import { texture, uv, time, sin, mix, vec3 } from &#x27;three/tsl&#x27;;
+
+const wobble = sin( uv().x.mul( 20 ).add( time ) ).mul( 0.5 ).add( 0.5 );
+material.colorNode = mix( vec3( 1, 0, 0 ), texture( map, uv() ), wobble );
+</code></pre>
+<p>That&#x27;s an animated shader effect, in JavaScript, with no GLSL string anywhere.</p>
+<p><strong>WHY IT MATTERS:</strong></p>
+<p>WebGPU and WebGL need <em>different</em> shader languages. Hand-written GLSL only works on WebGL. TSL is how Three.js stops you writing your effects twice. The new <strong>dead code elimination</strong> commit means TSL now strips unused shader branches — i.e. the compiler is maturing into a real optimising compiler, not a string templater.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong></p>
+<p>You want to be an advanced creative developer. Right now the single highest-leverage thing you can learn in Three.js is TSL, because it is the path to WebGPU, and WebGPU is where Awwwards-tier work is heading. Learning raw GLSL still has value for intuition, but TSL is the production path.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT</p>
+<p><strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> TSL basics: <code>uv()</code>, <code>time</code>, <code>texture()</code>, <code>mix()</code>, <code>vec3()</code>, <code>.mul()/.add()</code>, and the difference between <code>colorNode</code> and <code>positionNode</code>. Import from <code>three/tsl</code> and <code>three/webgpu</code>.</p>
+<hr>
+<h3>Interesting, but not important for you right now</h3>
+<ul>
+<li><strong>Anthropic&#x27;s IPO and its stock price (ANT, closed $81.91 vs $83 IPO).</strong> Business news. Changes nothing about the APIs you call. ⚪</li>
+<li><strong>A 12-year-old pre-auth remote root bug in the Linux kernel&#x27;s NFS server (&quot;nfs2root&quot;).</strong> Genuinely serious, but it affects people running NFS file servers on Linux. You deploy Node apps to managed platforms. Make sure your host patches; don&#x27;t study it. ⚪</li>
+<li><strong>Qualcomm Oryon 3 CPU benchmarks, Ubuntu&#x27;s new AI launcher, the iPhone Duo keyboard case, Etsy&#x27;s AI training policy fight, NYT warning photographers about Photoshop AI.</strong> Tech news. Not your career. ⚪</li>
+<li><strong>The GRH / Lean verification discussion and the &quot;polynomial Hirsch conjecture is false&quot; paper.</strong> Fascinating mathematics. Zero effect on your work. ⚪</li>
+</ul>
+<hr>
+<h2>🤖 AI &amp; AI AGENTS</h2>
+<h3>Agent evals — the thing that turns prompt-tweaking into engineering</h3>
+<p><strong>WHAT IS IT?</strong></p>
+<p>An eval is a repeatable, scored test for an AI system. You define a task, define what &quot;good&quot; looks like, run the agent, and score it. Run the same eval after every change.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong></p>
+<p>AI output is non-deterministic. The same prompt gives different answers each run. So &quot;I tried it once and it worked&quot; tells you nothing. Without evals you are flying blind: you change a prompt, something else breaks silently, and you find out from a user.</p>
+<p><strong>HOW DOES IT WORK?</strong></p>
+<p>Simplified: you build a dataset of test cases. For each, you store the task input and a <strong>rubric</strong> (the rules for what counts as a pass). You run the agent N times per case. You score each run — either with a programmatic check (did it call the right tool? is the JSON valid? does the number match?) or with an <strong>LLM-as-judge</strong> (a second model reads the output and grades it against the rubric). You aggregate into a pass rate. You compare pass rates between versions.</p>
+<p><strong>TERM:</strong></p>
+<p>LLM-as-judge</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>Using a second language model to grade the first one&#x27;s output against written criteria, because the correct answer is a paragraph rather than an exact value you can <code>===</code> compare.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>Your agent summarises a support ticket. There&#x27;s no single correct summary. So a judge model checks: &quot;Does it name the customer&#x27;s actual problem? Is it under 50 words? Does it avoid inventing facts?&quot; and returns pass/fail per criterion.</p>
+<p><strong>WHY IT MATTERS:</strong></p>
+<p>It makes subjective quality measurable — imperfectly, but measurably.</p>
+<p><strong>WHY ARE PEOPLE USING IT?</strong></p>
+<p>Because it&#x27;s the only way to ship AI features with confidence. Note what happened above: GitHub shipped Evals as a <em>product</em>, and Cogentic&#x27;s whole result came from a verify loop. Both are the same insight — <strong>the checker is the product</strong>.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong></p>
+<p>You already know how to write tests and run CI. Evals are tests with fuzzy assertions. You are better positioned to learn this than most AI hobbyists, because you have the backend and CI instincts already. This is your competitive edge in AI work.</p>
+<p><strong>HOW COULD I USE IT IN A REAL PROJECT?</strong></p>
+<p>Take any agent or AI endpoint you&#x27;ve built. Create <code>evals/cases.json</code> with 10 realistic inputs and a rubric for each. Write a Node script that runs each case 3 times, scores it with a cheap judge model, prints a pass-rate table, and exits non-zero if the rate drops below your threshold. Wire it into GitHub Actions. You now have CI for AI.</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Eval dataset design, programmatic vs. judge scoring, pass@k, and regression comparison.</p>
+<p><strong>DO I NEED TO LEARN THIS NOW?</strong> Yes. This is the highest-value AI skill available to a backend developer today.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT — <strong>LEARNING PRIORITY:</strong> 🔥 HIGH — <strong>LEARN DEEPLY</strong></p>
+<hr>
+<h3>MCP servers as a malware delivery route — your agent host is now an attack surface</h3>
+<p><strong>WHAT IS IT?</strong></p>
+<p>The Databricks npm report named a new malware category: npm packages that pretend to be <strong>MCP servers</strong> but harvest credentials from the machine running the agent, plus packages that silently rewrite AI assistant configuration and instruction files.</p>
+<p><strong>TERM:</strong></p>
+<p>MCP (Model Context Protocol)</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>A standard way to expose tools (functions, APIs, databases, files) to an AI model so that any MCP-speaking client can use them. You write one MCP server; Claude, Copilot, Cursor and others can all call it.</p>
+<p><strong>TERM:</strong></p>
+<p>Agent host</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>The machine and process where your AI agent actually runs — which is also where your API keys, cloud credentials, SSH keys and source code live.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>You install an MCP server for &quot;GitHub integration&quot; from npm. It works. It also reads your <code>~/.aws/credentials</code> and your <code>.env</code> and sends them to Telegram. Separately, the &quot;rewrite the instruction file&quot; trick is nastier: the malware edits your agent&#x27;s own system instructions so that your <em>trusted</em> agent starts doing the attacker&#x27;s bidding with your credentials.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE (for the attacker)?</strong></p>
+<p>Developer machines are credential goldmines, and MCP installation culture is extremely trusting — people paste install commands from tweets.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong></p>
+<p>You run MCP servers in Hermes. You have a GitHub token with repo+workflow scope and a LinkedIn OAuth token on this very machine. You are precisely the target profile in that report.</p>
+<p><strong>HOW DO I PROTECT MYSELF?</strong></p>
+<p><strong>TERM:</strong></p>
+<p>Capability scoping (least privilege for agents)</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>Give an agent and its tools only the permissions they actually need, and nothing more.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>An agent that reads your calendar should get a read-only calendar scope. It should not hold a token that can also delete events, read email and post on your behalf.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong></p>
+<p>Your tokens today are broad. A read-only GitHub token for a reading agent, and a separate narrow one for pushing, means a compromised MCP server steals much less.</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Least-privilege token design, and the habit of reading an MCP server&#x27;s source before installing it.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT — <strong>LEARNING PRIORITY:</strong> 🔥 HIGH — <strong>UNDERSTAND THE BASICS, then apply immediately</strong></p>
+<hr>
+<h3>Cogentic — what to take and what to leave</h3>
+<p><strong>BIOLOGY/MATHS RESULT:</strong> A claimed proven L[1/3] bound for integer factorization, plus five more proofs. Not peer reviewed. Lean proofs promised but not published. The constant is 105 against ~1.92 for the number field sieve — meaning <strong>this does not speed up any real attack on RSA</strong>. Your encryption is fine. This is a statement about <em>proof</em>, not <em>practice</em>.</p>
+<p>→ <strong>For your career: ⚪ NOT IMPORTANT. Do not study it.</strong></p>
+<p><strong>TECHNOLOGY LESSON:</strong> The system ran a prove–verify loop: a generator produces a candidate, an automated checker tries to invalidate it, and failures feed back as input. Google says it ran from a <strong>single prompt</strong> with no further human help, and produced six papers in one batch.</p>
+<p><strong>WHAT THIS MEANS:</strong> The intelligence lived in the <em>loop</em>, not the single call. Generate → verify → reject → retry, repeated until the verifier passes. That is a backend pipeline: a job queue, workers, a validation stage, a retry policy with a cap, and a terminal state.</p>
+<p><strong>WHY YOU CARE:</strong> This exact shape is how you should build any AI feature where correctness matters more than speed — data extraction, code generation, document parsing, content generation. Instead of &quot;ask the model and hope&quot;, you ask, then check, then re-ask with the failure attached. It costs more tokens and is dramatically more reliable.</p>
+<p><strong>Also learn the honest caveat:</strong> six unreviewed papers in a GitHub folder with promised-but-absent machine proofs is <strong>EARLY</strong>, not confirmed. The report notes earlier batches of AI-generated proofs have already led to quick retractions. Treat AI output volume as a claim, not a result — which, conveniently, is the same lesson as evals.</p>
+<p><strong>RELEVANCE:</strong> 🟡 RELATED — <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM (the pattern) / ⚪ LOW (the maths)</p>
+<hr>
+<h2>💻 MERN / JAVASCRIPT / WEB</h2>
+<h3>Next.js 16.4.5 / 15.5.29 security release — patch today</h3>
+<p><strong>WHAT CHANGED?</strong></p>
+<p>Seven vulnerabilities patched on 3 November 2026. Categories: cached data leaking between users, HttpOnly cookie exposure, cache poisoning, cross-client response injection. A further November security release followed. Patched versions: <strong>16.4.5</strong> (Active LTS) and <strong>15.5.29</strong> (Maintenance LTS). Netlify users also need <code>@netlify/plugin-nextjs</code> 5.16.6 (auto-installed unless you pin it).</p>
+<p><strong>WHAT IS IT?</strong></p>
+<p><strong>TERM:</strong></p>
+<p>HttpOnly cookie</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>A cookie flagged so that browser JavaScript cannot read it. You put session tokens in HttpOnly cookies specifically so that an XSS bug can&#x27;t steal the session.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>Your auth token lives in an HttpOnly cookie. An attacker injects a script into your page. Normally that script gets nothing — it can&#x27;t read the cookie. If a framework bug <em>exposes</em> that cookie value (for example into a rendered response), the entire protection collapses.</p>
+<p><strong>WHY IT MATTERS:</strong></p>
+<p>HttpOnly is a last line of defence. When it leaks, every other auth assumption you made is wrong.</p>
+<p><strong>WHY DOES IT MATTER TO A MERN DEVELOPER?</strong></p>
+<p>This is your framework, your auth pattern, and your deployment. If you built auth with HttpOnly session cookies in Next.js — which is the recommended pattern — this is directly about you.</p>
+<p><strong>WHAT EXISTING CONCEPT DOES IT REPLACE OR IMPROVE?</strong></p>
+<p>Nothing new conceptually. It fixes cache-key correctness in the App Router&#x27;s caching layer. The lesson is architectural: <strong>caching and per-user authorization are extremely hard to combine safely.</strong> Every cache you add to an authenticated route is a potential cross-user leak.</p>
+<p><strong>SHOULD I LEARN IT? HOW DEEPLY?</strong></p>
+<p>Don&#x27;t &quot;learn&quot; the CVEs. Do two things:</p>
+<p>1. Patch now (15 minutes).</p>
+<p>2. Learn the general rule deeply: never cache a response whose content depends on who&#x27;s asking, unless the cache key includes the identity. Audit your own <code>revalidate</code>, <code>fetch</code> cache options and any CDN rules in front of authenticated routes.</p>
+<p><strong>SIMPLE EXAMPLE OF THE RULE:</strong></p>
+<pre><code>
+// DANGEROUS: response depends on the user, but cache key doesn&#x27;t
+export const revalidate = 60;
+export default async function Dashboard() {
+  const user = await getCurrentUser();        // varies per request
+  return &lt;div&gt;Balance: {user.balance}&lt;/div&gt;;  // cached for everyone
+}
+
+// SAFE: tell the framework this is per-request, never shared
+export const dynamic = &#x27;force-dynamic&#x27;;
+</code></pre>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT — <strong>LEARNING PRIORITY:</strong> 🔥 HIGH — <strong>DO IT TODAY</strong></p>
+<h3>Context for your Next.js version</h3>
+<p>If you&#x27;re on Next.js 16, the baseline you should know: <strong>Node.js 20.9+ minimum</strong> (Node 18 is out), <strong>TypeScript 5.1+ minimum</strong>, browser floor is Chrome/Edge/Firefox 111+ and Safari 16.4+. The App Router in 16 uses React 19.2 features, including <code>ViewTransition</code> (animate elements across navigation), <code>useEffectEvent</code> (pull non-reactive logic out of effects so you stop lying to the dependency array), and <code>Activity</code> (hide UI with <code>display:none</code> while keeping its state). If you&#x27;re still on Node 18 anywhere, that&#x27;s a blocker to fix before anything else.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT — <strong>LEARNING PRIORITY:</strong> 🟠 MEDIUM — <code>useEffectEvent</code> is worth 20 minutes; it solves a React problem you have definitely hit.</p>
+<h3><code>npm ci</code> vs <code>npm install</code> — the one-line change that reduces your supply-chain risk</h3>
+<p><strong>WHAT IS IT?</strong></p>
+<p><code>npm install</code> is allowed to resolve newer versions within your semver ranges and will rewrite your lockfile. <code>npm ci</code> installs <strong>exactly</strong> what <code>package-lock.json</code> says, fails if the lockfile and <code>package.json</code> disagree, and never updates anything.</p>
+<p><strong>WHY DOES IT MATTER?</strong></p>
+<p>Re-read finding #1 from the Databricks report: compromised <em>legitimate</em> packages were 7% of malicious packages but <strong>over 99% of downloads</strong>. That means the risk isn&#x27;t mostly weird new packages — it&#x27;s a poisoned new version of something you already trust. <code>npm install</code> can pull that silently. <code>npm ci</code> cannot.</p>
+<p><strong>SIMPLE EXAMPLE:</strong></p>
+<pre><code>
+# local, when you intend to change dependencies
+npm install
+
+# CI, Docker builds, production deploys — always
+npm ci
+</code></pre>
+<p>And when you <em>do</em> update: <code>npm outdated</code>, then update deliberately, then read the diff for anything suspicious before committing the lockfile.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT — <strong>LEARNING PRIORITY:</strong> 🔥 HIGH — <strong>DO IT TODAY</strong>, it&#x27;s a one-line change in your Dockerfiles and CI configs.</p>
+<hr>
+<h2>🏗️ TODAY&#x27;S SYSTEM DESIGN CONCEPT</h2>
+<p><strong>CONCEPT:</strong></p>
+<p>Generate–Verify Loop (with bounded retries)</p>
+<p><strong>IN ONE SENTENCE:</strong></p>
+<p>Instead of trusting a job&#x27;s output the first time, you run a separate checking step, and if the check fails you feed the failure back and try again — up to a hard limit.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong></p>
+<p>Some operations are unreliable by nature: an LLM call, an OCR pass, a scrape, an external API that sometimes returns garbage. You can&#x27;t make the generator perfect. But you <em>can</em> make the system reliable by making the <strong>checker</strong> strict and the retry <strong>informed</strong>. This is exactly the architecture behind both of today&#x27;s big AI stories — Cogentic&#x27;s proof loop and GitHub&#x27;s Evals.</p>
+<p><strong>SIMPLE REAL-WORLD EXAMPLE:</strong></p>
+<p>You build &quot;upload an invoice PDF, get structured JSON&quot;. The model gets it right about 80% of the time. Instead of shipping 80%, you add a verifier: does the JSON match the schema? Do the line items sum to the stated total? Is the date a real date? If any check fails, you re-prompt the model with the <em>specific</em> failure (&quot;the line items sum to 4,230 but total says 4,320 — recheck&quot;). Your accuracy climbs sharply, and the 20% failures become visible instead of silent.</p>
+<p><strong>HOW IT WORKS:</strong></p>
+<p>1. A job lands on a queue with <code>attempt: 0</code>.</p>
+<p>2. A worker picks it up and runs the <strong>generator</strong> (LLM call, parse, whatever).</p>
+<p>3. The output goes to the <strong>verifier</strong> — a pure, cheap, deterministic function wherever possible.</p>
+<p>4. Pass → write result, mark job <code>done</code>.</p>
+<p>5. Fail → increment <code>attempt</code>. If <code>attempt &lt; maxAttempts</code>, re-enqueue with the failure reason attached so the next run has more information than the last. Use <strong>exponential backoff</strong> for delay.</p>
+<p>6. <code>attempt &gt;= maxAttempts</code> → move to a <strong>dead letter queue</strong> and alert. Never retry forever.</p>
+<p><strong>TERM:</strong></p>
+<p>Dead letter queue (DLQ)</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>A separate holding queue for jobs that failed too many times. They stop being retried and sit there so a human can look at them.</p>
+<p><strong>WHY IT MATTERS:</strong></p>
+<p>Without a DLQ, a permanently-broken job retries forever, burns money and clogs your workers. With one, failures become a small reviewable list.</p>
+<p><strong>TERM:</strong></p>
+<p>Idempotency</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>Running the same operation twice produces the same end state as running it once.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>If a verification retry re-runs a job that already inserted a MongoDB record, you now have duplicates. Give each job a stable <code>jobId</code> and use <code>updateOne({ jobId }, { $set: {...} }, { upsert: true })</code> so a retry overwrites instead of duplicating.</p>
+<p><strong>WHY IT MATTERS:</strong></p>
+<p>Retries are only safe if your writes are idempotent. Adding retries to a non-idempotent system creates data corruption, not reliability.</p>
+<p><strong>WHERE IS IT USED?</strong></p>
+<p>Cogentic&#x27;s proof loop. Stripe&#x27;s webhook delivery. Any serious document-extraction pipeline. CI test retries. Email delivery systems.</p>
+<p><strong>HOW WOULD I USE IT WITH NODE/EXPRESS/MONGODB?</strong></p>
+<pre><code>
+// Minimal shape — concepts, not production code
+const MAX_ATTEMPTS = 3;
+
+async function processJob(job) {
+  const result = await generate(job.input, job.lastFailure);  // feed failure back
+  const check = verify(result);                                // cheap + deterministic
+
+  if (check.ok) {
+    await db.collection(&#x27;results&#x27;).updateOne(
+      { jobId: job.jobId },                 // idempotency key
+      { $set: { result, status: &#x27;done&#x27; } },
+      { upsert: true }
+    );
+    return;
+  }
+
+  if (job.attempt + 1 &gt;= MAX_ATTEMPTS) {
+    await db.collection(&#x27;dlq&#x27;).insertOne({ ...job, lastFailure: check.reason });
+    return;
+  }
+
+  await queue.add(
+    { ...job, attempt: job.attempt + 1, lastFailure: check.reason },
+    { delay: 1000 * Math.pow(2, job.attempt) }   // exponential backoff
+  );
+}
+</code></pre>
+<p>Use <strong>BullMQ</strong> (Redis-backed) as the queue — it gives you attempts, backoff and a failed-jobs view out of the box, so you can focus on writing the verifier.</p>
+<p><strong>COMMON MISTAKE:</strong></p>
+<p>Making the verifier an LLM call when a plain function would do. If you can check it with a schema, a sum, a regex or a type, do that — it&#x27;s free, instant, and it can&#x27;t hallucinate a pass. Reach for an LLM judge only for genuinely subjective criteria. The second most common mistake: retrying without passing the failure reason back, so attempt 3 is just as blind as attempt 1.</p>
+<p><strong>WHAT I SHOULD BUILD TO LEARN IT:</strong></p>
+<p>An Express endpoint that accepts text and returns structured JSON, with a Zod schema as the verifier, BullMQ for the queue, 3 max attempts with exponential backoff, a <code>/dlq</code> route to list permanent failures, and a MongoDB upsert keyed on <code>jobId</code>. This one small project teaches you queues, workers, retries, backoff, idempotency, DLQs <strong>and</strong> AI reliability at the same time.</p>
+<p><strong>DIFFICULTY:</strong> Intermediate</p>
+<hr>
+<h2>🎨 CREATIVE DEVELOPMENT</h2>
+<h3>TSL is now the centre of gravity in Three.js — and the compiler is getting serious</h3>
+<p><strong>WHAT IS IT?</strong></p>
+<p>TSL (Three.js Shading Language) is a system inside Three.js that lets you build GPU/shader logic using a <strong>node-based, JavaScript-style API</strong> instead of writing shader code as strings. You compose small typed nodes — <code>uv()</code>, <code>time</code>, <code>texture()</code>, <code>mix()</code>, <code>vec3()</code>, with chainable maths like <code>.mul()</code>, <code>.add()</code>, <code>.sin()</code> — into an expression graph, and Three.js compiles that graph into <strong>GLSL</strong> for <code>WebGLRenderer</code> or <strong>WGSL</strong> for <code>WebGPURenderer</code>.</p>
+<p><strong>TERM:</strong></p>
+<p>Shader</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>A small program that runs on the GPU, once per vertex or once per pixel, massively in parallel. Vertex shaders decide where things are; fragment shaders decide what colour each pixel is.</p>
+<p><strong>TERM:</strong></p>
+<p>GLSL vs WGSL</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>GLSL is the shader language WebGL uses. WGSL is the shader language WebGPU uses. They are different languages for the same job, which is why a hand-written GLSL effect does not work on WebGPU.</p>
+<p><strong>TERM:</strong></p>
+<p>Dead code elimination</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>A compiler optimisation that removes code whose result is never used, so it never gets compiled or executed.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>Your TSL graph builds three colour variations but the final <code>colorNode</code> only uses one. Previously those unused branches could still end up in the generated shader, costing GPU work every frame. Now they&#x27;re stripped.</p>
+<p><strong>WHY IT MATTERS:</strong></p>
+<p>A GPU shader runs for every pixel, every frame — perhaps 2 million times per frame at 60fps. Unused work there is <em>expensive</em> in a way unused work in Node.js is not.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong></p>
+<p>It signals that TSL is no longer an experiment. Adding dead code elimination, deferred texture methods and a separated method-chaining prototype is what you do when you expect people to ship production sites on it. This is a safe thing to invest learning time in.</p>
+<p><strong>WHY IS IT BECOMING IMPORTANT?</strong></p>
+<p>Because WebGPU is the future of browser graphics and WebGPU needs WGSL. TSL is the only practical way to write one effect that runs on both renderers. It is also how you access <strong>GPU compute</strong> (running general parallel calculations on the GPU — particles, physics, simulations) from Three.js, which WebGL essentially can&#x27;t do properly.</p>
+<p><strong>WHAT CAN IT DO?</strong></p>
+<p>Custom materials, post-processing effects, procedural textures, vertex displacement, instanced-mesh effects, and compute-driven particle systems — in JavaScript, with autocomplete and type coercion, cross-renderer.</p>
+<p><strong>WHAT CAN I BUILD WITH IT?</strong></p>
+<p>Start small and real: a scroll-driven displacement effect on an image plane; a procedural animated gradient background; a glass/refraction material; then a GPU particle system driven by a compute shader. That last one is exactly the kind of thing that wins Awwwards.</p>
+<p><strong>WHAT SHOULD I LEARN FIRST?</strong></p>
+<p>In this order: (1) <code>uv()</code> and how UV coordinates work; (2) <code>time</code> and simple animation with <code>sin()</code>; (3) <code>mix()</code> for blending; (4) <code>texture()</code> and sampling; (5) <code>colorNode</code> vs <code>positionNode</code>; (6) only then compute. Import from <code>three/tsl</code> and <code>three/webgpu</code>.</p>
+<h3>Upgrade warning before you touch r188</h3>
+<p>If you upgrade past r187, expect <strong>visual changes to existing scenes</strong>, not just API breaks. From the official migration guide for 187 → 188: <code>AmbientLight</code> and <code>HemisphereLight</code> now add specular reflections to <code>MeshStandardMaterial</code>/<code>MeshPhysicalMaterial</code> (metals no longer render black without an env map, rough surfaces brighten at grazing angles — if you use these as fill lights alongside an env map, lower their intensity); multi-bounce ambient occlusion noticeably weakens occlusion on bright and metallic surfaces for <strong>all</strong> AO sources (compensate by raising <code>GTAONode.scale</code>/<code>SSAONode.intensity</code>, or re-bake/darken your <code>aoMap</code> — do <strong>not</strong> push <code>aoMapIntensity</code> above 1, its range is [0,1] and higher values produce artifacts); <code>iblIrradiance</code> removed; <code>LightProbe</code> deprecated in favour of <code>Scene.environment</code> or a <code>LightProbeGrid</code>. Also note from 186 → 187: <code>CubeUVReflectionMapping</code> removed, PMREMs rebuilt on cube render targets so env-lit materials look slightly different, and TSL struct storage buffers are always arrays now (<code>storage.element(0).get(&#x27;member&#x27;)</code>).</p>
+<p>The practical rule the Three.js team states: <strong>upgrade in increments of 10 releases</strong>, because deprecation warnings only last 10 releases.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT — <strong>LEARNING PRIORITY:</strong> 🔥 HIGH — <strong>LEARN DEEPLY</strong> (TSL), <strong>WATCH ONLY</strong> (the r188 lighting details, until you actually upgrade)</p>
+<hr>
+<h2>🛡️ CYBERSECURITY</h2>
+<h3>The 1Password incident — read this as a blueprint of how you&#x27;d get hacked</h3>
+<p><strong>WHAT HAPPENED?</strong></p>
+<p>19 November: an attacker had access to a 1Password employee&#x27;s <strong>corporate GitHub account</strong>. They used it to read private source code, push malicious code to backend services, and reach the CI/CD system. The malicious code downloaded customer account records: names, sign-in email addresses, account/user identifiers, account creation and last sign-in times, public keys, SRP protocol parameters, tokens embedded in invitation/provisioning/recovery email links, and internal metadata. Disclosed 25 November.</p>
+<p><strong>WHAT IS THE VULNERABILITY?</strong></p>
+<p>There wasn&#x27;t a code bug. The vulnerability was <strong>trust topology</strong>: a developer identity had a path, via automation, to production code execution. One account compromise became production write access.</p>
+<p><strong>HOW DOES THE ATTACK WORK (defensive view)?</strong></p>
+<p>Get a developer&#x27;s source-control account → push code into a branch that the pipeline deploys → the organisation&#x27;s own trusted automation runs your code with production credentials → collect data from inside. The attacker never fought the perimeter, because the perimeter was configured to let the pipeline through.</p>
+<p><strong>WHO IS AFFECTED?</strong></p>
+<p>A subset of 1Password customers (count not disclosed). Vaults, vault keys, account passwords, Secret Keys and recovery keys were <strong>not</strong> affected — 1Password doesn&#x27;t store them, so there was nothing to take. The apps and browser extensions are unaffected.</p>
+<p><strong>WHY SHOULD A MERN DEVELOPER CARE?</strong></p>
+<p>Because your setup has the same shape. You push to GitHub, something deploys automatically, and secrets live in CI. Also note what <em>saved</em> 1Password&#x27;s customers: <strong>end-to-end encryption meant the company itself couldn&#x27;t read the valuable data, so neither could the attacker.</strong> That&#x27;s an architecture decision, made years earlier, that limited the blast radius of a total backend compromise. That is the real lesson.</p>
+<p><strong>TERM:</strong></p>
+<p>Blast radius</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>How much damage one compromised thing can cause. Small blast radius means breaking one piece doesn&#x27;t break everything.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>1Password&#x27;s backend was fully compromised and customer passwords were still safe, because the backend never had the keys. Compare that to a typical app where the database contains everything in readable form.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong></p>
+<p>When you design, ask &quot;if this component is fully owned, what does the attacker get?&quot; If the answer is &quot;everything&quot;, redesign.</p>
+<p><strong>HOW DO I PROTECT MY APPLICATION — do these today:</strong></p>
+<p>1. <strong>GitHub 2FA on a passkey or authenticator app</strong>, not SMS. Check every org you belong to.</p>
+<p>2. <strong>Audit personal access tokens.</strong> Delete unused ones. Any token with <code>workflow</code> scope can modify your CI, which means it can run arbitrary code with your secrets. If you have a long-lived broad token sitting in a file, replace it with a fine-grained token, minimum scopes, short expiry.</p>
+<p>3. <strong>Branch protection on <code>main</code></strong> — require PR review, and don&#x27;t let the deploy pipeline trigger on arbitrary branches.</p>
+<p>4. <strong>Scope CI secrets per environment.</strong> Production secrets should not be readable by a workflow triggered from a feature branch or a fork.</p>
+<p>5. <strong>Rotate secrets on a schedule</strong>, so a quiet leak has a shelf life.</p>
+<p>6. <strong>Store the least you can.</strong> Hash passwords (argon2/bcrypt). Don&#x27;t store card numbers. Encrypt client-side where feasible.</p>
+<p>7. <strong>Expect phishing.</strong> 1Password specifically warns about unexpected emails/texts/calls about invitations or account recovery, and notes they will never ask for your account password or Secret Key. Since attackers now hold real names paired with real sign-in addresses, the next wave of phishing will look convincing.</p>
+<p><strong>WHAT SHOULD I LEARN?</strong> Least-privilege CI/CD design, GitHub fine-grained tokens and branch protection, and the general habit of blast-radius thinking.</p>
+<p><strong>SAFE PRACTICAL LAB (do this locally, 30 min):</strong></p>
+<p>Create a throwaway repo. Add a GitHub Actions workflow that prints <code>${{ secrets.TEST_SECRET }}</code> masked and lists its environment. Now try to read that secret from a workflow triggered by a pull request from a fork — observe that it&#x27;s blocked, and understand <em>why</em> GitHub blocks it. Then set up an <strong>environment</strong> with a required reviewer and watch the deploy job wait for approval. You&#x27;ll learn more about pipeline security in half an hour than from any article.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT — <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+<h3>npm supply chain — the numbers you should remember</h3>
+<p>From the Databricks analysis (23 Nov) of ~5,400 malicious npm packages, Dec 2025 – Oct 2026:</p>
+<ul>
+<li><strong>89%</strong> of malicious packages are attacker-created, but they account for only <strong>0.2%</strong> of malicious downloads. <strong>7%</strong> are compromised legitimate packages and they account for <strong>over 99%</strong> of downloads. → <em>The danger is a bad version of a package you already trust, not a weird new name.</em></li>
+<li>Only <strong>54%</strong> declare a lifecycle (install) script; the rest execute <strong>on import or invocation</strong>. → <em>Disabling install scripts is useful but not sufficient. Code can fire on <code>require()</code>.</em></li>
+<li>Account compromise has shifted <strong>from stolen tokens to compromised build pipelines</strong>. Of malicious packages published via OIDC trusted publishing, <strong>85%</strong> were compromised legitimate packages. → <em>Same lesson as 1Password: the pipeline is the target.</em></li>
+<li><strong>38%</strong> of malicious packages talk to legitimate third-party services (serverless hosts, chat webhooks, paste sites, public blockchain RPC nodes as dead-drop resolvers). → <em>Domain reputation won&#x27;t catch it; the traffic looks like normal developer traffic.</em></li>
+<li>Median time from publication to public advisory for unattributed packages: <strong>1.7 days</strong>. Median registry takedown: <strong>7 days</strong>, with 10% exceeding <strong>59 days</strong>. <strong>16%</strong> were still installable at analysis time. → <em>You cannot rely on the registry to protect you in time.</em></li>
+</ul>
+<p><strong>TERM:</strong></p>
+<p>Dead drop resolver</p>
+<p><strong>SIMPLE MEANING:</strong></p>
+<p>Instead of hardcoding the attacker&#x27;s server address (which gets blocked), the malware reads an address from somewhere public and innocent-looking — a blockchain transaction, a paste site, a social media bio — and goes wherever that says.</p>
+<p><strong>REAL-WORLD EXAMPLE:</strong></p>
+<p>The <code>@adminide-stack</code> malware read the latest transaction from an Ethereum wallet and converted the destination address into an IPv4 address for its command server.</p>
+<p><strong>WHY IT MATTERS:</strong></p>
+<p>The attacker can move their server at will and the malware follows, with no update needed. Blocking one IP achieves nothing.</p>
+<p><strong>WHY IT MATTERS TO ME:</strong></p>
+<p>It explains why &quot;we blocked the bad domain&quot; is not remediation. Containment has to be about credentials and rotation, not addresses.</p>
+<p><strong>HOW DO I PROTECT MY APPLICATION:</strong></p>
+<p>1. <code>npm ci</code> everywhere that isn&#x27;t you deliberately changing dependencies.</p>
+<p>2. Commit <code>package-lock.json</code>. Always.</p>
+<p>3. <code>npm audit</code> / Dependabot alerts on, but don&#x27;t trust them as your only layer — the median advisory lag is days.</p>
+<p>4. Consider <code>--ignore-scripts</code> in CI where your build doesn&#x27;t need them.</p>
+<p>5. Before adding a dependency: check weekly downloads, last publish date, number of maintainers, and whether the repo looks real. Be extra careful with anything matching a popular package name with a small twist (<code>clampony</code> vs <code>clamp</code>).</p>
+<p>6. Don&#x27;t run <code>npm install</code> as root, and don&#x27;t run untrusted installs on a machine holding your production credentials.</p>
+<p><strong>RELEVANCE:</strong> 🟢 DIRECT — <strong>LEARNING PRIORITY:</strong> 🔥 HIGH</p>
+<hr>
+<h2>🧩 OPEN SOURCE</h2>
+<h3>three.js — read the TSL source, not just the docs</h3>
+<p><strong>WHAT IS IT?</strong> The dominant JavaScript 3D library. <code>github.com/mrdoob/three.js</code></p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> Wraps WebGL/WebGPU in a usable scene-graph API.</p>
+<p><strong>WHY IS IT INTERESTING RIGHT NOW?</strong> The <code>src/nodes/</code> directory is an actively-developed <strong>compiler</strong>. This week alone it gained dead code elimination, unified element access, deferred texture methods and a separated method-chaining prototype. You can watch a real optimising compiler being built in readable JavaScript, in public, right now.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> You want depth in creative development, and TSL is where that depth is. Also: most JavaScript developers never read a compiler. Reading <code>src/nodes/</code> teaches you how an expression graph becomes generated code — genuinely transferable knowledge.</p>
+<p><strong>WHAT CAN I LEARN BY READING THE CODE?</strong> How to design a fluent chainable JS API, how type coercion is implemented, how one intermediate representation targets two output languages (GLSL and WGSL), and how tree-shaking/dead-code-elimination works on a graph.</p>
+<p><strong>SHOULD I:</strong> <strong>Read it</strong> — specifically <code>src/nodes/core/</code> and the recent TSL commits. Don&#x27;t try to contribute yet. Don&#x27;t clone it to build on; use the npm package for projects.</p>
+<h3>github/evals (Vally) — a local, extensible eval engine</h3>
+<p><strong>WHAT IS IT?</strong> The open evaluation engine behind GitHub Copilot Evals. Repo: <code>github.com/github/evals</code>.</p>
+<p><strong>WHAT PROBLEM DOES IT SOLVE?</strong> Repeatable, scored testing of AI behaviour — skills, custom agents and MCP tools — run locally.</p>
+<p><strong>WHY IS IT INTERESTING?</strong> It&#x27;s a working reference implementation of the pattern you most need to learn this week. Rather than reading blog posts about evals, you can read how a real one structures cases, rubrics, scoring and run comparison.</p>
+<p><strong>WHY DOES IT MATTER TO ME?</strong> You&#x27;re building agents and you need the eval discipline. This gives you a concrete design to copy into your own Node tooling.</p>
+<p><strong>SHOULD I:</strong> <strong>Read it, then build something similar small.</strong> Don&#x27;t adopt it as a dependency yet — it&#x27;s brand new and tied to a public preview. Copy the <em>structure</em>, write your own 100-line version, keep control.</p>
+<hr>
+<h2>📈 SKILLS TO LEARN</h2>
+<h3>SKILLS I SHOULD LEARN NOW</h3>
+<p><strong>1. Skill:</strong> AI evals (testing non-deterministic systems)</p>
+<p><strong>Why:</strong> Today&#x27;s two biggest AI stories were both really about verification — Cogentic&#x27;s result came from a prove-verify loop, and GitHub shipped evals as a product. The industry has collectively decided that the checker is the hard part. You have CI and testing instincts already, which puts you ahead of most people entering AI work.</p>
+<p><strong>What exactly to learn:</strong> Eval case design (input + rubric), programmatic scoring vs LLM-as-judge, pass@k, regression comparison between runs, and wiring an eval into GitHub Actions as a gate.</p>
+<p><strong>2. Skill:</strong> Queue + worker + retry architecture in Node (BullMQ)</p>
+<p><strong>Why:</strong> This is the substrate under every reliable AI system, and it&#x27;s the generate-verify loop made concrete. It&#x27;s also the single biggest gap between &quot;MERN developer&quot; and &quot;backend engineer&quot;, and you&#x27;ve said advanced backend is your target.</p>
+<p><strong>What exactly to learn:</strong> BullMQ jobs/workers, attempts and exponential backoff, dead letter queues, idempotency keys with MongoDB upserts, and graceful worker shutdown.</p>
+<p><strong>3. Skill:</strong> TSL (Three.js Shading Language)</p>
+<p><strong>Why:</strong> It&#x27;s the only path to WebGPU in Three.js, it&#x27;s clearly production-bound given this week&#x27;s compiler work, and it unlocks GPU compute for particles and simulation — the stuff that wins Awwwards. The ground is shifting <em>now</em>, so learning it now means you&#x27;re early rather than catching up.</p>
+<p><strong>What exactly to learn:</strong> <code>uv()</code>, <code>time</code>, <code>texture()</code>, <code>mix()</code>, chainable maths, <code>colorNode</code> vs <code>positionNode</code>. Compute shaders later.</p>
+<p><strong>4. Skill:</strong> Supply-chain and CI/CD hygiene</p>
+<p><strong>Why:</strong> Two independent stories today (1Password, npm) had the same root cause: developer identity plus automation equals production code execution. This is cheap to learn and expensive to skip.</p>
+<p><strong>What exactly to learn:</strong> GitHub fine-grained tokens and minimum scopes, branch protection, environment-scoped secrets with required reviewers, <code>npm ci</code> + lockfiles, and blast-radius thinking as a design habit.</p>
+<h3>SKILLS I SHOULD WATCH</h3>
+<ul>
+<li><strong>Confidential computing / private inference.</strong> OpenAI&#x27;s Private Inference is in alpha, Anthropic&#x27;s Enterprise Frontier Safeguards in beta. Understand the one-paragraph version so you can answer a client&#x27;s &quot;where does our data go?&quot;. Don&#x27;t study the hardware.</li>
+<li><strong>WebGPU compute shaders.</strong> Real, and coming. But learn TSL basics first — compute without TSL fundamentals is frustration.</li>
+<li><strong>React 19.2 <code>ViewTransition</code> and <code>Activity</code>.</strong> Useful for polished navigation animations, which overlaps your creative-dev interest. Low urgency; they&#x27;ll still be there in two months.</li>
+<li><strong>Agent observability and permission monitoring</strong> (the Microsoft Agent 365 / Copilot activity-monitoring direction). This will become a real category. Not yet actionable for you.</li>
+</ul>
+<h3>SKILLS I CAN IGNORE FOR NOW</h3>
+<ul>
+<li><strong>AI-for-mathematics, Lean 4, formal proof systems.</strong> Genuinely exciting, completely orthogonal to your career. ⚪</li>
+<li><strong>Perplexity tuning, pretraining, model internals.</strong> You consume models via API. You will never pretrain one. ⚪</li>
+<li><strong>AI safety policy, frontier-limit debates, lab governance.</strong> Read the headlines for awareness; spend zero learning hours. ⚪</li>
+<li><strong>Linux kernel / NFS internals.</strong> Patch your servers, don&#x27;t study them. ⚪</li>
+<li><strong>Chasing every new Copilot model name</strong> (GPT-6.2 Astra/Sol, Gemini 4 Neon, MAI Code 2). Pick one agent, learn it deeply, ignore the churn. The leaderboard changes monthly; your skills shouldn&#x27;t. ⚪</li>
+</ul>
+<hr>
+<h2>🎓 FREE / CHEAP LEARNING</h2>
+<p><strong>NAME:</strong> The Book of Shaders</p>
+<p><strong>WHAT IS IT?</strong> The canonical free interactive introduction to fragment shaders, with live editable examples in the page.</p>
+<p><strong>PROVIDER:</strong> Patricio Gonzalez Vivo &amp; Jen Lowe</p>
+<p><strong>COST:</strong> Free</p>
+<p><strong>CERTIFICATE:</strong> No</p>
+<p><strong>WHAT WILL I ACTUALLY LEARN?</strong> How a fragment shader thinks — UV coordinates, <code>step</code>, <code>smoothstep</code>, <code>mix</code>, noise, shaping functions. The mental model, which is the actual hard part.</p>
+<p><strong>DIFFICULTY:</strong> Beginner → Intermediate</p>
+<p><strong>WHY IS IT RELEVANT TO ME?</strong> It&#x27;s written in GLSL, not TSL, but TSL is just a different way to express the <em>same</em> operations. Learn the concepts here and TSL becomes syntax rather than a new subject. This is the fastest route into creative development.</p>
+<p><strong>LINK:</strong> <a href="https://thebookofshaders.com/">https://thebookofshaders.com/</a></p>
+<p><strong>NAME:</strong> Three.js official manual + TSL / WebGPU examples</p>
+<p><strong>WHAT IS IT?</strong> Official docs plus several hundred runnable examples, including the WebGPU and TSL ones (<code>webgpu_*</code> in the examples list) with viewable source.</p>
+<p><strong>PROVIDER:</strong> three.js (mrdoob and contributors)</p>
+<p><strong>COST:</strong> Free</p>
+<p><strong>CERTIFICATE:</strong> No</p>
+<p><strong>WHAT WILL I ACTUALLY LEARN?</strong> Working TSL code for real effects, which is scarce elsewhere because TSL is too new for the tutorial ecosystem to have caught up.</p>
+<p><strong>DIFFICULTY:</strong> Intermediate</p>
+<p><strong>WHY IS IT RELEVANT TO ME?</strong> Primary source, matching the version you install. Given how fast TSL is changing this month, third-party tutorials will be stale — official examples won&#x27;t be.</p>
+<p><strong>LINK:</strong> <a href="https://threejs.org/examples/">https://threejs.org/examples/</a> and <a href="https://threejs.org/docs/">https://threejs.org/docs/</a></p>
+<p><strong>NAME:</strong> BullMQ official documentation</p>
+<p><strong>WHAT IS IT?</strong> Docs for the standard Redis-backed queue library for Node.js.</p>
+<p><strong>PROVIDER:</strong> Taskforce.sh</p>
+<p><strong>COST:</strong> Free (Redis locally via Docker, also free)</p>
+<p><strong>CERTIFICATE:</strong> No</p>
+<p><strong>WHAT WILL I ACTUALLY LEARN?</strong> Jobs, workers, concurrency, attempts, backoff strategies, repeatable jobs, flows (parent/child — which is literally fan-out/fan-in), and failed-job handling.</p>
+<p><strong>DIFFICULTY:</strong> Intermediate</p>
+<p><strong>WHY IS IT RELEVANT TO ME?</strong> This is the practical tool for today&#x27;s system design concept and for skill #2 above. The docs are task-oriented and you can be productive in an afternoon.</p>
+<p><strong>LINK:</strong> <a href="https://docs.bullmq.io/">https://docs.bullmq.io/</a></p>
+<p><strong>NAME:</strong> GitHub Actions security hardening guide</p>
+<p><strong>WHAT IS IT?</strong> Official documentation on securing workflows — secret scoping, <code>GITHUB_TOKEN</code> permissions, environments with required reviewers, the dangers of <code>pull_request_target</code>.</p>
+<p><strong>PROVIDER:</strong> GitHub</p>
+<p><strong>COST:</strong> Free</p>
+<p><strong>CERTIFICATE:</strong> No</p>
+<p><strong>WHAT WILL I ACTUALLY LEARN?</strong> Exactly how a developer-account compromise turns into production code execution, and the specific settings that break that chain.</p>
+<p><strong>DIFFICULTY:</strong> Beginner → Intermediate</p>
+<p><strong>WHY IS IT RELEVANT TO ME?</strong> It is the direct, actionable counter to today&#x27;s number-one story. Highest security value per minute available to you today.</p>
+<p><strong>LINK:</strong> <a href="https://docs.github.com/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions">https://docs.github.com/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions</a></p>
+<p><strong>NAME:</strong> 1Password&#x27;s own incident write-up</p>
+<p><strong>WHAT IS IT?</strong> The company&#x27;s public disclosure and remediation report.</p>
+<p><strong>PROVIDER:</strong> 1Password</p>
+<p><strong>COST:</strong> Free</p>
+<p><strong>CERTIFICATE:</strong> No</p>
+<p><strong>WHAT WILL I ACTUALLY LEARN?</strong> What a competent incident disclosure looks like: what was taken, what wasn&#x27;t, why not, and what was changed. Including small smart details — they extended invitation/recovery codes from six numeric digits to ten alphanumeric characters to make brute force impractical.</p>
+<p><strong>DIFFICULTY:</strong> Beginner</p>
+<p><strong>WHY IS IT RELEVANT TO ME?</strong> Reading real incident reports is the cheapest security education there is. And one day you&#x27;ll have to write one.</p>
+<p><strong>LINK:</strong> <a href="https://1password.com/blog/update-on-nov-2026-security-incident">https://1password.com/blog/update-on-nov-2026-security-incident</a></p>
+<hr>
+<h2>▶️ YOUTUBE</h2>
+<p>Not today — it&#x27;s Thursday. YouTube recommendations come on Wednesday only.</p>
+<hr>
+<h2>🧠 WHAT I SHOULD LEARN TODAY</h2>
+<h2>LEARN THIS #1 — The generate–verify loop with bounded retries</h2>
+<p><strong>WHAT IS IT?</strong></p>
+<p>A pattern where an unreliable step (an LLM call) is followed by a strict checking step, and failures are re-queued with the failure reason attached, up to a hard attempt limit, after which they go to a dead letter queue.</p>
+<p><strong>WHY NOW?</strong></p>
+<p>Both of today&#x27;s headline AI stories are this pattern in disguise. Cogentic&#x27;s six proofs came from a prove-verify loop; GitHub shipped Evals because verification is now understood to be the product. The industry just told you, twice in one day, where the value is.</p>
+<p><strong>WHY ME?</strong></p>
+<p>It&#x27;s a backend architecture problem wearing an AI costume. Queues, workers, retries, idempotency — your target skill list. You don&#x27;t need to learn ML to build this; you need to learn queues, which you were going to learn anyway. This is the highest-leverage overlap between where you are and where you want to be.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong></p>
+<p>BullMQ job options (<code>attempts</code>, <code>backoff</code>), what a dead letter queue is and why unbounded retries are a bug, idempotency keys with MongoDB <code>upsert</code>, and why your verifier should be a plain deterministic function wherever possible.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong></p>
+<p>Distributed locks, multiple queue priorities, autoscaling workers, exactly-once semantics, Kafka. All real, none needed today.</p>
+<p><strong>TIME:</strong> 2 hours</p>
+<p><strong>FREE RESOURCE:</strong> <a href="https://docs.bullmq.io/">https://docs.bullmq.io/</a> — read &quot;Queues&quot;, &quot;Workers&quot;, &quot;Retrying failing jobs&quot; and &quot;Flows&quot;.</p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> Express endpoint → BullMQ job → LLM call that returns JSON → Zod schema as verifier → on fail re-queue with the Zod error text included in the next prompt → 3 attempts max, exponential backoff → DLQ collection in MongoDB → <code>GET /dlq</code> to inspect. Keep it under 150 lines.</p>
+<h2>LEARN THIS #2 — Lock down your own supply chain (this is maintenance, not study)</h2>
+<p><strong>WHAT IS IT?</strong></p>
+<p>Closing the exact attack path used against 1Password, on your own accounts and repos.</p>
+<p><strong>WHY NOW?</strong></p>
+<p>Two separate confirmed stories today share one root cause: a developer identity with a path through automation to production code execution. The npm data makes it concrete — median registry takedown is 7 days, and 16% of confirmed malicious packages were still installable.</p>
+<p><strong>WHY ME?</strong></p>
+<p>You have a broad-scope GitHub token and OAuth tokens on this machine, you run MCP servers from npm, and you have automated deploys. You are the target profile described in the Databricks report, specifically including the &quot;malicious MCP server&quot; category.</p>
+<p><strong>WHAT EXACTLY SHOULD I LEARN?</strong></p>
+<p>Not theory — do these: (1) GitHub 2FA on passkey/authenticator; (2) delete unused PATs, replace broad ones with fine-grained minimum-scope tokens with expiry dates; (3) branch protection on <code>main</code>; (4) environment-scoped secrets with a required reviewer for production; (5) switch every CI and Dockerfile to <code>npm ci</code>; (6) <code>npm ls next</code> in every project and patch to ≥16.4.5 / ≥15.5.29.</p>
+<p><strong>WHAT SHOULD I NOT WORRY ABOUT YET?</strong></p>
+<p>SLSA attestation, sigstore, SBOM tooling, a private registry. Enterprise-scale concerns; you&#x27;re one developer.</p>
+<p><strong>TIME:</strong> 1 hour</p>
+<p><strong>FREE RESOURCE:</strong> <a href="https://docs.github.com/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions">https://docs.github.com/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions</a></p>
+<p><strong>PRACTICAL MINI PROJECT:</strong> The throwaway-repo lab from the Cybersecurity section — try to read a secret from a fork PR workflow, see it blocked, then add an environment with a required reviewer and watch a deploy wait for approval.</p>
+<hr>
+<h2>🔮 WHERE TECHNOLOGY IS GOING</h2>
+<p><strong>TREND 1:</strong> The verifier is becoming the product.</p>
+<p><strong>WHAT THAT MEANS:</strong> For two years the question was &quot;which model is smartest&quot;. The answer now is &quot;it doesn&#x27;t matter much — what matters is whether you can tell if the output is correct&quot;. Cogentic&#x27;s results came from a prove-verify loop. GitHub shipped an eval harness as a product. Both labs are publicly worried that their evaluation methods can&#x27;t keep up with their models.</p>
+<p><strong>WHY IT MATTERS:</strong> AI engineering is converging on something that looks like QA engineering and distributed systems, not like data science.</p>
+<p><strong>WHAT I SHOULD LEARN:</strong> Evals, rubrics, LLM-as-judge, verify loops, retry policies, dead letter queues.</p>
+<p><strong>TREND 2:</strong> Agents are getting hands — and therefore an attack surface.</p>
+<p><strong>WHAT THAT MEANS:</strong> Copilot can now drive your Chrome browser and your desktop apps. MCP gives agents your tools. In the same week, npm malware is specifically targeting MCP hosts, stealing agent-host credentials and rewriting AI assistant instruction files. Capability and vulnerability arrived together.</p>
+<p><strong>WHY IT MATTERS:</strong> Every new capability you grant an agent is a new privilege an attacker can inherit. The security model for agents — scoped tokens, approval gates, audit trails — is being invented right now, and it&#x27;s mostly backend work.</p>
+<p><strong>WHAT I SHOULD LEARN:</strong> Capability scoping, per-tool credentials, approval gates for destructive actions, and auditing what your agent actually did.</p>
+<p><strong>TREND 3:</strong> The developer account is the new perimeter.</p>
+<p><strong>WHAT THAT MEANS:</strong> 1Password was breached through one employee&#x27;s GitHub account. The npm report found that account compromise has shifted from stolen tokens to compromised build pipelines, and that 85% of malicious packages published via trusted publishing were compromised legitimate packages. Attackers stopped attacking servers and started attacking the people and pipelines that write to them.</p>
+<p><strong>WHY IT MATTERS:</strong> Your CI/CD config is now security-critical infrastructure, not plumbing. &quot;Who can trigger a deploy, with which secrets&quot; is a security question.</p>
+<p><strong>WHAT I SHOULD LEARN:</strong> Least-privilege tokens, environment-scoped secrets, required reviewers, branch protection, credential rotation.</p>
+<p><strong>TREND 4:</strong> The web is migrating to the GPU, and JavaScript is the new shader language.</p>
+<p><strong>WHAT THAT MEANS:</strong> WebGPU unlocks GPU compute in the browser, but it needs WGSL while WebGL needs GLSL. Three.js&#x27;s answer is TSL: write it once in JavaScript, compile to either. This month TSL gained dead code elimination and other real compiler features — a clear signal it&#x27;s heading for production, not staying a demo.</p>
+<p><strong>WHY IT MATTERS:</strong> Previously, high-end web graphics required GLSL, which gated most JavaScript developers out. TSL lowers that gate substantially.</p>
+<p><strong>WHAT I SHOULD LEARN:</strong> TSL fundamentals now; WebGPU compute shaders in a few months.</p>
+<p><strong>TREND 5:</strong> &quot;Where does my data go while the AI processes it?&quot; is becoming an engineering question with a real answer.</p>
+<p><strong>WHAT THAT MEANS:</strong> OpenAI&#x27;s Private Inference (alpha) uses confidential computing to keep business prompts encrypted <em>during</em> processing, with verifiable controls; Anthropic has Enterprise Frontier Safeguards in beta. Both are responses to the same enterprise objection.</p>
+<p><strong>WHY IT MATTERS:</strong> It unblocks AI features in regulated industries, which is where the paid work is.</p>
+<p><strong>WHAT I SHOULD LEARN:</strong> Just the concept, well enough to answer a client in two sentences. Revisit when it exits alpha.</p>
+<hr>
+<h2>🚀 MY ACTION PLAN</h2>
+<h3>TODAY — 30 MINUTES</h3>
+<p>Read the BullMQ docs on retries and backoff (<a href="https://docs.bullmq.io/">https://docs.bullmq.io/</a>), and get a clear answer in your own words to: what is a dead letter queue, and why is <code>attempts: Infinity</code> a bug?</p>
+<h3>TODAY — 1 HOUR</h3>
+<p>Security maintenance, not learning. Run <code>npm ls next</code> across your projects and patch anything below 16.4.5 / 15.5.29, then redeploy. Switch your CI and Dockerfiles from <code>npm install</code> to <code>npm ci</code>. Then open GitHub settings: confirm 2FA is on a passkey or authenticator, delete unused personal access tokens, and replace any broad long-lived token with a fine-grained minimum-scope one with an expiry date.</p>
+<h3>THIS WEEK</h3>
+<p>TSL in Three.js. Spend 3–4 focused sessions on <code>uv()</code>, <code>time</code>, <code>mix()</code>, <code>texture()</code> and <code>colorNode</code>. Work from the official WebGPU/TSL examples at <a href="https://threejs.org/examples/">https://threejs.org/examples/</a> rather than tutorials, because TSL changed again this week and third-party content will be stale.</p>
+<h3>THIS WEEK&#x27;S PROJECT</h3>
+<p><strong>&quot;Verified Extractor&quot;</strong> — a small Express + MongoDB + BullMQ service that accepts messy text (an invoice, a CV, a product description), sends it to an LLM asking for structured JSON, validates against a Zod schema <strong>plus</strong> one arithmetic/logic check, and on failure re-queues with the specific validation error embedded in the next prompt — 3 attempts, exponential backoff, then dead letter queue. MongoDB writes keyed on <code>jobId</code> with <code>upsert</code> so retries never duplicate. Add <code>GET /dlq</code>. Then add 10 eval cases and a script that prints the pass rate, and run it before and after you change the prompt.</p>
+<p>This single project gives you queues, workers, retries, backoff, idempotency, DLQs, schema validation, AI reliability <strong>and</strong> evals — every item on your &quot;advanced backend + AI agents&quot; list, in one codebase you can demo and talk about in an interview.</p>
+<h3>IGNORE FOR NOW</h3>
+<p>The Cogentic maths. Do not read the factoring paper, don&#x27;t look up L[1/3] notation, don&#x27;t learn Lean. The result isn&#x27;t peer reviewed, the Lean proofs aren&#x27;t even published yet, the constant of 105 means it doesn&#x27;t threaten RSA in practice, and number theory has no path into your career. Take the architecture lesson from Section 3 and move on. Also ignore the new Copilot model names — Astra, Sol, Neon, MAI Code 2 — pick one agent, learn it properly, let the leaderboard churn without you.</p>
+<hr>
+<h3>🎯 IF I ONLY HAVE 1 HOUR TODAY</h3>
+<p>Build the skeleton of the Verified Extractor. Nothing else.</p>
+<ul>
+<li><strong>0–10 min:</strong> <code>docker run -p 6379:6379 redis</code>, <code>npm init</code>, install <code>express bullmq zod mongodb</code>.</li>
+<li><strong>10–25 min:</strong> One Express POST route that accepts <code>{ text }</code> and adds a BullMQ job with <code>{ attempts: 3, backoff: { type: &#x27;exponential&#x27;, delay: 1000 } }</code>.</li>
+<li><strong>25–45 min:</strong> A worker that calls your LLM, parses the JSON, and validates it with a Zod schema. On validation failure, <strong>throw the Zod error</strong> — let BullMQ&#x27;s retry handle it. Pass <code>job.attemptsMade</code> and the last error into the prompt so attempt 2 knows what attempt 1 got wrong.</li>
+<li><strong>45–55 min:</strong> On success, <code>updateOne({ jobId }, { $set: {...} }, { upsert: true })</code>. Watch the retry actually happen by deliberately giving it text that will fail.</li>
+<li><strong>55–60 min:</strong> Write down one sentence: <em>what does my verifier check that a schema alone cannot?</em> If you can&#x27;t answer that, your verifier is too weak — and that&#x27;s the real lesson of today.</li>
+</ul>
+<p>Don&#x27;t add the DLQ route, the evals or a UI today. Get one job to fail, retry with better information, and then succeed. That single observation is worth more than three hours of reading.</p>
+<hr>
+<p><em>Sources: 1Password security blog (25 Nov), TechCrunch, The Verge, Databricks supply-chain report (23 Nov), nextjs.org blog + Vercel security advisories, Netlify changelog, GitHub Changelog (17–25 Nov), three.js GitHub repo + official migration guide, Google Research cogentic_research_papers on GitHub (25 Nov), Axios (via reporting, 24 Nov), OpenAI blog, Reuters. Claims labelled CONFIRMED / ANNOUNCED / EARLY / ANALYSIS above.</em></p>
+</body>
+</html>
